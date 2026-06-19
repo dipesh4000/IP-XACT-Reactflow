@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { ComponentType } from "../../../types";
 
 const typeIcon: Record<ComponentType, string> = {
@@ -24,7 +25,7 @@ interface NodeHeaderProps {
   onExpand?: () => void;
 }
 
-export function NodeHeader({ name, type, color, expanded, depth = 0, isExpandable, isExpanded, onExpand }: NodeHeaderProps) {
+export const NodeHeader = memo(function NodeHeader({ name, type, color, expanded, depth = 0, isExpandable, isExpanded, onExpand }: NodeHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-3">
       {depth > 0 && (
@@ -65,4 +66,4 @@ export function NodeHeader({ name, type, color, expanded, depth = 0, isExpandabl
       )}
     </div>
   );
-}
+});

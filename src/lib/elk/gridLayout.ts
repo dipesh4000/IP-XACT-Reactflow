@@ -2,21 +2,21 @@ import type { ArchitectureFlowNode, ArchitectureFlowEdge } from "../../types";
 
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 88;
-const NODE_X_SPACING = 280;
-const NODE_Y_SPACING = 130;
+const NODE_X_SPACING = 340;
+const NODE_Y_SPACING = 160;
 const BUS_CHANNEL_WIDTH = 32;
-const BUS_CHANNEL_HEIGHT = 400;
+const BUS_CHANNEL_HEIGHT = 720;
 const CLUSTER_WIDTH = 280;
 const CLUSTER_HEIGHT = 118;
 
 const LAYER_X: Record<number, number> = {
   0: 0,
-  1: 300,
-  2: 600,
-  3: 900,
-  4: 1200,
-  5: 1500,
-  6: 1800
+  1: 400,
+  2: 800,
+  3: 1200,
+  4: 1600,
+  5: 2000,
+  6: 2400
 };
 
 export function computeGridLayout(
@@ -43,18 +43,19 @@ export function computeGridLayout(
     }
   }
 
+  const ySpacing = nodes.length > 500 ? 200 : NODE_Y_SPACING;
   const result: ArchitectureFlowNode[] = [];
 
   for (const [layer, layerNodes] of layerGroups) {
-    const x = LAYER_X[layer] ?? layer * 300;
-    const totalHeight = layerNodes.length * NODE_Y_SPACING;
+    const x = LAYER_X[layer] ?? layer * 400;
+    const totalHeight = layerNodes.length * ySpacing;
     const startY = -(totalHeight / 2);
 
     for (let i = 0; i < layerNodes.length; i++) {
       const node = layerNodes[i];
       if (!node) continue;
 
-      const y = startY + i * NODE_Y_SPACING;
+      const y = startY + i * ySpacing;
 
       let width = NODE_WIDTH;
       let height = NODE_HEIGHT;

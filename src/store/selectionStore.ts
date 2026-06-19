@@ -6,7 +6,6 @@ interface SelectionStore {
   expandedNodeId: string | null;
   searchQuery: string;
   highlightedNodeIds: Set<string>;
-  dimmedNodeIds: Set<string>;
   highlightedEdgeIds: Set<string>;
   selectNode: (id: string | null) => void;
   expandNode: (id: string | null) => void;
@@ -16,7 +15,6 @@ interface SelectionStore {
 function emptySets() {
   return {
     highlightedNodeIds: new Set<string>(),
-    dimmedNodeIds: new Set<string>(),
     highlightedEdgeIds: new Set<string>()
   };
 }
@@ -46,14 +44,7 @@ export const useSelectionStore = create<SelectionStore>((set) => ({
       highlightedNodeIds.add(connection.targetComponentId);
     }
 
-    const dimmedNodeIds = new Set<string>();
-    for (const component of model.components) {
-      if (!highlightedNodeIds.has(component.id)) {
-        dimmedNodeIds.add(component.id);
-      }
-    }
-
-    set({ selectedNodeId: id, highlightedNodeIds, highlightedEdgeIds, dimmedNodeIds });
+    set({ selectedNodeId: id, highlightedNodeIds, highlightedEdgeIds });
   },
   expandNode: (id) => set((state) => ({ expandedNodeId: state.expandedNodeId === id ? null : id })),
   setSearchQuery: (query) => set({ searchQuery: query })

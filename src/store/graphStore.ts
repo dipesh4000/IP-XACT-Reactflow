@@ -9,6 +9,7 @@ interface GraphStore {
   expandedClusterIds: Set<string>;
   expansionPath: string[];
   isLayoutLoading: boolean;
+  childClusterMap: Map<string, string[]>;
   setNodes: (nodes: ArchitectureFlowNode[]) => void;
   setEdges: (edges: ArchitectureFlowEdge[]) => void;
   updateNodePosition: (nodeId: string, position: { x: number; y: number }) => void;
@@ -21,18 +22,37 @@ interface GraphStore {
   setLayoutLoading: (loading: boolean) => void;
 }
 
-function getDescendantIds(nodeId: string, allNodes: ArchitectureFlowNode[]): string[] {
-  const ids: string[] = [];
-  for (const node of allNodes) {
-    if (node.data.kind === "cluster" && node.data.cluster.hierarchyPath.length > 1) {
-      const path = node.data.cluster.hierarchyPath;
-      const parentPath = path.slice(0, -1).join(":");
-      if (nodeId.endsWith(parentPath) || nodeId === `hierarchy:${parentPath}`) {
-        ids.push(node.id);
+function buildChildClusterMap(nodes: ArchitectureFlowNode[]): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const node of nodes) {
+    if (node.data.kind !== "cluster") continue;
+    const path = node.data.cluster.hierarchyPath;
+    if (path.length <= 1) continue;
+    const parentId = `hierarchy:${path.slice(0, -1).join(":")}`;
+    let children = map.get(parentId);
+    if (!children) {
+      children = [];
+      map.set(parentId, children);
+    }
+    children.push(node.id);
+  }
+  return map;
+}
+
+function getDescendantIds(nodeId: string, childClusterMap: Map<string, string[]>): string[] {
+  const result: string[] = [];
+  const stack = [nodeId];
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    const children = childClusterMap.get(current);
+    if (children) {
+      for (const child of children) {
+        result.push(child);
+        stack.push(child);
       }
     }
   }
-  return ids;
+  return result;
 }
 
 export const useGraphStore = create<GraphStore>((set) => ({
@@ -42,7 +62,8 @@ export const useGraphStore = create<GraphStore>((set) => ({
   expandedClusterIds: new Set<string>(),
   expansionPath: [],
   isLayoutLoading: false,
-  setNodes: (nodes) => set({ nodes }),
+  childClusterMap: new Map(),
+  setNodes: (nodes) => set({ nodes, childClusterMap: buildChildClusterMap(nodes) }),
   setEdges: (edges) => set({ edges }),
   updateNodePosition: (nodeId, position) =>
     set((state) => ({
@@ -94,7 +115,7 @@ export const useGraphStore = create<GraphStore>((set) => ({
           expansionPath.splice(pathIndex);
         }
 
-        const descendants = getDescendantIds(nodeId, state.nodes);
+        const descendants = getDescendantIds(nodeId, state.childClusterMap);
         for (const descId of descendants) {
           expandedClusterIds.delete(descId);
         }
@@ -117,7 +138,7 @@ export const useGraphStore = create<GraphStore>((set) => ({
 
       for (const removedId of removedIds) {
         expandedClusterIds.delete(removedId);
-        const descendants = getDescendantIds(removedId, state.nodes);
+        const descendants = getDescendantIds(removedId, state.childClusterMap);
         for (const descId of descendants) {
           expandedClusterIds.delete(descId);
         }

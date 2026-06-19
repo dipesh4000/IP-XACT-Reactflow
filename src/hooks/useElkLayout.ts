@@ -74,6 +74,7 @@ export function useElkLayout(): void {
   const expandedClusterIds = useGraphStore((state) => state.expandedClusterIds);
   const expansionPath = useGraphStore((state) => state.expansionPath);
   const preprocessedRef = useRef<PreprocessedArchitecture | null>(null);
+  const initialLayoutDoneRef = useRef(false);
 
   useEffect(() => {
     if (!model) {
@@ -89,20 +90,15 @@ export function useElkLayout(): void {
       worker.onmessage = (event: MessageEvent<{ result?: PreprocessedArchitecture; error?: string }>) => {
         if (event.data.result) {
           preprocessedRef.current = event.data.result;
-          const { nodes, edges } = modelToFlow(model, expandedClusterIds, event.data.result);
-          setNodes(nodes);
-          setEdges(edges);
-
-          const gridNodes = computeGridLayout(nodes, edges);
-          setNodes(applyLayout(nodes, gridNodes));
-        } else {
-          const { nodes, edges } = modelToFlow(model, expandedClusterIds);
-          setNodes(nodes);
-          setEdges(edges);
-          const gridNodes = computeGridLayout(nodes, edges);
-          setNodes(applyLayout(nodes, gridNodes));
         }
+        const { nodes, edges } = modelToFlow(model, expandedClusterIds, event.data.result);
+        setNodes(nodes);
+        setEdges(edges);
+
+        const gridNodes = computeGridLayout(nodes, edges);
+        setNodes(applyLayout(nodes, gridNodes));
         setLayoutLoading(false);
+        initialLayoutDoneRef.current = true;
         worker.terminate();
       };
       worker.onerror = () => {
@@ -112,6 +108,7 @@ export function useElkLayout(): void {
         const gridNodes = computeGridLayout(nodes, edges);
         setNodes(applyLayout(nodes, gridNodes));
         setLayoutLoading(false);
+        initialLayoutDoneRef.current = true;
         worker.terminate();
       };
       worker.postMessage({ model });
@@ -135,6 +132,7 @@ export function useElkLayout(): void {
       const cachedLayout = getCachedLayout(cacheKey);
       if (cachedLayout) {
         setNodes(applyElkLayout(nodes, cachedLayout));
+        initialLayoutDoneRef.current = true;
         return;
       }
 
@@ -148,11 +146,13 @@ export function useElkLayout(): void {
           setNodes(nodes);
         }
         setLayoutLoading(false);
+        initialLayoutDoneRef.current = true;
         elkWorker.terminate();
       };
       elkWorker.onerror = () => {
         setNodes(nodes);
         setLayoutLoading(false);
+        initialLayoutDoneRef.current = true;
         elkWorker.terminate();
       };
       elkWorker.postMessage({
@@ -168,5 +168,18 @@ export function useElkLayout(): void {
 
     const timer = setTimeout(runPreprocessAndLayout, 10);
     return () => clearTimeout(timer);
-  }, [expandedClusterIds, expansionPath, model, setEdges, setNodes, setLayoutLoading]);
+  }, [model, setEdges, setNodes, setLayoutLoading]);
+
+  useEffect(() => {
+    if (!model || !initialLayoutDoneRef.current) {
+      return;
+    }
+
+    const { nodes, edges } = modelToFlow(model, expandedClusterIds, preprocessedRef.current ?? undefined);
+    setNodes(nodes);
+    setEdges(edges);
+
+    const gridNodes = computeGridLayout(nodes, edges);
+    setNodes(applyLayout(nodes, gridNodes));
+  }, [expandedClusterIds, expansionPath, model, setNodes, setEdges]);
 }

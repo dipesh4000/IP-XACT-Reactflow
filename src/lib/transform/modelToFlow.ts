@@ -16,8 +16,8 @@ import type { LayoutLayer } from "../preprocess/types";
 import type { PreprocessedArchitecture } from "../preprocess";
 import { buildHierarchy, findHierarchyNode, getDescendantIds } from "../clustering/hierarchyBuilder";
 
-const NODE_X_SPACING = 260;
-const NODE_Y_SPACING = 120;
+const NODE_X_SPACING = 340;
+const NODE_Y_SPACING = 160;
 const NODE_HEIGHT = 88;
 const BUS_CHANNEL_HEIGHT = 720;
 const BUS_CHANNEL_WIDTH = 32;
@@ -29,12 +29,12 @@ const MAX_COLUMNS = 32;
 
 const LAYER_X: Record<number, number> = {
   0: 0,
-  1: 300,
-  2: 600,
-  3: 900,
-  4: 1200,
-  5: 1500,
-  6: 1800
+  1: 400,
+  2: 800,
+  3: 1200,
+  4: 1600,
+  5: 2000,
+  6: 2400
 };
 
 function getFallbackColumnCount(nodeCount: number): number {
@@ -51,6 +51,42 @@ function getDegreeMap(model: ArchitectureModel): Map<string, number> {
     degree.set(connection.targetComponentId, (degree.get(connection.targetComponentId) ?? 0) + 1);
   }
   return degree;
+}
+
+function buildConnectionIndex(model: ArchitectureModel): Map<string, Set<string>> {
+  const index = new Map<string, Set<string>>();
+  for (const connection of model.connections) {
+    let sourceSet = index.get(connection.sourceComponentId);
+    if (!sourceSet) {
+      sourceSet = new Set();
+      index.set(connection.sourceComponentId, sourceSet);
+    }
+    sourceSet.add(connection.id);
+
+    let targetSet = index.get(connection.targetComponentId);
+    if (!targetSet) {
+      targetSet = new Set();
+      index.set(connection.targetComponentId, targetSet);
+    }
+    targetSet.add(connection.id);
+  }
+  return index;
+}
+
+function countConnectionsForComponentIds(
+  componentIds: string[],
+  connectionIndex: Map<string, Set<string>>
+): number {
+  const seen = new Set<string>();
+  for (const id of componentIds) {
+    const connIds = connectionIndex.get(id);
+    if (connIds) {
+      for (const connId of connIds) {
+        seen.add(connId);
+      }
+    }
+  }
+  return seen.size;
 }
 
 function isBusType(type: ComponentType): boolean {
@@ -146,10 +182,14 @@ function aggregateEdges(
       connectionCount: count,
       connectionType: connMeta?.connectionType as ArchitectureEdgeData["connectionType"]
     };
+    const isClusterSource = source.startsWith("hierarchy:");
+    const isClusterTarget = target.startsWith("hierarchy:");
     return {
       id: count > 1 ? `agg_${source}_to_${target}` : connection.id,
       source,
       target,
+      sourceHandle: isClusterSource ? undefined : `right:${source}`,
+      targetHandle: isClusterTarget ? undefined : `left:${target}`,
       type: "architecture",
       data,
       markerEnd: { type: MarkerType.ArrowClosed }
@@ -162,7 +202,8 @@ function walkHierarchy(
   expandedClusterIds: Set<string>,
   model: ArchitectureModel,
   componentById: Map<string, Component>,
-  componentToVisibleId: Map<string, string>
+  componentToVisibleId: Map<string, string>,
+  connectionIndex: Map<string, Set<string>>
 ): { visibleComponents: Component[]; clusters: ArchitectureCluster[] } {
   const visibleComponents: Component[] = [];
   const clusters: ArchitectureCluster[] = [];
@@ -194,11 +235,7 @@ function walkHierarchy(
           }
         }
       } else {
-        const connectionCount = model.connections.filter(
-          (conn) =>
-            child.componentIds.includes(conn.sourceComponentId) ||
-            child.componentIds.includes(conn.targetComponentId)
-        ).length;
+        const connectionCount = countConnectionsForComponentIds(child.componentIds, connectionIndex);
 
         const typeBreakdown: Partial<Record<ComponentType, number>> = {};
         for (const compId of child.componentIds) {
@@ -227,11 +264,7 @@ function walkHierarchy(
       }
     }
   } else {
-    const connectionCount = model.connections.filter(
-      (conn) =>
-        node.componentIds.includes(conn.sourceComponentId) ||
-        node.componentIds.includes(conn.targetComponentId)
-    ).length;
+    const connectionCount = countConnectionsForComponentIds(node.componentIds, connectionIndex);
 
     const typeBreakdown: Partial<Record<ComponentType, number>> = {};
     for (const compId of node.componentIds) {
@@ -334,8 +367,8 @@ function layoutWithLayers(
   for (let i = 0; i < clusters.length; i++) {
     const cluster = clusters[i];
     if (!cluster) continue;
-    const clusterX = LAYER_X[4] ?? 1200;
-    const clusterY = -200 + i * (CLUSTER_WIDTH + 40);
+    const clusterX = LAYER_X[4] ?? 1600;
+    const clusterY = -200 + i * (CLUSTER_WIDTH + 80);
     nodes.push(makeClusterNode(cluster, clusterX + 400, clusterY));
   }
 
@@ -353,6 +386,7 @@ export function modelToFlow(
   const degree = getDegreeMap(model);
   const hierarchy = buildHierarchy(model, degree);
   const componentById = new Map(model.components.map((component) => [component.id, component]));
+  const connectionIndex = buildConnectionIndex(model);
   const expandedSet = expandedClusterIds ?? new Set<string>();
   const componentToVisibleId = new Map<string, string>();
 
@@ -360,7 +394,7 @@ export function modelToFlow(
   const clusters: ArchitectureCluster[] = [];
 
   for (const child of hierarchy.childGroups) {
-    const result = walkHierarchy(child, expandedSet, model, componentById, componentToVisibleId);
+    const result = walkHierarchy(child, expandedSet, model, componentById, componentToVisibleId, connectionIndex);
     visibleComponents.push(...result.visibleComponents);
     clusters.push(...result.clusters);
   }

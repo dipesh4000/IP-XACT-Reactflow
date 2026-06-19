@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState, type MouseEvent } from "react";
-import ReactFlow, { Controls, MarkerType, type Node, type Viewport, useEdgesState, useNodesState } from "reactflow";
+import { useCallback, useState, type MouseEvent } from "react";
+import ReactFlow, { Controls, MarkerType, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
 import "reactflow/dist/style.css";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
-import type { ArchitectureEdgeData, ArchitectureNodeData } from "../../types";
+import type { ArchitectureEdgeData, ArchitectureFlowEdge, ArchitectureFlowNode, ArchitectureNodeData } from "../../types";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { MiniMapPanel } from "./MiniMapPanel";
@@ -26,16 +26,29 @@ function FlowCanvasInner() {
   const storeNodes = useGraphStore((state) => state.nodes);
   const storeEdges = useGraphStore((state) => state.edges);
   const updateNodePosition = useGraphStore((state) => state.updateNodePosition);
+  const setNodes = useGraphStore((state) => state.setNodes);
+  const setEdges = useGraphStore((state) => state.setEdges);
   const toggleCluster = useGraphStore((state) => state.toggleCluster);
   const isLayoutLoading = useGraphStore((state) => state.isLayoutLoading);
   const selectNode = useSelectionStore((state) => state.selectNode);
   const focusNode = useFitViewOnSelect();
-  const [nodes, setNodes, onNodesChange] = useNodesState<ArchitectureNodeData>(storeNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<ArchitectureEdgeData>(storeEdges);
   const [isOverview, setIsOverview] = useState(false);
 
-  useEffect(() => setNodes(storeNodes), [setNodes, storeNodes]);
-  useEffect(() => setEdges(storeEdges), [setEdges, storeEdges]);
+  const handleNodesChange: OnNodesChange = useCallback(
+    (changes) => {
+      const currentNodes = useGraphStore.getState().nodes;
+      setNodes(applyNodeChanges(changes, currentNodes as any) as ArchitectureFlowNode[]);
+    },
+    [setNodes]
+  );
+
+  const handleEdgesChange: OnEdgesChange = useCallback(
+    (changes) => {
+      const currentEdges = useGraphStore.getState().edges;
+      setEdges(applyEdgeChanges(changes, currentEdges as any) as ArchitectureFlowEdge[]);
+    },
+    [setEdges]
+  );
 
   const handleNodeClick = useCallback(
     (_event: MouseEvent, node: Node<ArchitectureNodeData>) => {
@@ -76,13 +89,13 @@ function FlowCanvasInner() {
     <div className="relative h-full w-full">
       <ReactFlow
         className={isOverview ? "architecture-flow architecture-flow--overview" : "architecture-flow"}
-        nodes={nodes}
-        edges={edges}
+        nodes={storeNodes}
+        edges={storeEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
         onNodeClick={handleNodeClick}
         onNodeDoubleClick={handleNodeDoubleClick}
         onNodeDragStop={handleNodeDragStop}

@@ -7,7 +7,9 @@ export function useNodeHighlighting(nodeId: string): {
 } {
   const isSelected = useSelectionStore((state) => state.selectedNodeId === nodeId);
   const isExpanded = useSelectionStore((state) => state.expandedNodeId === nodeId);
-  const isDimmed = useSelectionStore((state) => state.dimmedNodeIds.has(nodeId));
+  const isDimmed = useSelectionStore(
+    (state) => state.highlightedNodeIds.size > 0 && !state.highlightedNodeIds.has(nodeId)
+  );
 
   return { isSelected, isExpanded, isDimmed };
 }

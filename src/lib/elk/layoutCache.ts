@@ -3,11 +3,21 @@ import type { ArchitectureModel } from "../../types";
 
 const layoutCache = new Map<string, ElkNode>();
 
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash + char) | 0;
+  }
+  return hash.toString(36);
+}
+
 export function getLayoutCacheKey(model: ArchitectureModel, expansionPath?: string[]): string {
-  const nodeIds = model.components.map((component) => component.id).sort().join("|");
-  const edgeIds = model.connections.map((connection) => connection.id).sort().join("|");
-  const pathKey = expansionPath?.length ? `::path:${expansionPath.join("|")}` : "";
-  return `${nodeIds}::${edgeIds}${pathKey}`;
+  const componentCount = model.components.length;
+  const connectionCount = model.connections.length;
+  const pathKey = expansionPath?.length ? expansionPath.join(",") : "";
+  const pathHash = pathKey ? hashString(pathKey) : "none";
+  return `${componentCount}::${connectionCount}::${pathHash}`;
 }
 
 export function getCachedLayout(key: string): ElkNode | undefined {
