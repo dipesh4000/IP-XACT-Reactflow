@@ -10,6 +10,7 @@ interface GraphStore {
   expansionPath: string[];
   isLayoutLoading: boolean;
   childClusterMap: Map<string, string[]>;
+  sidebarCollapsed: boolean;
   setNodes: (nodes: ArchitectureFlowNode[]) => void;
   setEdges: (edges: ArchitectureFlowEdge[]) => void;
   updateNodePosition: (nodeId: string, position: { x: number; y: number }) => void;
@@ -20,6 +21,7 @@ interface GraphStore {
   collapseToLevel: (nodeId: string) => void;
   resetExpansion: () => void;
   setLayoutLoading: (loading: boolean) => void;
+  toggleSidebar: () => void;
 }
 
 function buildChildClusterMap(nodes: ArchitectureFlowNode[]): Map<string, string[]> {
@@ -63,6 +65,7 @@ export const useGraphStore = create<GraphStore>((set) => ({
   expansionPath: [],
   isLayoutLoading: false,
   childClusterMap: new Map(),
+  sidebarCollapsed: false,
   setNodes: (nodes) => set({ nodes, childClusterMap: buildChildClusterMap(nodes) }),
   setEdges: (edges) => set({ edges }),
   updateNodePosition: (nodeId, position) =>
@@ -151,5 +154,6 @@ export const useGraphStore = create<GraphStore>((set) => ({
       expandedClusterIds: new Set<string>(),
       expansionPath: []
     }),
-  setLayoutLoading: (loading) => set({ isLayoutLoading: loading })
+  setLayoutLoading: (loading) => set({ isLayoutLoading: loading }),
+  toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }))
 }));

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useArchitectureStore } from "./architectureStore";
+import { useGraphStore } from "./graphStore";
 
 interface SelectionStore {
   selectedNodeId: string | null;
@@ -29,9 +30,12 @@ export const useSelectionStore = create<SelectionStore>((set) => ({
     const model = architecture.model;
 
     if (!id || !model) {
+      useGraphStore.setState({ sidebarCollapsed: true });
       set({ selectedNodeId: id, ...emptySets() });
       return;
     }
+
+    useGraphStore.setState({ sidebarCollapsed: false });
 
     const highlightedNodeIds = new Set<string>([id]);
     const highlightedEdgeIds = new Set<string>(architecture.edgeIdsByComponentId.get(id) ?? []);

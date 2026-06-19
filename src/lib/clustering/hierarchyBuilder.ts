@@ -2,6 +2,7 @@ import type { ArchitectureModel, Component, ComponentType, Connection } from "..
 import type { HierarchyNode } from "../../types";
 
 const EXPAND_THRESHOLD = 6;
+const CLUSTER_DISABLE_THRESHOLD = 100;
 
 const TYPE_GROUP_ORDER: ComponentType[] = ["cpu", "bus", "memory", "peripheral", "interface", "clockReset", "custom", "dma", "interruptController", "debug"];
 
@@ -164,6 +165,10 @@ export function buildHierarchy(
       typeBreakdown: computeTypeBreakdown(model.components)
     }
   };
+
+  if (model.components.length < CLUSTER_DISABLE_THRESHOLD) {
+    return root;
+  }
 
   const byType = groupByType(model.components);
 

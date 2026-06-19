@@ -184,6 +184,7 @@ function aggregateEdges(
     };
     const isClusterSource = source.startsWith("hierarchy:");
     const isClusterTarget = target.startsWith("hierarchy:");
+
     return {
       id: count > 1 ? `agg_${source}_to_${target}` : connection.id,
       source,
@@ -393,10 +394,20 @@ export function modelToFlow(
   const visibleComponents: Component[] = [];
   const clusters: ArchitectureCluster[] = [];
 
-  for (const child of hierarchy.childGroups) {
-    const result = walkHierarchy(child, expandedSet, model, componentById, componentToVisibleId, connectionIndex);
-    visibleComponents.push(...result.visibleComponents);
-    clusters.push(...result.clusters);
+  if (hierarchy.childGroups.length === 0) {
+    for (const compId of hierarchy.componentIds) {
+      const comp = componentById.get(compId);
+      if (comp) {
+        visibleComponents.push(comp);
+        componentToVisibleId.set(compId, compId);
+      }
+    }
+  } else {
+    for (const child of hierarchy.childGroups) {
+      const result = walkHierarchy(child, expandedSet, model, componentById, componentToVisibleId, connectionIndex);
+      visibleComponents.push(...result.visibleComponents);
+      clusters.push(...result.clusters);
+    }
   }
 
   const nodes = layoutWithLayers(visibleComponents, clusters, preprocessed);

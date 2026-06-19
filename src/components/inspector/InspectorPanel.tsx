@@ -1,5 +1,6 @@
 import { nodeColorMap } from "../../lib/transform/colorMap";
 import { useArchitectureStore } from "../../store/architectureStore";
+import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
 import { Badge } from "../ui/Badge";
 import { Panel } from "../ui/Panel";
@@ -17,22 +18,28 @@ export function InspectorPanel() {
   const outgoing = useArchitectureStore((state) => (selectedNodeId ? state.getOutgoing(selectedNodeId) : EMPTY_CONNECTIONS));
   const getComponent = useArchitectureStore((state) => state.getComponent);
   const focusNode = useFitViewOnSelect();
+  const sidebarCollapsed = useGraphStore((state) => state.sidebarCollapsed);
+  const toggleSidebar = useGraphStore((state) => state.toggleSidebar);
 
-  if (!component) {
-    return (
-      <Panel className="flex h-full w-[360px] shrink-0 items-center justify-center p-8 text-center text-sm text-slate-500">
-        Select a block to inspect ports, registers, and live connections.
-      </Panel>
-    );
+  if (!component || sidebarCollapsed) {
+    return null;
   }
 
-  const colors = nodeColorMap[component.type];
-  const getName = (id: string) => getComponent(id)?.name ?? id;
-
   return (
-    <Panel className="h-full w-[360px] shrink-0 overflow-y-auto p-5">
+    <Panel className="relative h-full w-[360px] shrink-0 overflow-y-auto p-5">
+      <button
+        className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5 text-slate-500 transition hover:bg-white/10 hover:text-slate-200"
+        onClick={toggleSidebar}
+        title="Collapse sidebar"
+        type="button"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
       <div className="mb-5">
-        <Badge color={colors.border}>{component.type}</Badge>
+        <Badge color={nodeColorMap[component.type].border}>{component.type}</Badge>
         <h2 className="mt-3 text-xl font-semibold text-slate-50">{component.name}</h2>
         <p className="mt-1 font-mono text-xs text-slate-500">{component.id}</p>
       </div>
@@ -66,11 +73,11 @@ export function InspectorPanel() {
       </InspectorSection>
 
       <InspectorSection title="Incoming">
-        <ConnectionList connections={incoming} direction="incoming" getName={getName} onSelect={focusNode} />
+        <ConnectionList connections={incoming} direction="incoming" getName={(id: string) => getComponent(id)?.name ?? id} onSelect={focusNode} />
       </InspectorSection>
 
       <InspectorSection title="Outgoing">
-        <ConnectionList connections={outgoing} direction="outgoing" getName={getName} onSelect={focusNode} />
+        <ConnectionList connections={outgoing} direction="outgoing" getName={(id: string) => getComponent(id)?.name ?? id} onSelect={focusNode} />
       </InspectorSection>
     </Panel>
   );

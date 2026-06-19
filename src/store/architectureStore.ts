@@ -11,6 +11,7 @@ export interface ArchitectureLookups {
 interface ArchitectureStore extends ArchitectureLookups {
   model: ArchitectureModel | null;
   loadModel: (model: ArchitectureModel) => void;
+  clearModel: () => void;
   getComponent: (id: string) => Component | undefined;
   getIncoming: (id: string) => Connection[];
   getOutgoing: (id: string) => Connection[];
@@ -45,6 +46,7 @@ export const useArchitectureStore = create<ArchitectureStore>((set, get) => ({
   model: null,
   ...emptyLookups,
   loadModel: (model) => set({ model, ...buildLookups(model) }),
+  clearModel: () => set({ model: null, ...emptyLookups }),
   getComponent: (id) => get().componentById.get(id),
   getIncoming: (id) => get().incomingByComponentId.get(id) ?? EMPTY_CONNECTIONS,
   getOutgoing: (id) => get().outgoingByComponentId.get(id) ?? EMPTY_CONNECTIONS
