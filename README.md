@@ -1,4 +1,4 @@
-# ip-xact
+# IP-XACT
 
 A React Flow-based hardware architecture explorer for IP-XACT-like SoC (System-on-Chip) models. Visualizes component hierarchies, port connections, and register maps with custom node types and ELK-powered layout.
 
