@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "postinstall": "node -e \"try{require('fs').chmodSync('node_modules/.bin/tsc',0o755)}catch(e){}\""
+    "postinstall": "node -e \"const fs=require('fs'),p=require('path'),d='node_modules/.bin';fs.existsSync(d)&&fs.readdirSync(d).forEach(f=>{try{fs.chmodSync(p.join(d,f),0o755)}catch(e){}})\""
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
