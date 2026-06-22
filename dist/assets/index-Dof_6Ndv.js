@@ -1,5 +1,4 @@
-let ZE;
-let __tla = (async () => {
+(async () => {
   (function() {
     const r = document.createElement("link").relList;
     if (r && r.supports && r.supports("modulepreload")) return;
@@ -16957,13 +16956,9 @@ Error generating stack: ` + g.message + `
     }
     return l;
   }
-  let KE, QE, n0;
-  KE = "modulepreload";
-  QE = function(e) {
+  const KE = "modulepreload", QE = function(e) {
     return "/" + e;
-  };
-  n0 = {};
-  ZE = function(r, o, i) {
+  }, n0 = {}, ZE = function(r, o, i) {
     let l = Promise.resolve();
     if (o && o.length > 0) {
       let c = function(h) {
@@ -17035,7 +17030,7 @@ Error generating stack: ` + g.message + `
   }
   async function tC(e) {
     const { preprocessArchitectureWasm: r } = await ZE(async () => {
-      const { preprocessArchitectureWasm: i } = await import("./index-BcnA6_2p.js");
+      const { preprocessArchitectureWasm: i } = await import("./index-B5Iy_e64.js");
       return {
         preprocessArchitectureWasm: i
       };
@@ -17486,7 +17481,7 @@ Error generating stack: ` + g.message + `
       if (!e) return;
       if (e.components.length > G2) {
         i(true);
-        const y = new Worker(new URL("/assets/preprocessWorker-DBZGLPjR.js", import.meta.url), {
+        const y = new Worker(new URL("/assets/preprocessWorker-DkNNOVJt.js", import.meta.url), {
           type: "module"
         });
         return y.onmessage = (v) => {
@@ -18507,7 +18502,3 @@ Error generating stack: ` + g.message + `
     children: I.jsx(VC, {})
   }));
 })();
-export {
-  ZE as _,
-  __tla
-};
