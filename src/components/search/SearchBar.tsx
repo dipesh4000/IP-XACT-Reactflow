@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
 import { useSearch } from "../../hooks/useSearch";
 import { useSelectionStore } from "../../store/selectionStore";
+import { useSettingsStore } from "../../store/settingsStore";
 import { Panel } from "../ui/Panel";
 import { SearchResultsList } from "./SearchResultsList";
 
@@ -11,6 +12,8 @@ export function SearchBar() {
   const results = useSearch();
   const focusNode = useFitViewOnSelect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setSearchQuery(value), 150);
@@ -55,20 +58,24 @@ export function SearchBar() {
 
   return (
     <Panel className="w-[280px] overflow-hidden rounded-lg">
-      <div className="flex items-center gap-2 px-3 py-2">
-        <svg className="h-4 w-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex items-center gap-2 px-3 py-2.5">
+        <svg className={`h-4 w-4 shrink-0 ${isDark ? "text-slate-500" : "text-slate-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input
           ref={inputRef}
-          className="w-full border-0 bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-600"
+          className={`w-full border-0 bg-transparent text-sm outline-none ${
+            isDark
+              ? "text-slate-100 placeholder:text-slate-600"
+              : "text-slate-800 placeholder:text-slate-400"
+          }`}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Search components... (/)"
           value={value}
         />
         {value.trim() ? (
           <button
-            className="shrink-0 text-slate-500 hover:text-slate-300"
+            className={`shrink-0 ${isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-400 hover:text-slate-600"}`}
             onClick={() => { setValue(""); setSearchQuery(""); }}
             type="button"
           >

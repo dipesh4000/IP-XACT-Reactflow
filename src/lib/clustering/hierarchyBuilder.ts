@@ -1,9 +1,6 @@
 import type { ArchitectureModel, Component, ComponentType, Connection } from "../../types";
 import type { HierarchyNode } from "../../types";
 
-const EXPAND_THRESHOLD = 6;
-const CLUSTER_DISABLE_THRESHOLD = 100;
-
 const TYPE_GROUP_ORDER: ComponentType[] = ["cpu", "bus", "memory", "peripheral", "interface", "clockReset", "custom", "dma", "interruptController", "debug"];
 
 const TYPE_LABELS: Record<ComponentType, string> = {
@@ -17,6 +14,19 @@ const TYPE_LABELS: Record<ComponentType, string> = {
   dma: "DMA",
   interruptController: "Interrupt Controller",
   debug: "Debug"
+};
+
+const TYPE_ICONS: Record<ComponentType, string> = {
+  cpu: "CPU",
+  bus: "BUS",
+  memory: "MEM",
+  peripheral: "I/O",
+  interface: "PAD",
+  clockReset: "CLK",
+  custom: "IP",
+  dma: "DMA",
+  interruptController: "INT",
+  debug: "DBG"
 };
 
 const NUMERIC_SUFFIX = /\d+$/;
@@ -77,27 +87,34 @@ function splitIntoChunks(components: Component[], chunkSize: number): Component[
   return chunks;
 }
 
+function computeOptimalChunkSize(componentCount: number): number {
+  if (componentCount <= 12) return componentCount;
+  if (componentCount <= 30) return Math.ceil(componentCount / 3);
+  if (componentCount <= 60) return Math.ceil(componentCount / 4);
+  return Math.ceil(componentCount / 5);
+}
+
 function buildSubGroups(
   components: Component[],
   connections: Connection[],
   depth: number,
   parentPath: string
 ): HierarchyNode[] {
-  if (components.length <= EXPAND_THRESHOLD) {
+  if (components.length <= 12) {
     return [];
   }
 
   const byPrefix = groupByPrefix(components);
   const prefixes = [...byPrefix.keys()].sort();
 
-  if (prefixes.length >= 2 && components.length > EXPAND_THRESHOLD * 2) {
+  if (prefixes.length >= 2 && components.length > 24) {
     const groups: HierarchyNode[] = [];
     for (const prefix of prefixes) {
       const members = byPrefix.get(prefix)!;
       if (members.length === 0) continue;
 
       const groupId = `${parentPath}:${prefix.toLowerCase()}`;
-      const hasChildren = members.length > EXPAND_THRESHOLD;
+      const hasChildren = members.length > 12;
 
       groups.push({
         id: groupId,
@@ -116,7 +133,7 @@ function buildSubGroups(
     return groups;
   }
 
-  const chunkSize = Math.max(EXPAND_THRESHOLD, Math.ceil(components.length / 4));
+  const chunkSize = computeOptimalChunkSize(components.length);
   const chunks = splitIntoChunks(components, chunkSize);
   const groups: HierarchyNode[] = [];
 
@@ -125,7 +142,7 @@ function buildSubGroups(
     if (!chunk || chunk.length === 0) continue;
 
     const groupId = `${parentPath}:part${i}`;
-    const hasChildren = chunk.length > EXPAND_THRESHOLD;
+    const hasChildren = chunk.length > 12;
     const firstName = chunk[0]?.name ?? `Part ${i + 1}`;
     const lastName = chunk[chunk.length - 1]?.name ?? firstName;
     const label = chunk.length > 2 ? `${firstName}..${lastName}` : firstName;
@@ -148,6 +165,16 @@ function buildSubGroups(
   return groups;
 }
 
+function computeClusterThreshold(componentCount: number): number {
+  // The check below is `componentCount < threshold`.
+  // Thanks to Rust WASM preprocessing, we can comfortably handle up to 1000 components
+  // without needing to summarize them into clusters.
+  if (componentCount <= 1000) return 1001;
+  
+  // For graphs larger than 1000, we start clustering to maintain rendering performance.
+  return 1001;
+}
+
 export function buildHierarchy(
   model: ArchitectureModel,
   degree: Map<string, number>
@@ -166,7 +193,8 @@ export function buildHierarchy(
     }
   };
 
-  if (model.components.length < CLUSTER_DISABLE_THRESHOLD) {
+  const clusterThreshold = computeClusterThreshold(model.components.length);
+  if (model.components.length < clusterThreshold) {
     return root;
   }
 
@@ -177,7 +205,7 @@ export function buildHierarchy(
     if (!members || members.length === 0) continue;
 
     const typeGroupId = `hierarchy:${type}`;
-    const needsSubGroups = members.length > EXPAND_THRESHOLD;
+    const needsSubGroups = members.length > 12;
 
     const typeNode: HierarchyNode = {
       id: typeGroupId,

@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useSettingsStore } from "../../store/settingsStore";
 import type { Component } from "../../types";
 
 interface SearchResultsListProps {
@@ -14,6 +15,8 @@ export function SearchResultsList({ results, onSelect }: SearchResultsListProps)
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [containerHeight, setContainerHeight] = useState(MAX_HEIGHT);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const container = containerRef.current;
@@ -43,7 +46,7 @@ export function SearchResultsList({ results, onSelect }: SearchResultsListProps)
   const visibleItems = results.slice(startIndex, endIndex);
 
   return (
-    <div className="border-t border-white/10">
+    <div className={`border-t ${isDark ? "border-white/10" : "border-slate-200"}`}>
       <div
         ref={containerRef}
         className="overflow-y-auto"
@@ -56,7 +59,9 @@ export function SearchResultsList({ results, onSelect }: SearchResultsListProps)
             return (
               <button
                 key={component.id}
-                className="flex w-full items-center justify-between gap-3 px-3 text-left transition hover:bg-white/5"
+                className={`flex w-full items-center justify-between gap-3 px-3 text-left transition ${
+                  isDark ? "hover:bg-white/5" : "hover:bg-slate-100"
+                }`}
                 style={{
                   position: "absolute",
                   top: actualIndex * ROW_HEIGHT,
@@ -68,10 +73,10 @@ export function SearchResultsList({ results, onSelect }: SearchResultsListProps)
                 type="button"
               >
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-slate-100">{component.name}</span>
-                  <span className="block font-mono text-[11px] text-slate-500">{component.id}</span>
+                  <span className={`block truncate text-sm font-medium ${isDark ? "text-slate-100" : "text-slate-800"}`}>{component.name}</span>
+                  <span className={`block font-mono text-[11px] ${isDark ? "text-slate-500" : "text-slate-500"}`}>{component.id}</span>
                 </span>
-                <span className="shrink-0 rounded bg-white/5 px-2 py-0.5 text-[10px] uppercase text-slate-400">{component.type}</span>
+                <span className={`shrink-0 rounded px-2 py-0.5 text-[10px] font-medium uppercase ${isDark ? "bg-white/5 text-slate-400" : "bg-slate-100 text-slate-600"}`}>{component.type}</span>
               </button>
             );
           })}

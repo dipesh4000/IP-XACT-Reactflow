@@ -4,6 +4,7 @@ import { parseArchitectureModel } from "../../lib/validateArchitectureModel";
 import { useArchitectureStore } from "../../store/architectureStore";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
+import { useSettingsStore } from "../../store/settingsStore";
 import type { ArchitectureModel } from "../../types";
 import { Panel } from "../ui/Panel";
 
@@ -16,6 +17,8 @@ export function ModelImportPanel() {
   const setLayoutLoading = useGraphStore((state) => state.setLayoutLoading);
   const selectNode = useSelectionStore((state) => state.selectNode);
   const setSearchQuery = useSelectionStore((state) => state.setSearchQuery);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
@@ -64,23 +67,31 @@ export function ModelImportPanel() {
   };
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center bg-shell-950/70 p-6 backdrop-blur-sm">
-      <Panel className="pointer-events-auto w-full max-w-3xl overflow-hidden rounded-lg">
-        <div className="border-b border-white/10 p-5">
-          <h2 className="text-xl font-semibold text-slate-50">Load architecture JSON</h2>
-          <p className="mt-2 text-sm text-slate-400">
+    <div className={`pointer-events-none absolute inset-0 z-20 grid place-items-center p-6 backdrop-blur-sm ${isDark ? "bg-shell-950/80" : "bg-slate-200/80"}`}>
+      <Panel className="pointer-events-auto w-full max-w-3xl overflow-hidden rounded-xl shadow-2xl">
+        <div className={`border-b p-6 ${isDark ? "border-white/10" : "border-slate-200"}`}>
+          <h2 className={`text-xl font-semibold ${isDark ? "text-slate-50" : "text-slate-900"}`}>Load architecture JSON</h2>
+          <p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
             Choose a JSON file or paste an architecture model to render the graph.
           </p>
         </div>
 
-        <div className="grid gap-4 p-5">
+        <div className="grid gap-4 p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <label className="inline-flex cursor-pointer items-center rounded-md border border-cyan-300/30 bg-cyan-300/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/15">
+            <label className={`inline-flex cursor-pointer items-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition ${
+              isDark
+                ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:bg-cyan-300/15"
+                : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
+            }`}>
               {isParsing ? "Reading file..." : "Choose JSON file"}
               <input accept="application/json,.json" className="sr-only" onChange={handleFileChange} type="file" />
             </label>
             <button
-              className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+              className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition ${
+                isDark
+                  ? "border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shadow-sm"
+              }`}
               onClick={() => {
                 setIsParsing(true);
                 setTimeout(() => {
@@ -96,18 +107,22 @@ export function ModelImportPanel() {
           </div>
 
           <textarea
-            className="h-72 resize-none rounded-md border border-white/10 bg-shell-950 p-3 font-mono text-xs leading-5 text-slate-200 outline-none placeholder:text-slate-600 focus:border-cyan-300/40"
+            className={`h-72 resize-none rounded-lg border p-4 font-mono text-xs leading-5 outline-none transition ${
+              isDark
+                ? "border-white/10 bg-shell-950 text-slate-200 placeholder:text-slate-600 focus:border-cyan-300/40"
+                : "border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+            }`}
             onChange={(event) => setText(event.target.value)}
             placeholder='{"components": [...], "connections": [...]}'
             spellCheck={false}
             value={text}
           />
 
-          {error ? <div className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-100">{error}</div> : null}
+          {error ? <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
 
           <div className="flex justify-end">
             <button
-              className="rounded-md bg-cyan-300 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
               disabled={!text.trim() || isParsing}
               onClick={handleLoadText}
               type="button"

@@ -3,6 +3,7 @@ import type { ElkNode } from "elkjs";
 import { flowToElkGraph } from "../lib/elk/elkAdapter";
 import { getCachedLayout, getLayoutCacheKey, setCachedLayout } from "../lib/elk/layoutCache";
 import { computeGridLayout } from "../lib/elk/gridLayout";
+import { preprocessArchitecture } from "../lib/preprocess";
 import { modelToFlow } from "../lib/transform/modelToFlow";
 import { useArchitectureStore } from "../store/architectureStore";
 import { useGraphStore } from "../store/graphStore";
@@ -120,8 +121,7 @@ export function useElkLayout(): void {
     }
 
     const runPreprocessAndLayout = async () => {
-      const { preprocessArchitecture } = await import("../lib/preprocess");
-      const preprocessed = preprocessArchitecture(model);
+      const preprocessed = await preprocessArchitecture(model);
       preprocessedRef.current = preprocessed;
 
       const { nodes, edges } = modelToFlow(model, expandedClusterIds, preprocessed);
@@ -138,10 +138,13 @@ export function useElkLayout(): void {
 
       setLayoutLoading(true);
       const elkWorker = new Worker(new URL("../lib/elk/layoutWorker.ts", import.meta.url), { type: "module" });
-      elkWorker.onmessage = (event: MessageEvent<{ layout?: ElkNode; error?: string }>) => {
+      elkWorker.onmessage = (event: MessageEvent<{ layout?: ElkNode; duration?: number; error?: string }>) => {
         if (event.data.layout) {
           setCachedLayout(cacheKey, event.data.layout);
           setNodes(applyElkLayout(nodes, event.data.layout));
+          if (event.data.duration) {
+            console.log(`ELK layout completed in ${event.data.duration.toFixed(0)}ms for ${nodes.length} nodes`);
+          }
         } else {
           setNodes(nodes);
         }

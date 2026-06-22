@@ -1,9 +1,9 @@
 import type { ArchitectureModel } from "../../types";
-import { preprocessArchitecture, type PreprocessedArchitecture } from "./index";
+import { preprocessArchitecture } from "./index";
 
 self.onmessage = async (event: MessageEvent<{ model: ArchitectureModel }>) => {
   try {
-    const result = preprocessArchitecture(event.data.model);
+    const result = await preprocessArchitecture(event.data.model);
     self.postMessage({ result });
   } catch (error) {
     self.postMessage({

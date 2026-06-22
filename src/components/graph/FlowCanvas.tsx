@@ -1,26 +1,22 @@
-import { useCallback, useState, type MouseEvent } from "react";
-import ReactFlow, { Controls, MarkerType, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
+import { useCallback, useRef, useState, type MouseEvent } from "react";
+import ReactFlow, { Controls, MarkerType, useReactFlow, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
 import "reactflow/dist/style.css";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
+import { useSettingsStore } from "../../store/settingsStore";
 import type { ArchitectureEdgeData, ArchitectureFlowEdge, ArchitectureFlowNode, ArchitectureNodeData } from "../../types";
 import { BackgroundGrid } from "./BackgroundGrid";
+import { CanvasOverlay } from "./CanvasOverlay";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { MiniMapPanel } from "./MiniMapPanel";
 import { edgeTypes } from "./edges/edgeTypeRegistry";
 import { nodeTypes } from "./nodes/nodeTypeRegistry";
 
-const defaultEdgeOptions = {
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    color: "#64748b"
-  }
-};
-
 const MIN_ZOOM = 0.035;
 const MAX_ZOOM = 2.2;
 const OVERVIEW_ZOOM = 0.32;
+const CANVAS_THRESHOLD = 2000;
 
 function FlowCanvasInner() {
   const storeNodes = useGraphStore((state) => state.nodes);
@@ -31,8 +27,42 @@ function FlowCanvasInner() {
   const toggleCluster = useGraphStore((state) => state.toggleCluster);
   const isLayoutLoading = useGraphStore((state) => state.isLayoutLoading);
   const selectNode = useSelectionStore((state) => state.selectNode);
+  const clearSelection = useSelectionStore((state) => state.clearSelection);
   const focusNode = useFitViewOnSelect();
   const [isOverview, setIsOverview] = useState(false);
+  const nonInteractiveThreshold = useSettingsStore((state) => state.nonInteractiveThreshold);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
+  const isNonInteractive = storeNodes.length > nonInteractiveThreshold;
+  const useCanvas = storeNodes.length > CANVAS_THRESHOLD;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const reactFlowInstance = useReactFlow();
+
+  // Track container size for canvas renderer
+  const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect;
+          setContainerSize({ width, height });
+        }
+      });
+      observer.observe(node);
+      return () => observer.disconnect();
+    }
+  }, []);
+
+  const defaultEdgeOptions = {
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: isDark ? "#64748b" : "#1e293b"
+    },
+    style: {
+      stroke: isDark ? "#64748b" : "#334155",
+      strokeWidth: isDark ? 2 : 2.5
+    }
+  };
 
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -51,10 +81,15 @@ function FlowCanvasInner() {
   );
 
   const handleNodeClick = useCallback(
-    (_event: MouseEvent, node: Node<ArchitectureNodeData>) => {
-      selectNode(node.data.kind === "component" ? node.id : null);
+    (event: MouseEvent, node: Node<ArchitectureNodeData>) => {
+      const additive = event.ctrlKey || event.metaKey || event.shiftKey;
+      if (node.data.kind === "component") {
+        selectNode(node.id, additive ? { additive: true } : undefined);
+      } else {
+        clearSelection();
+      }
     },
-    [selectNode]
+    [clearSelection, selectNode]
   );
 
   const handleNodeDoubleClick = useCallback(
@@ -85,22 +120,43 @@ function FlowCanvasInner() {
     });
   }, []);
 
+  // Use canvas renderer for very large graphs
+  if (useCanvas && containerSize.width > 0) {
+    return (
+      <div ref={handleContainerRef} className="relative h-full w-full">
+        <CanvasOverlay width={containerSize.width} height={containerSize.height} />
+        {isLayoutLoading && <LoadingSkeleton />}
+        <div className={`absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border px-3 py-1.5 text-xs font-medium ${
+          isDark
+            ? "border-white/10 bg-shell-950/90 text-slate-400"
+            : "border-slate-300 bg-white/90 text-slate-600 shadow-sm"
+        }`}>
+          Canvas Mode — {storeNodes.length} nodes
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative h-full w-full">
+    <div ref={handleContainerRef} className="relative h-full w-full">
       <ReactFlow
-        className={isOverview ? "architecture-flow architecture-flow--overview" : "architecture-flow"}
+        className={`${isOverview ? "architecture-flow architecture-flow--overview" : "architecture-flow"}${isNonInteractive ? " architecture-flow--static" : ""}`}
         nodes={storeNodes}
         edges={storeEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
-        onNodeClick={handleNodeClick}
-        onNodeDoubleClick={handleNodeDoubleClick}
-        onNodeDragStop={handleNodeDragStop}
+        onNodesChange={isNonInteractive ? undefined : handleNodesChange}
+        onEdgesChange={isNonInteractive ? undefined : handleEdgesChange}
+        onNodeClick={isNonInteractive ? undefined : handleNodeClick}
+        onNodeDoubleClick={isNonInteractive ? undefined : handleNodeDoubleClick}
+        onNodeDragStop={isNonInteractive ? undefined : handleNodeDragStop}
         onMove={handleMove}
-        onPaneClick={() => selectNode(null)}
+        onPaneClick={isNonInteractive ? undefined : () => clearSelection()}
+        nodesDraggable={!isNonInteractive}
+        nodesConnectable={!isNonInteractive}
+        elementsSelectable={!isNonInteractive}
+        nodesFocusable={!isNonInteractive}
         fitView
         fitViewOptions={{ padding: 0.18, minZoom: MIN_ZOOM, maxZoom: 0.9 }}
         onlyRenderVisibleElements
@@ -112,14 +168,27 @@ function FlowCanvasInner() {
         <svg>
           <defs>
             <marker id="architecture-arrow" markerHeight="12" markerWidth="12" orient="auto" refX="10" refY="6">
-              <path d="M2,2 L10,6 L2,10 z" fill="#67e8f9" />
+              <path d="M2,2 L10,6 L2,10 z" fill={isDark ? "#67e8f9" : "#0891b2"} />
             </marker>
           </defs>
         </svg>
         <BackgroundGrid />
-        <Controls className="!border !border-white/10 !bg-shell-950/90 !fill-slate-200 !text-slate-200" />
+        <Controls
+          className={`!border !bg-shell-950/90 !fill-slate-200 !text-slate-200 ${
+            isDark ? "!border-white/10" : "!border-black/10"
+          }`}
+        />
         <MiniMapPanel />
       </ReactFlow>
+      {isNonInteractive && (
+        <div className={`absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border px-3 py-1.5 text-xs ${
+          isDark
+            ? "border-white/10 bg-shell-950/90 text-slate-400"
+            : "border-black/10 bg-white/90 text-slate-600"
+        }`}>
+          Static View — {storeNodes.length} nodes
+        </div>
+      )}
       {isLayoutLoading && <LoadingSkeleton />}
     </div>
   );

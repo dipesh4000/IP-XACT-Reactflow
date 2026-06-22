@@ -9,7 +9,7 @@ export function getEdgeVisualState(edgeId: string): EdgeVisualState {
     return "highlighted";
   }
 
-  if (selection.selectedNodeId) {
+  if (selection.selectedNodeIds.size > 0) {
     return "dimmed";
   }
 

@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { memo, type CSSProperties } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import { nodeColorMap } from "../../../lib/transform/colorMap";
+import { useSettingsStore } from "../../../store/settingsStore";
 import type { ArchitectureNodeData, BusChannelNodeData } from "../../../types";
 import { useNodeHighlighting } from "../../../hooks/useNodeHighlighting";
 
@@ -14,6 +15,8 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
   const busData = data as BusChannelNodeData;
   const colors = nodeColorMap[busData.component.type];
   const { isSelected, isDimmed } = useNodeHighlighting(id);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
 
   return (
     <div
@@ -32,14 +35,14 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
       }
     >
       <Handle
-        className="!h-3 !w-1 !rounded-full !border-0 !bg-slate-500 hover:!bg-cyan-400"
+        className={`!h-3 !w-1 !rounded-full !border-0 hover:!bg-cyan-400 ${isDark ? "!bg-slate-500" : "!bg-slate-500"}`}
         id={`left:${id}`}
         type="target"
         position={Position.Left}
         style={{ top: "50%" }}
       />
       <Handle
-        className="!h-3 !w-1 !rounded-full !border-0 !bg-slate-500 hover:!bg-cyan-400"
+        className={`!h-3 !w-1 !rounded-full !border-0 hover:!bg-cyan-400 ${isDark ? "!bg-slate-500" : "!bg-slate-500"}`}
         id={`right:${id}`}
         type="source"
         position={Position.Right}
@@ -48,35 +51,56 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
 
       <div
         className={clsx(
-          "absolute inset-0 rounded-md border transition-all duration-150",
-          isSelected && "ring-2 ring-cyan-200/70 shadow-lg"
+          "absolute inset-0 rounded-md border-2 transition-all duration-150",
+          isSelected && "ring-2 ring-cyan-400 shadow-lg"
         )}
         style={{
-          backgroundColor: `${colors.base}30`,
-          borderColor: isSelected ? colors.border : `${colors.base}60`,
-          boxShadow: isSelected ? `0 0 20px ${colors.glow}` : "none"
+          backgroundColor: isDark ? `${colors.base}25` : `${colors.base}35`,
+          borderColor: isSelected ? colors.border : isDark ? `${colors.base}50` : `${colors.base}80`,
+          boxShadow: isSelected ? `0 0 20px ${colors.glow}` : isDark ? "none" : `0 2px 8px ${colors.base}30`
         }}
       >
+        {/* Top accent */}
         <div
-          className="absolute left-0 top-0 h-1 w-full rounded-t-md"
+          className="absolute left-0 top-0 h-1.5 w-full rounded-t-md"
           style={{ backgroundColor: colors.base }}
         />
+        {/* Bottom accent */}
         <div
-          className="absolute bottom-0 left-0 h-1 w-full rounded-b-md"
+          className="absolute bottom-0 left-0 h-1.5 w-full rounded-b-md"
           style={{ backgroundColor: colors.base }}
         />
+        {/* Left accent line */}
+        <div
+          className="absolute left-0 top-1.5 h-[calc(100%-12px)] w-1"
+          style={{ backgroundColor: colors.base }}
+        />
+        {/* Right accent line */}
+        <div
+          className="absolute right-0 top-1.5 h-[calc(100%-12px)] w-1"
+          style={{ backgroundColor: colors.base }}
+        />
+        {/* Vertical text */}
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         >
           <div className="flex items-center gap-2">
             <div
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded border text-[8px] font-black"
-              style={{ borderColor: colors.border, color: colors.border, backgroundColor: `${colors.base}20` }}
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[8px] font-black"
+              style={{
+                borderColor: colors.border,
+                color: colors.text,
+                backgroundColor: isDark ? `${colors.base}30` : `${colors.base}40`,
+                border: `2px solid ${colors.border}`
+              }}
             >
               BUS
             </div>
-            <span className="text-xs font-semibold" style={{ color: colors.text }}>
+            <span
+              className="text-xs font-bold"
+              style={{ color: isDark ? colors.text : colors.border }}
+            >
               {busData.component.name}
             </span>
           </div>
