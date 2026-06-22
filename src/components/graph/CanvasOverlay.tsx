@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from "react";
+import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../../lib/constants";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
 import { renderToCanvas } from "../../lib/render/canvasRenderer";
@@ -36,8 +37,8 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
     for (const node of nodes) {
       minX = Math.min(minX, node.position.x);
       minY = Math.min(minY, node.position.y);
-      maxX = Math.max(maxX, node.position.x + 220);
-      maxY = Math.max(maxY, node.position.y + 88);
+      maxX = Math.max(maxX, node.position.x + NODE_WIDTH);
+      maxY = Math.max(maxY, node.position.y + NODE_HEIGHT);
     }
 
     const graphWidth = maxX - minX;
@@ -136,8 +137,8 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
     const graphY = (mouseY - viewport.y) / viewport.zoom;
 
     for (const node of nodes) {
-      const nodeWidth = node.data.kind === "busChannel" ? 32 : node.data.kind === "cluster" ? 280 : 220;
-      const nodeHeight = node.data.kind === "busChannel" ? 720 : node.data.kind === "cluster" ? 118 : 88;
+      const nodeWidth = node.data.kind === "busChannel" ? BUS_CHANNEL_WIDTH : node.data.kind === "cluster" ? CLUSTER_WIDTH : NODE_WIDTH;
+      const nodeHeight = node.data.kind === "busChannel" ? BUS_CHANNEL_HEIGHT : node.data.kind === "cluster" ? CLUSTER_HEIGHT : NODE_HEIGHT;
 
       if (
         graphX >= node.position.x &&

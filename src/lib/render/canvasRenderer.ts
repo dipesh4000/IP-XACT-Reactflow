@@ -1,12 +1,13 @@
+import {
+  NODE_WIDTH,
+  NODE_HEIGHT,
+  CLUSTER_WIDTH,
+  CLUSTER_HEIGHT,
+  BUS_CHANNEL_WIDTH,
+  BUS_CHANNEL_HEIGHT,
+} from "../constants";
 import type { ArchitectureFlowNode, ArchitectureFlowEdge } from "../../types";
 import { nodeColorMap } from "../transform/colorMap";
-
-const NODE_WIDTH = 220;
-const NODE_HEIGHT = 88;
-const CLUSTER_WIDTH = 280;
-const CLUSTER_HEIGHT = 118;
-const BUS_CHANNEL_WIDTH = 32;
-const BUS_CHANNEL_HEIGHT = 720;
 
 interface Viewport {
   x: number;

@@ -1,4 +1,17 @@
 import { MarkerType } from "reactflow";
+import {
+  NODE_X_SPACING,
+  NODE_Y_SPACING,
+  NODE_HEIGHT,
+  BUS_CHANNEL_HEIGHT,
+  BUS_CHANNEL_WIDTH,
+  NODE_WIDTH,
+  CLUSTER_WIDTH,
+  EXPAND_THRESHOLD,
+  MIN_COLUMNS,
+  MAX_COLUMNS,
+  LAYER_X,
+} from "../constants";
 import type {
   ArchitectureCluster,
   ArchitectureEdgeData,
@@ -15,27 +28,6 @@ import type {
 import type { LayoutLayer } from "../preprocess/types";
 import type { PreprocessedArchitecture } from "../preprocess";
 import { buildHierarchy, findHierarchyNode, getDescendantIds } from "../clustering/hierarchyBuilder";
-
-const NODE_X_SPACING = 340;
-const NODE_Y_SPACING = 160;
-const NODE_HEIGHT = 88;
-const BUS_CHANNEL_HEIGHT = 720;
-const BUS_CHANNEL_WIDTH = 32;
-const NODE_WIDTH = 220;
-const CLUSTER_WIDTH = 280;
-const EXPAND_THRESHOLD = 12;
-const MIN_COLUMNS = 3;
-const MAX_COLUMNS = 32;
-
-const LAYER_X: Record<number, number> = {
-  0: 0,
-  1: 400,
-  2: 800,
-  3: 1200,
-  4: 1600,
-  5: 2000,
-  6: 2400
-};
 
 function getFallbackColumnCount(nodeCount: number): number {
   if (nodeCount <= MIN_COLUMNS) {

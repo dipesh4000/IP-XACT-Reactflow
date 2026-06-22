@@ -1,33 +1,6 @@
+import { TYPE_LABEL, TYPE_GROUP_ORDER } from "../constants";
 import type { ArchitectureModel, Component, ComponentType, Connection } from "../../types";
 import type { HierarchyNode } from "../../types";
-
-const TYPE_GROUP_ORDER: ComponentType[] = ["cpu", "bus", "memory", "peripheral", "interface", "clockReset", "custom", "dma", "interruptController", "debug"];
-
-const TYPE_LABELS: Record<ComponentType, string> = {
-  cpu: "CPU",
-  bus: "Bus",
-  memory: "Memory",
-  peripheral: "Peripheral",
-  interface: "Interface",
-  clockReset: "Clock/Reset",
-  custom: "Custom",
-  dma: "DMA",
-  interruptController: "Interrupt Controller",
-  debug: "Debug"
-};
-
-const TYPE_ICONS: Record<ComponentType, string> = {
-  cpu: "CPU",
-  bus: "BUS",
-  memory: "MEM",
-  peripheral: "I/O",
-  interface: "PAD",
-  clockReset: "CLK",
-  custom: "IP",
-  dma: "DMA",
-  interruptController: "INT",
-  debug: "DBG"
-};
 
 const NUMERIC_SUFFIX = /\d+$/;
 
@@ -209,7 +182,7 @@ export function buildHierarchy(
 
     const typeNode: HierarchyNode = {
       id: typeGroupId,
-      name: `${TYPE_LABELS[type]} (${members.length})`,
+      name: `${TYPE_LABEL[type]} (${members.length})`,
       type,
       depth: 1,
       componentIds: members.map((c) => c.id),

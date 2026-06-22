@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type MouseEvent } from "react";
 import ReactFlow, { Controls, MarkerType, useReactFlow, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
 import "reactflow/dist/style.css";
+import { CANVAS_THRESHOLD } from "../../lib/constants";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
@@ -16,7 +17,6 @@ import { nodeTypes } from "./nodes/nodeTypeRegistry";
 const MIN_ZOOM = 0.035;
 const MAX_ZOOM = 2.2;
 const OVERVIEW_ZOOM = 0.32;
-const CANVAS_THRESHOLD = 2000;
 
 function FlowCanvasInner() {
   const storeNodes = useGraphStore((state) => state.nodes);

@@ -1,13 +1,14 @@
 import type { ElkExtendedEdge, ElkNode } from "elkjs";
+import {
+  NODE_WIDTH,
+  NODE_HEIGHT,
+  CLUSTER_WIDTH,
+  CLUSTER_HEIGHT,
+  BUS_CHANNEL_WIDTH,
+  BUS_CHANNEL_HEIGHT,
+} from "../constants";
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
 import type { ELKLayoutHints } from "../preprocess/types";
-
-const COLLAPSED_NODE_WIDTH = 220;
-const COLLAPSED_NODE_HEIGHT = 88;
-const CLUSTER_NODE_WIDTH = 280;
-const CLUSTER_NODE_HEIGHT = 118;
-const BUS_CHANNEL_WIDTH = 32;
-const BUS_CHANNEL_HEIGHT = 720;
 
 // Mirrors the layer table from preprocess/classifier.ts.
 // Used to assign ELK partition IDs so the architectural hierarchy
@@ -209,13 +210,13 @@ export function flowToElkGraph(
       const width = isBusChannel
         ? BUS_CHANNEL_WIDTH
         : isCluster
-          ? CLUSTER_NODE_WIDTH
-          : COLLAPSED_NODE_WIDTH;
+          ? CLUSTER_WIDTH
+          : NODE_WIDTH;
       const height = isBusChannel
         ? BUS_CHANNEL_HEIGHT
         : isCluster
-          ? CLUSTER_NODE_HEIGHT
-          : COLLAPSED_NODE_HEIGHT;
+          ? CLUSTER_HEIGHT
+          : NODE_HEIGHT;
 
       // Build ports
       let ports: { id: string; side: "LEFT" | "RIGHT"; x: number; y: number }[] =

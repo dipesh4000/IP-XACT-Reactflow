@@ -1,19 +1,7 @@
 import { memo } from "react";
+import { TYPE_ICON } from "../../../lib/constants";
 import { useSettingsStore } from "../../../store/settingsStore";
 import type { ComponentType } from "../../../types";
-
-const typeIcon: Record<ComponentType, string> = {
-  cpu: "CPU",
-  bus: "BUS",
-  memory: "MEM",
-  peripheral: "I/O",
-  interface: "PAD",
-  clockReset: "CLK",
-  custom: "IP",
-  dma: "DMA",
-  interruptController: "INT",
-  debug: "DBG"
-};
 
 interface NodeHeaderProps {
   name: string;
@@ -43,7 +31,7 @@ export const NodeHeader = memo(function NodeHeader({ name, type, color, expanded
         className="architecture-node__type grid h-10 w-10 shrink-0 place-items-center rounded-lg border text-[10px] font-black"
         style={{ borderColor: color, color, backgroundColor: `${color}18` }}
       >
-        {typeIcon[type]}
+        {TYPE_ICON[type]}
       </div>
       <div className="architecture-node__label min-w-0 flex-1">
         <div className={`truncate text-sm font-semibold ${isDark ? "text-slate-50" : "text-slate-900"}`}>{name}</div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ElkNode } from "elkjs";
+import { LARGE_GRAPH_THRESHOLD } from "../lib/constants";
 import { flowToElkGraph } from "../lib/elk/elkAdapter";
 import { getCachedLayout, getLayoutCacheKey, setCachedLayout } from "../lib/elk/layoutCache";
 import { computeGridLayout } from "../lib/elk/gridLayout";
@@ -9,8 +10,6 @@ import { useArchitectureStore } from "../store/architectureStore";
 import { useGraphStore } from "../store/graphStore";
 import type { ArchitectureFlowNode, PortPosition } from "../types";
 import type { PreprocessedArchitecture } from "../lib/preprocess";
-
-const LARGE_GRAPH_THRESHOLD = 1000;
 
 function extractPortPositions(elkNode: ElkNode): PortPosition[] {
   if (!elkNode.ports) return [];

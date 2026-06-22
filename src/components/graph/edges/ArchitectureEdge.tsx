@@ -1,50 +1,17 @@
 import { memo, useMemo } from "react";
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, getSmoothStepPath } from "reactflow";
+import { BaseEdge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath } from "reactflow";
+import { getEdgeStyle as getEdgeStyleBase } from "../../../lib/edgeStyles";
 import { useSelectionStore } from "../../../store/selectionStore";
 import { useSettingsStore } from "../../../store/settingsStore";
 import type { ArchitectureEdgeData } from "../../../types";
-import type { ConnectionType } from "../../../lib/preprocess/types";
-
-interface EdgeStyle {
-  color: string;
-  width: number;
-  dash?: string;
-  opacity: number;
-}
-
-const CONNECTION_STYLES_DARK: Record<ConnectionType, EdgeStyle> = {
-  bus: { color: "#a78bfa", width: 4, opacity: 0.7 },
-  interrupt: { color: "#f472b6", width: 3, dash: "6 4", opacity: 0.65 },
-  dma: { color: "#2dd4bf", width: 3.5, opacity: 0.65 },
-  clock: { color: "#f87171", width: 2.5, opacity: 0.55 },
-  reset: { color: "#fb923c", width: 2.5, dash: "3 3", opacity: 0.55 },
-  debug: { color: "#94a3b8", width: 2, dash: "2 4", opacity: 0.5 },
-  data: { color: "#4ade80", width: 3, opacity: 0.6 },
-  control: { color: "#facc15", width: 2.5, dash: "4 2", opacity: 0.55 },
-  unknown: { color: "#64748b", width: 2, opacity: 0.45 }
-};
-
-const CONNECTION_STYLES_LIGHT: Record<ConnectionType, EdgeStyle> = {
-  bus: { color: "#7c3aed", width: 4, opacity: 0.8 },
-  interrupt: { color: "#db2777", width: 3, dash: "6 4", opacity: 0.75 },
-  dma: { color: "#0d9488", width: 3.5, opacity: 0.75 },
-  clock: { color: "#dc2626", width: 2.5, opacity: 0.65 },
-  reset: { color: "#ea580c", width: 2.5, dash: "3 3", opacity: 0.65 },
-  debug: { color: "#475569", width: 2, dash: "2 4", opacity: 0.6 },
-  data: { color: "#16a34a", width: 3, opacity: 0.7 },
-  control: { color: "#ca8a04", width: 2.5, dash: "4 2", opacity: 0.65 },
-  unknown: { color: "#334155", width: 2, opacity: 0.55 }
-};
 
 function getEdgeStyle(
-  connectionType: ConnectionType | undefined,
+  connectionType: ArchitectureEdgeData["connectionType"],
   highlighted: boolean,
   dimmed: boolean,
   isClusterEdge: boolean,
   isDark: boolean
 ): React.CSSProperties {
-  const styles = isDark ? CONNECTION_STYLES_DARK : CONNECTION_STYLES_LIGHT;
-
   if (highlighted) {
     return {
       stroke: isDark ? "#67e8f9" : "#0369a1",
@@ -71,7 +38,7 @@ function getEdgeStyle(
     };
   }
 
-  const style = styles[connectionType ?? "unknown"] ?? styles.unknown;
+  const style = getEdgeStyleBase(connectionType, isDark);
   return {
     stroke: style.color,
     strokeWidth: style.width,

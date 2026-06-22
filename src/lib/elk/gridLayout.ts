@@ -1,21 +1,13 @@
+import {
+  NODE_WIDTH,
+  NODE_HEIGHT,
+  BUS_CHANNEL_WIDTH,
+  BUS_CHANNEL_HEIGHT,
+  CLUSTER_WIDTH,
+  CLUSTER_HEIGHT,
+  LAYER_X,
+} from "../constants";
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
-
-const NODE_WIDTH = 220;
-const NODE_HEIGHT = 88;
-const BUS_CHANNEL_WIDTH = 32;
-const BUS_CHANNEL_HEIGHT = 720;
-const CLUSTER_WIDTH = 280;
-const CLUSTER_HEIGHT = 118;
-
-const LAYER_X: Record<number, number> = {
-  0: 0,
-  1: 420,
-  2: 840,
-  3: 1260,
-  4: 1680,
-  5: 2100,
-  6: 2520
-};
 
 const KIND_ORDER: Record<string, number> = {
   component: 0,
