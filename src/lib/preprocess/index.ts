@@ -7,7 +7,6 @@ import type {
   PortSide,
   SemanticGroup
 } from "./types";
-import { preprocessArchitectureWasm } from "../wasm/index";
 
 export interface PreprocessedArchitecture {
   model: ArchitectureModel;
@@ -76,6 +75,7 @@ function normalizeElkHints(
 }
 
 export async function preprocessArchitecture(model: ArchitectureModel): Promise<PreprocessedArchitecture> {
+  const { preprocessArchitectureWasm } = await import("../wasm/index");
   const result = await preprocessArchitectureWasm(JSON.stringify(model));
 
   return {

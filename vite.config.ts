@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), wasm(), topLevelAwait()],
   server: {
     port: 5173
+  },
+  worker: {
+    format: "es"
   }
 });

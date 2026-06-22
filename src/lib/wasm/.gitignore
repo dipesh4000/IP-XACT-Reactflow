@@ -1,0 +1,2 @@
+# Ignore wasm-pack build artifacts but keep the glue code and types
+target/
