@@ -2950,21 +2950,21 @@ let __tla = (async () => {
         return null;
       }
       function de(j, P, V, ie) {
-        for (var pe = null, we = null, xe = P, ke = P = 0, st = null; xe !== null && ke < V.length; ke++) {
-          xe.index > ke ? (st = xe, xe = null) : st = xe.sibling;
+        for (var pe = null, we = null, xe = P, ke = P = 0, it = null; xe !== null && ke < V.length; ke++) {
+          xe.index > ke ? (it = xe, xe = null) : it = xe.sibling;
           var Ie = te(j, xe, V[ke], ie);
           if (Ie === null) {
-            xe === null && (xe = st);
+            xe === null && (xe = it);
             break;
           }
-          t && xe && Ie.alternate === null && n(j, xe), P = g(Ie, P, ke), we === null ? pe = Ie : we.sibling = Ie, we = Ie, xe = st;
+          t && xe && Ie.alternate === null && n(j, xe), P = g(Ie, P, ke), we === null ? pe = Ie : we.sibling = Ie, we = Ie, xe = it;
         }
         if (ke === V.length) return s(j, xe), Fe && Mr(j, ke), pe;
         if (xe === null) {
           for (; ke < V.length; ke++) xe = se(j, V[ke], ie), xe !== null && (P = g(xe, P, ke), we === null ? pe = xe : we.sibling = xe, we = xe);
           return Fe && Mr(j, ke), pe;
         }
-        for (xe = a(j, xe); ke < V.length; ke++) st = ue(xe, j, ke, V[ke], ie), st !== null && (t && st.alternate !== null && xe.delete(st.key === null ? ke : st.key), P = g(st, P, ke), we === null ? pe = st : we.sibling = st, we = st);
+        for (xe = a(j, xe); ke < V.length; ke++) it = ue(xe, j, ke, V[ke], ie), it !== null && (t && it.alternate !== null && xe.delete(it.key === null ? ke : it.key), P = g(it, P, ke), we === null ? pe = it : we.sibling = it, we = it);
         return t && xe.forEach(function(cr) {
           return n(j, cr);
         }), Fe && Mr(j, ke), pe;
@@ -2973,14 +2973,14 @@ let __tla = (async () => {
         var pe = R(V);
         if (typeof pe != "function") throw Error(o(150));
         if (V = pe.call(V), V == null) throw Error(o(151));
-        for (var we = pe = null, xe = P, ke = P = 0, st = null, Ie = V.next(); xe !== null && !Ie.done; ke++, Ie = V.next()) {
-          xe.index > ke ? (st = xe, xe = null) : st = xe.sibling;
+        for (var we = pe = null, xe = P, ke = P = 0, it = null, Ie = V.next(); xe !== null && !Ie.done; ke++, Ie = V.next()) {
+          xe.index > ke ? (it = xe, xe = null) : it = xe.sibling;
           var cr = te(j, xe, Ie.value, ie);
           if (cr === null) {
-            xe === null && (xe = st);
+            xe === null && (xe = it);
             break;
           }
-          t && xe && cr.alternate === null && n(j, xe), P = g(cr, P, ke), we === null ? pe = cr : we.sibling = cr, we = cr, xe = st;
+          t && xe && cr.alternate === null && n(j, xe), P = g(cr, P, ke), we === null ? pe = cr : we.sibling = cr, we = cr, xe = it;
         }
         if (Ie.done) return s(j, xe), Fe && Mr(j, ke), pe;
         if (xe === null) {
@@ -3301,7 +3301,7 @@ let __tla = (async () => {
       for (var t = 0; t < Qa.length; t++) Qa[t]._workInProgressVersionPrimary = null;
       Qa.length = 0;
     }
-    var Di = A.ReactCurrentDispatcher, qa = A.ReactCurrentBatchConfig, Tr = 0, He = null, Je = null, rt = null, zi = false, ls = false, as = 0, qg = 0;
+    var Di = A.ReactCurrentDispatcher, qa = A.ReactCurrentBatchConfig, Tr = 0, He = null, Je = null, ot = null, zi = false, ls = false, as = 0, qg = 0;
     function ht() {
       throw Error(o(321));
     }
@@ -3315,10 +3315,10 @@ let __tla = (async () => {
         g = 0;
         do {
           if (ls = false, as = 0, 25 <= g) throw Error(o(301));
-          g += 1, rt = Je = null, n.updateQueue = null, Di.current = oy, t = s(a, f);
+          g += 1, ot = Je = null, n.updateQueue = null, Di.current = oy, t = s(a, f);
         } while (ls);
       }
-      if (Di.current = Bi, n = Je !== null && Je.next !== null, Tr = 0, rt = Je = He = null, zi = false, n) throw Error(o(300));
+      if (Di.current = Bi, n = Je !== null && Je.next !== null, Tr = 0, ot = Je = He = null, zi = false, n) throw Error(o(300));
       return t;
     }
     function tu() {
@@ -3333,15 +3333,15 @@ let __tla = (async () => {
         queue: null,
         next: null
       };
-      return rt === null ? He.memoizedState = rt = t : rt = rt.next = t, rt;
+      return ot === null ? He.memoizedState = ot = t : ot = ot.next = t, ot;
     }
     function Yt() {
       if (Je === null) {
         var t = He.alternate;
         t = t !== null ? t.memoizedState : null;
       } else t = Je.next;
-      var n = rt === null ? He.memoizedState : rt.next;
-      if (n !== null) rt = n, Je = t;
+      var n = ot === null ? He.memoizedState : ot.next;
+      if (n !== null) ot = n, Je = t;
       else {
         if (t === null) throw Error(o(310));
         Je = t, t = {
@@ -3350,9 +3350,9 @@ let __tla = (async () => {
           baseQueue: Je.baseQueue,
           queue: Je.queue,
           next: null
-        }, rt === null ? He.memoizedState = rt = t : rt = rt.next = t;
+        }, ot === null ? He.memoizedState = ot = t : ot = ot.next = t;
       }
-      return rt;
+      return ot;
     }
     function us(t, n) {
       return typeof n == "function" ? n(t) : n;
@@ -3430,8 +3430,8 @@ let __tla = (async () => {
       var s = He, a = Yt(), f = n(), g = !on(a.memoizedState, f);
       if (g && (a.memoizedState = f, Ct = true), a = a.queue, ou(vf.bind(null, s, a, t), [
         t
-      ]), a.getSnapshot !== n || g || rt !== null && rt.memoizedState.tag & 1) {
-        if (s.flags |= 2048, cs(9, yf.bind(null, s, a, f, n), void 0, null), ot === null) throw Error(o(349));
+      ]), a.getSnapshot !== n || g || ot !== null && ot.memoizedState.tag & 1) {
+        if (s.flags |= 2048, cs(9, yf.bind(null, s, a, f, n), void 0, null), st === null) throw Error(o(349));
         (Tr & 30) !== 0 || gf(s, n, f);
       }
       return f;
@@ -3719,7 +3719,7 @@ let __tla = (async () => {
           if (s === void 0) throw Error(o(407));
           s = s();
         } else {
-          if (s = n(), ot === null) throw Error(o(349));
+          if (s = n(), st === null) throw Error(o(349));
           (Tr & 30) !== 0 || gf(a, n, s);
         }
         f.memoizedState = s;
@@ -3732,7 +3732,7 @@ let __tla = (async () => {
         ]), a.flags |= 2048, cs(9, yf.bind(null, a, g, s, n), void 0, null), s;
       },
       useId: function() {
-        var t = kn(), n = ot.identifierPrefix;
+        var t = kn(), n = st.identifierPrefix;
         if (Fe) {
           var s = Ln, a = Pn;
           s = (a & ~(1 << 32 - rn(a) - 1)).toString(32) + s, n = ":" + n + "R" + s, s = as++, 0 < s && (n += "H" + s.toString(32)), n += ":";
@@ -4091,7 +4091,7 @@ Error generating stack: ` + g.message + `
         return a = M, g = Error(o(419)), a = au(g, a, void 0), Hi(t, n, w, a);
       }
       if (M = (w & t.childLanes) !== 0, Ct || M) {
-        if (a = ot, a !== null) {
+        if (a = st, a !== null) {
           switch (w & -w) {
             case 4:
               f = 2;
@@ -5240,7 +5240,7 @@ Error generating stack: ` + g.message + `
         ce = n.return;
       }
     }
-    var py = Math.ceil, Yi = A.ReactCurrentDispatcher, Su = A.ReactCurrentOwner, Gt = A.ReactCurrentBatchConfig, Ne = 0, ot = null, Ze = null, at = 0, Rt = 0, go = Jn(0), et = 0, hs = null, Ar = 0, Gi = 0, ku = 0, ps = null, _t = null, Eu = 0, yo = 1 / 0, Fn = null, Xi = false, Cu = null, sr = null, Ki = false, ir = null, Qi = 0, ms = 0, _u = null, Zi = -1, qi = 0;
+    var py = Math.ceil, Yi = A.ReactCurrentDispatcher, Su = A.ReactCurrentOwner, Gt = A.ReactCurrentBatchConfig, Ne = 0, st = null, Ze = null, at = 0, Rt = 0, go = Jn(0), et = 0, hs = null, Ar = 0, Gi = 0, ku = 0, ps = null, _t = null, Eu = 0, yo = 1 / 0, Fn = null, Xi = false, Cu = null, sr = null, Ki = false, ir = null, Qi = 0, ms = 0, _u = null, Zi = -1, qi = 0;
     function vt() {
       return (Ne & 6) !== 0 ? Be() : Zi !== -1 ? Zi : Zi = Be();
     }
@@ -5249,12 +5249,12 @@ Error generating stack: ` + g.message + `
     }
     function cn(t, n, s, a) {
       if (50 < ms) throw ms = 0, _u = null, Error(o(185));
-      Fo(t, s, a), ((Ne & 2) === 0 || t !== ot) && (t === ot && ((Ne & 2) === 0 && (Gi |= s), et === 4 && ar(t, at)), Nt(t, a), s === 1 && Ne === 0 && (n.mode & 1) === 0 && (yo = Be() + 500, Ni && tr()));
+      Fo(t, s, a), ((Ne & 2) === 0 || t !== st) && (t === st && ((Ne & 2) === 0 && (Gi |= s), et === 4 && ar(t, at)), Nt(t, a), s === 1 && Ne === 0 && (n.mode & 1) === 0 && (yo = Be() + 500, Ni && tr()));
     }
     function Nt(t, n) {
       var s = t.callbackNode;
       Zm(t, n);
-      var a = li(t, t === ot ? at : 0);
+      var a = li(t, t === st ? at : 0);
       if (a === 0) s !== null && ei(s), t.callbackNode = null, t.callbackPriority = 0;
       else if (n = a & -a, t.callbackPriority !== n) {
         if (s != null && ei(s), n === 1) t.tag === 0 ? Qg(mh.bind(null, t)) : Jd(mh.bind(null, t)), Yg(function() {
@@ -5286,7 +5286,7 @@ Error generating stack: ` + g.message + `
       if (Zi = -1, qi = 0, (Ne & 6) !== 0) throw Error(o(327));
       var s = t.callbackNode;
       if (vo() && t.callbackNode !== s) return null;
-      var a = li(t, t === ot ? at : 0);
+      var a = li(t, t === st ? at : 0);
       if (a === 0) return null;
       if ((a & 30) !== 0 || (a & t.expiredLanes) !== 0 || n) n = Ji(t, a);
       else {
@@ -5294,7 +5294,7 @@ Error generating stack: ` + g.message + `
         var f = Ne;
         Ne |= 2;
         var g = yh();
-        (ot !== t || at !== n) && (Fn = null, yo = Be() + 500, Rr(t, n));
+        (st !== t || at !== n) && (Fn = null, yo = Be() + 500, Rr(t, n));
         do
           try {
             yy();
@@ -5303,7 +5303,7 @@ Error generating stack: ` + g.message + `
             gh(t, M);
           }
         while (true);
-        Va(), Yi.current = g, Ne = f, Ze !== null ? n = 0 : (ot = null, at = 0, n = et);
+        Va(), Yi.current = g, Ne = f, Ze !== null ? n = 0 : (st = null, at = 0, n = et);
       }
       if (n !== 0) {
         if (n === 2 && (f = sa(t), f !== 0 && (a = f, n = Nu(t, f))), n === 1) throw s = hs, Rr(t, 0), ar(t, a), Nt(t, Be()), s;
@@ -5460,7 +5460,7 @@ Error generating stack: ` + g.message + `
         }
         s = s.return;
       }
-      if (ot = t, Ze = t = ur(t.current, null), at = Rt = n, et = 0, hs = null, ku = Gi = Ar = 0, _t = ps = null, Ir !== null) {
+      if (st = t, Ze = t = ur(t.current, null), at = Rt = n, et = 0, hs = null, ku = Gi = Ar = 0, _t = ps = null, Ir !== null) {
         for (n = 0; n < Ir.length; n++) if (s = Ir[n], a = s.interleaved, a !== null) {
           s.interleaved = null;
           var f = a.next, g = s.pending;
@@ -5485,7 +5485,7 @@ Error generating stack: ` + g.message + `
             }
             zi = false;
           }
-          if (Tr = 0, rt = Je = He = null, ls = false, as = 0, Su.current = null, s === null || s.return === null) {
+          if (Tr = 0, ot = Je = He = null, ls = false, as = 0, Su.current = null, s === null || s.return === null) {
             et = 1, hs = n, Ze = null;
             break;
           }
@@ -5556,13 +5556,13 @@ Error generating stack: ` + g.message + `
       return Yi.current = Bi, t === null ? Bi : t;
     }
     function Tu() {
-      (et === 0 || et === 3 || et === 2) && (et = 4), ot === null || (Ar & 268435455) === 0 && (Gi & 268435455) === 0 || ar(ot, at);
+      (et === 0 || et === 3 || et === 2) && (et = 4), st === null || (Ar & 268435455) === 0 && (Gi & 268435455) === 0 || ar(st, at);
     }
     function Ji(t, n) {
       var s = Ne;
       Ne |= 2;
       var a = yh();
-      (ot !== t || at !== n) && (Fn = null, Rr(t, n));
+      (st !== t || at !== n) && (Fn = null, Rr(t, n));
       do
         try {
           gy();
@@ -5572,7 +5572,7 @@ Error generating stack: ` + g.message + `
         }
       while (true);
       if (Va(), Ne = s, Yi.current = a, Ze !== null) throw Error(o(261));
-      return ot = null, at = 0, et;
+      return st = null, at = 0, et;
     }
     function gy() {
       for (; Ze !== null; ) vh(Ze);
@@ -5632,7 +5632,7 @@ Error generating stack: ` + g.message + `
       if (t.finishedWork = null, t.finishedLanes = 0, s === t.current) throw Error(o(177));
       t.callbackNode = null, t.callbackPriority = 0;
       var g = s.lanes | s.childLanes;
-      if (qm(t, g), t === ot && (Ze = ot = null, at = 0), (s.subtreeFlags & 2064) === 0 && (s.flags & 2064) === 0 || Ki || (Ki = true, Eh(Xr, function() {
+      if (qm(t, g), t === st && (Ze = st = null, at = 0), (s.subtreeFlags & 2064) === 0 && (s.flags & 2064) === 0 || Ki || (Ki = true, Eh(Xr, function() {
         return vo(), null;
       })), g = (s.flags & 15990) !== 0, (s.subtreeFlags & 15990) !== 0 || g) {
         g = Gt.transition, Gt.transition = null;
@@ -5780,7 +5780,7 @@ Error generating stack: ` + g.message + `
     }
     function wy(t, n, s) {
       var a = t.pingCache;
-      a !== null && a.delete(n), n = vt(), t.pingedLanes |= t.suspendedLanes & s, ot === t && (at & s) === s && (et === 4 || et === 3 && (at & 130023424) === at && 500 > Be() - Eu ? Rr(t, 0) : ku |= s), Nt(t, n);
+      a !== null && a.delete(n), n = vt(), t.pingedLanes |= t.suspendedLanes & s, st === t && (at & s) === s && (et === 4 || et === 3 && (at & 130023424) === at && 500 > Be() - Eu ? Rr(t, 0) : ku |= s), Nt(t, n);
     }
     function Sh(t, n) {
       n === 0 && ((t.mode & 1) === 0 ? n = 1 : (n = ii, ii <<= 1, (ii & 130023424) === 0 && (ii = 4194304)));
@@ -8816,7 +8816,7 @@ Error generating stack: ` + g.message + `
     if (o === null) throw new Error(z0);
     return a0(o, e, r);
   }
-  const nt = () => {
+  const rt = () => {
     const e = z.useContext(Gl);
     if (e === null) throw new Error(z0);
     return z.useMemo(() => ({
@@ -9739,7 +9739,7 @@ Error generating stack: ` + g.message + `
     };
   }, tm = z.forwardRef(({ type: e = "source", position: r = ge.Top, isValidConnection: o, isConnectable: i = true, isConnectableStart: l = true, isConnectableEnd: u = true, id: c, onConnect: d, children: m, className: h, onMouseDown: p, onTouchStart: y, ...v }, x) => {
     var _a, _b;
-    const S = c || null, k = e === "target", _ = nt(), E = Vx(), { connectOnClick: $, noPanClassName: b } = Re(qx, bt), { connecting: A, clickConnecting: G } = Re(Jx(E, S, e), bt);
+    const S = c || null, k = e === "target", _ = rt(), E = Vx(), { connectOnClick: $, noPanClassName: b } = Re(qx, bt), { connecting: A, clickConnecting: G } = Re(Jx(E, S, e), bt);
     E || ((_b = (_a = _.getState()).onError) == null ? void 0 : _b.call(_a, "010", Un.error010()));
     const D = (Y) => {
       const { defaultEdgeOptions: J, onConnect: U, hasDefaultEdges: Z } = _.getState(), ee = {
@@ -9857,7 +9857,7 @@ Error generating stack: ` + g.message + `
     return bt(e.selectedNodes.map(ml), r.selectedNodes.map(ml)) && bt(e.selectedEdges.map(ml), r.selectedEdges.map(ml));
   }
   const lm = z.memo(({ onSelectionChange: e }) => {
-    const r = nt(), { selectedNodes: o, selectedEdges: i } = Re(eS, tS);
+    const r = rt(), { selectedNodes: o, selectedEdges: i } = Re(eS, tS);
     return z.useEffect(() => {
       const l = {
         nodes: o,
@@ -9905,7 +9905,7 @@ Error generating stack: ` + g.message + `
     ]);
   }
   const sS = ({ nodes: e, edges: r, defaultNodes: o, defaultEdges: i, onConnect: l, onConnectStart: u, onConnectEnd: c, onClickConnectStart: d, onClickConnectEnd: m, nodesDraggable: h, nodesConnectable: p, nodesFocusable: y, edgesFocusable: v, edgesUpdatable: x, elevateNodesOnSelect: S, minZoom: k, maxZoom: _, nodeExtent: E, onNodesChange: $, onEdgesChange: b, elementsSelectable: A, connectionMode: G, snapGrid: D, snapToGrid: Q, translateExtent: q, connectOnClick: Y, defaultEdgeOptions: J, fitView: U, fitViewOptions: Z, onNodesDelete: ee, onEdgesDelete: C, onNodeDrag: H, onNodeDragStart: O, onNodeDragStop: K, onSelectionDrag: F, onSelectionDragStart: R, onSelectionDragStop: B, noPanClassName: N, nodeOrigin: L, rfId: oe, autoPanOnConnect: ne, autoPanOnNodeDrag: le, onError: ae, connectionRadius: he, isValidConnection: me, nodeDragThreshold: ve }) => {
-    const { setNodes: Ee, setEdges: Ve, setDefaultNodesAndEdges: Ue, setMinZoom: Ke, setMaxZoom: Qe, setTranslateExtent: Oe, setNodeExtent: dt, reset: Me } = Re(oS, bt), ye = nt();
+    const { setNodes: Ee, setEdges: Ve, setDefaultNodesAndEdges: Ue, setMinZoom: Ke, setMaxZoom: Qe, setTranslateExtent: Oe, setNodeExtent: dt, reset: Me } = Re(oS, bt), ye = rt();
     return z.useEffect(() => {
       const qe = i == null ? void 0 : i.map((gt) => ({
         ...gt,
@@ -10109,7 +10109,7 @@ Error generating stack: ` + g.message + `
     d3Zoom: e.d3Zoom,
     d3Selection: e.d3Selection
   }), mS = () => {
-    const e = nt(), { d3Zoom: r, d3Selection: o } = Re(pS, bt);
+    const e = rt(), { d3Zoom: r, d3Selection: o } = Re(pS, bt);
     return z.useMemo(() => o && r ? {
       zoomIn: (l) => r.scaleBy(Dr(o, l == null ? void 0 : l.duration), 1.2),
       zoomOut: (l) => r.scaleBy(Dr(o, l == null ? void 0 : l.duration), 1 / 1.2),
@@ -10165,7 +10165,7 @@ Error generating stack: ` + g.message + `
     ]);
   };
   function js() {
-    const e = mS(), r = nt(), o = z.useCallback(() => r.getState().getNodes().map((k) => ({
+    const e = mS(), r = rt(), o = z.useCallback(() => r.getState().getNodes().map((k) => ({
       ...k
     })), []), i = z.useCallback((k) => r.getState().nodeInternals.get(k), []), l = z.useCallback(() => {
       const { edges: k = [] } = r.getState();
@@ -10333,7 +10333,7 @@ Error generating stack: ` + g.message + `
     actInsideInputWithModifier: false
   };
   var yS = ({ deleteKeyCode: e, multiSelectionKeyCode: r }) => {
-    const o = nt(), { deleteElements: i } = js(), l = Ps(e, gS), u = Ps(r);
+    const o = rt(), { deleteElements: i } = js(), l = Ps(e, gS), u = Ps(r);
     z.useEffect(() => {
       if (l) {
         const { edges: c, getNodes: d } = o.getState(), m = d().filter((p) => p.selected), h = c.filter((p) => p.selected);
@@ -10355,7 +10355,7 @@ Error generating stack: ` + g.message + `
     ]);
   };
   function vS(e) {
-    const r = nt();
+    const r = rt();
     z.useEffect(() => {
       let o;
       const i = () => {
@@ -10391,7 +10391,7 @@ Error generating stack: ` + g.message + `
     d3ZoomHandler: e.d3ZoomHandler,
     userSelectionActive: e.userSelectionActive
   }), SS = ({ onMove: e, onMoveStart: r, onMoveEnd: o, onPaneContextMenu: i, zoomOnScroll: l = true, zoomOnPinch: u = true, panOnScroll: c = false, panOnScrollSpeed: d = 0.5, panOnScrollMode: m = Or.Free, zoomOnDoubleClick: h = true, elementsSelectable: p, panOnDrag: y = true, defaultViewport: v, translateExtent: x, minZoom: S, maxZoom: k, zoomActivationKeyCode: _, preventScrolling: E = true, children: $, noWheelClassName: b, noPanClassName: A }) => {
-    const G = z.useRef(), D = nt(), Q = z.useRef(false), q = z.useRef(false), Y = z.useRef(null), J = z.useRef({
+    const G = z.useRef(), D = rt(), Q = z.useRef(false), q = z.useRef(false), Y = z.useRef(null), J = z.useRef({
       x: 0,
       y: 0,
       zoom: 0
@@ -10629,7 +10629,7 @@ Error generating stack: ` + g.message + `
     elementsSelectable: e.elementsSelectable,
     dragging: e.paneDragging
   }), mm = z.memo(({ isSelecting: e, selectionMode: r = Rs.Full, panOnDrag: o, onSelectionStart: i, onSelectionEnd: l, onPaneClick: u, onPaneContextMenu: c, onPaneScroll: d, onPaneMouseEnter: m, onPaneMouseMove: h, onPaneMouseLeave: p, children: y }) => {
-    const v = z.useRef(null), x = nt(), S = z.useRef(0), k = z.useRef(0), _ = z.useRef(), { userSelectionActive: E, elementsSelectable: $, dragging: b } = Re(_S, bt), A = () => {
+    const v = z.useRef(null), x = rt(), S = z.useRef(0), k = z.useRef(0), _ = z.useRef(), { userSelectionActive: E, elementsSelectable: $, dragging: b } = Re(_S, bt), A = () => {
       x.setState({
         userSelectionActive: false,
         userSelectionRect: null
@@ -10879,7 +10879,7 @@ Error generating stack: ` + g.message + `
     ]);
   }
   function IS() {
-    const e = nt();
+    const e = rt();
     return z.useCallback(({ sourceEvent: o }) => {
       const { transform: i, snapGrid: l, snapToGrid: u } = e.getState(), c = o.touches ? o.touches[0].clientX : o.clientX, d = o.touches ? o.touches[0].clientY : o.clientY, m = {
         x: (c - i[0]) / i[2],
@@ -10896,7 +10896,7 @@ Error generating stack: ` + g.message + `
     return (r, o, i) => e == null ? void 0 : e(r, i);
   }
   function vm({ nodeRef: e, disabled: r = false, noDragClassName: o, handleSelector: i, nodeId: l, isSelectable: u, selectNodesOnDrag: c }) {
-    const d = nt(), [m, h] = z.useState(false), p = z.useRef([]), y = z.useRef({
+    const d = rt(), [m, h] = z.useState(false), p = z.useRef([]), y = z.useRef({
       x: null,
       y: null
     }), v = z.useRef(0), x = z.useRef(null), S = z.useRef({
@@ -11033,7 +11033,7 @@ Error generating stack: ` + g.message + `
     ]), m;
   }
   function wm() {
-    const e = nt();
+    const e = rt();
     return z.useCallback((o) => {
       const { nodeInternals: i, nodeExtent: l, updateNodePositions: u, getNodes: c, snapToGrid: d, snapGrid: m, onError: h, nodesDraggable: p } = e.getState(), y = c().filter(($) => $.selected && ($.draggable || p && typeof $.draggable > "u")), v = d ? m[0] : 5, x = d ? m[1] : 5, S = o.isShiftPressed ? 4 : 1, k = o.x * v * S, _ = o.y * x * S, E = y.map(($) => {
         if ($.positionAbsolute) {
@@ -11070,7 +11070,7 @@ Error generating stack: ` + g.message + `
   };
   var ks = (e) => {
     const r = ({ id: o, type: i, data: l, xPos: u, yPos: c, xPosOrigin: d, yPosOrigin: m, selected: h, onClick: p, onMouseEnter: y, onMouseMove: v, onMouseLeave: x, onContextMenu: S, onDoubleClick: k, style: _, className: E, isDraggable: $, isSelectable: b, isConnectable: A, isFocusable: G, selectNodesOnDrag: D, sourcePosition: Q, targetPosition: q, hidden: Y, resizeObserver: J, dragHandle: U, zIndex: Z, isParent: ee, noDragClassName: C, noPanClassName: H, initialized: O, disableKeyboardA11y: K, ariaLabel: F, rfId: R, hasHandleBounds: B }) => {
-      const N = nt(), L = z.useRef(null), oe = z.useRef(null), ne = z.useRef(Q), le = z.useRef(q), ae = z.useRef(i), he = b || $ || p || y || v || x, me = wm(), ve = Ss(o, N.getState, y), Ee = Ss(o, N.getState, v), Ve = Ss(o, N.getState, x), Ue = Ss(o, N.getState, S), Ke = Ss(o, N.getState, k), Qe = (Me) => {
+      const N = rt(), L = z.useRef(null), oe = z.useRef(null), ne = z.useRef(Q), le = z.useRef(q), ae = z.useRef(i), he = b || $ || p || y || v || x, me = wm(), ve = Ss(o, N.getState, y), Ee = Ss(o, N.getState, v), Ve = Ss(o, N.getState, x), Ue = Ss(o, N.getState, S), Ke = Ss(o, N.getState, k), Qe = (Me) => {
         const { nodeDragThreshold: ye } = N.getState();
         if (b && (!D || !$ || ye > 0) && Sc({
           id: o,
@@ -11198,7 +11198,7 @@ Error generating stack: ` + g.message + `
     };
   };
   function TS({ onSelectionContextMenu: e, noPanClassName: r, disableKeyboardA11y: o }) {
-    const i = nt(), { width: l, height: u, x: c, y: d, transformString: m, userSelectionActive: h } = Re(bS, bt), p = wm(), y = z.useRef(null);
+    const i = rt(), { width: l, height: u, x: c, y: d, transformString: m, userSelectionActive: h } = Re(bS, bt), p = wm(), y = z.useRef(null);
     if (z.useEffect(() => {
       var _a;
       o || ((_a = y.current) == null ? void 0 : _a.focus({
@@ -11420,7 +11420,7 @@ Error generating stack: ` + g.message + `
   }), jS = () => true;
   var ko = (e) => {
     const r = ({ id: o, className: i, type: l, data: u, onClick: c, onEdgeDoubleClick: d, selected: m, animated: h, label: p, labelStyle: y, labelShowBg: v, labelBgStyle: x, labelBgPadding: S, labelBgBorderRadius: k, style: _, source: E, target: $, sourceX: b, sourceY: A, targetX: G, targetY: D, sourcePosition: Q, targetPosition: q, elementsSelectable: Y, hidden: J, sourceHandleId: U, targetHandleId: Z, onContextMenu: ee, onMouseEnter: C, onMouseMove: H, onMouseLeave: O, reconnectRadius: K, onReconnect: F, onReconnectStart: R, onReconnectEnd: B, markerEnd: N, markerStart: L, rfId: oe, ariaLabel: ne, isFocusable: le, isReconnectable: ae, pathOptions: he, interactionWidth: me, disableKeyboardA11y: ve }) => {
-      const Ee = z.useRef(null), [Ve, Ue] = z.useState(false), [Ke, Qe] = z.useState(false), Oe = nt(), dt = z.useMemo(() => `url('#${vc(L, oe)}')`, [
+      const Ee = z.useRef(null), [Ve, Ue] = z.useState(false), [Ke, Qe] = z.useState(false), Oe = rt(), dt = z.useMemo(() => `url('#${vc(L, oe)}')`, [
         L,
         oe
       ]), Me = z.useMemo(() => `url('#${vc(N, oe)}')`, [
@@ -11708,7 +11708,7 @@ Error generating stack: ` + g.message + `
     [To.ArrowClosed]: KS
   };
   function QS(e) {
-    const r = nt();
+    const r = rt();
     return z.useMemo(() => {
       var _a, _b;
       return Object.prototype.hasOwnProperty.call(bp, e) ? bp[e] : ((_b = (_a = r.getState()).onError) == null ? void 0 : _b.call(_a, "009", Un.error009(e)), null);
@@ -11956,7 +11956,7 @@ Error generating stack: ` + g.message + `
     })));
   }
   function Tp(e, r) {
-    return z.useRef(null), nt(), z.useMemo(() => r(e), [
+    return z.useRef(null), rt(), z.useMemo(() => r(e), [
       e
     ]);
   }
@@ -12576,7 +12576,7 @@ Error generating stack: ` + g.message + `
     };
   }, N2 = "react-flow__minimap-desc";
   function Tm({ style: e, className: r, nodeStrokeColor: o = "transparent", nodeColor: i = "#e2e2e2", nodeClassName: l = "", nodeBorderRadius: u = 5, nodeStrokeWidth: c = 2, nodeComponent: d, maskColor: m = "rgb(240, 240, 240, 0.6)", maskStrokeColor: h = "none", maskStrokeWidth: p = 1, position: y = "bottom-right", onClick: v, onNodeClick: x, pannable: S = false, zoomable: k = false, ariaLabel: _ = "React Flow mini map", inversePan: E = false, zoomStep: $ = 10, offsetScale: b = 5 }) {
-    const A = nt(), G = z.useRef(null), { boundingRect: D, viewBB: Q, rfId: q } = Re(_2, Im), Y = (e == null ? void 0 : e.width) ?? E2, J = (e == null ? void 0 : e.height) ?? C2, U = D.width / Y, Z = D.height / J, ee = Math.max(U, Z), C = ee * Y, H = ee * J, O = b * ee, K = D.x - (C - D.width) / 2 - O, F = D.y - (H - D.height) / 2 - O, R = C + O * 2, B = H + O * 2, N = `${N2}-${q}`, L = z.useRef(0);
+    const A = rt(), G = z.useRef(null), { boundingRect: D, viewBB: Q, rfId: q } = Re(_2, Im), Y = (e == null ? void 0 : e.width) ?? E2, J = (e == null ? void 0 : e.height) ?? C2, U = D.width / Y, Z = D.height / J, ee = Math.max(U, Z), C = ee * Y, H = ee * J, O = b * ee, K = D.x - (C - D.width) / 2 - O, F = D.y - (H - D.height) / 2 - O, R = C + O * 2, B = H + O * 2, N = `${N2}-${q}`, L = z.useRef(0);
     L.current = ee, z.useEffect(() => {
       if (G.current) {
         const le = Qt(G.current), ae = (ve) => {
@@ -12733,7 +12733,7 @@ Error generating stack: ` + g.message + `
     minZoomReached: e.transform[2] <= e.minZoom,
     maxZoomReached: e.transform[2] >= e.maxZoom
   }), Am = ({ style: e, showZoom: r = true, showFitView: o = true, showInteractive: i = true, fitViewOptions: l, onZoomIn: u, onZoomOut: c, onFitView: d, onInteractiveChange: m, className: h, children: p, position: y = "bottom-left" }) => {
-    const v = nt(), [x, S] = z.useState(false), { isInteractive: k, minZoomReached: _, maxZoomReached: E } = Re(P2, I2), { zoomIn: $, zoomOut: b, fitView: A } = js();
+    const v = rt(), [x, S] = z.useState(false), { isInteractive: k, minZoomReached: _, maxZoomReached: E } = Re(P2, I2), { zoomIn: $, zoomOut: b, fitView: A } = js();
     if (z.useEffect(() => {
       S(true);
     }, []), !x) return null;
@@ -13223,7 +13223,7 @@ Error generating stack: ` + g.message + `
     const e = localStorage.getItem("ip-xact-theme");
     return e === "light" || e === "dark" ? e : window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   }
-  const it = ql((e, r) => ({
+  const nt = ql((e, r) => ({
     theme: tk(),
     nonInteractiveThreshold: 5e3,
     setTheme: (o) => {
@@ -13242,7 +13242,7 @@ Error generating stack: ` + g.message + `
     })
   }));
   function nk() {
-    const r = it((o) => o.theme) === "dark";
+    const r = nt((o) => o.theme) === "dark";
     return I.jsx(H2, {
       color: r ? "rgba(148, 163, 184, 0.18)" : "rgba(0, 0, 0, 0.08)",
       gap: 24,
@@ -13716,11 +13716,12 @@ Error generating stack: ` + g.message + `
     });
   }
   function fk() {
+    const r = nt((o) => o.theme) === "dark";
     return I.jsx(M2, {
-      className: "!border !border-white/10 !bg-shell-950/90",
-      maskColor: "rgba(2, 6, 23, 0.58)",
+      className: `!border ${r ? "!border-white/10 !bg-shell-950/90" : "!border-slate-300 !bg-white/90"}`,
+      maskColor: r ? "rgba(2, 6, 23, 0.58)" : "rgba(255, 252, 249, 0.58)",
       nodeBorderRadius: 8,
-      nodeColor: "#334155",
+      nodeColor: r ? "#334155" : "#94a3b8",
       pannable: true,
       zoomable: true
     });
@@ -13857,7 +13858,7 @@ Error generating stack: ` + g.message + `
     };
   }
   function yk({ id: e, sourceX: r, sourceY: o, targetX: i, targetY: l, sourcePosition: u, targetPosition: c, data: d, source: m, target: h }) {
-    const p = $e((G) => G.highlightedEdgeIds.has(e)), v = $e((G) => G.selectedNodeIds.size > 0) && !p, S = it((G) => G.theme) === "dark", k = m.startsWith("hierarchy:") || h.startsWith("hierarchy:"), _ = z.useMemo(() => zl({
+    const p = $e((G) => G.highlightedEdgeIds.has(e)), v = $e((G) => G.selectedNodeIds.size > 0) && !p, S = nt((G) => G.theme) === "dark", k = m.startsWith("hierarchy:") || h.startsWith("hierarchy:"), _ = z.useMemo(() => zl({
       sourceX: r,
       sourceY: o,
       targetX: i,
@@ -13939,7 +13940,7 @@ Error generating stack: ` + g.message + `
     };
   }
   const xk = z.memo(function({ name: r, type: o, color: i, expanded: l, depth: u = 0, isExpandable: c, isExpanded: d, onExpand: m }) {
-    const p = it((y) => y.theme) === "dark";
+    const p = nt((y) => y.theme) === "dark";
     return I.jsxs("div", {
       className: "flex min-w-0 items-center gap-3",
       children: [
@@ -13997,7 +13998,7 @@ Error generating stack: ` + g.message + `
   function Sk({ id: e, data: r }) {
     var _a;
     if (r.kind === "busChannel") return null;
-    const o = r.kind === "cluster", i = o ? r.cluster.name : r.component.name, l = o ? r.cluster.type : r.component.type, u = wt[l], { isSelected: c, isDimmed: d } = Lm(e), m = be((E) => E.expandToLevel), h = be((E) => E.expansionPath), y = it((E) => E.theme) === "dark", v = o && h.includes(r.cluster.id), x = o ? r.cluster.depth : 0, S = o && (r.cluster.depth < 2 || r.cluster.componentCount > 6), k = o && x > 1 ? (_a = h[h.indexOf(r.cluster.id) - 1]) == null ? void 0 : _a.replace("hierarchy:", "").replace(/:/g, " > ") : null, _ = o && r.cluster.componentCount > 6 ? r.cluster.componentCount : 0;
+    const o = r.kind === "cluster", i = o ? r.cluster.name : r.component.name, l = o ? r.cluster.type : r.component.type, u = wt[l], { isSelected: c, isDimmed: d } = Lm(e), m = be((E) => E.expandToLevel), h = be((E) => E.expansionPath), y = nt((E) => E.theme) === "dark", v = o && h.includes(r.cluster.id), x = o ? r.cluster.depth : 0, S = o && (r.cluster.depth < 2 || r.cluster.componentCount > 6), k = o && x > 1 ? (_a = h[h.indexOf(r.cluster.id) - 1]) == null ? void 0 : _a.replace("hierarchy:", "").replace(/:/g, " > ") : null, _ = o && r.cluster.componentCount > 6 ? r.cluster.componentCount : 0;
     return I.jsxs("div", {
       className: Ls("architecture-node group overflow-hidden rounded-xl border-2 shadow-node transition duration-150", o ? "w-[280px]" : "w-[220px]", "hover:-translate-y-0.5 hover:shadow-glow", c && "ring-2 ring-cyan-400", d && "opacity-30 grayscale", y ? "bg-gradient-to-br from-shell-800 to-shell-950" : "bg-[#fffcf9]"),
       style: {
@@ -14110,7 +14111,7 @@ Error generating stack: ` + g.message + `
   const kk = z.memo(Sk, (e, r) => e.data.kind === "busChannel" || r.data.kind === "busChannel" ? false : e.id === r.id && e.selected === r.selected && e.data.kind === r.data.kind && (e.data.kind === "cluster" ? r.data.kind === "cluster" && e.data.cluster.id === r.data.cluster.id && e.data.cluster.componentCount === r.data.cluster.componentCount && e.data.cluster.connectionCount === r.data.cluster.connectionCount && e.data.cluster.depth === r.data.cluster.depth : r.data.kind === "component" && e.data.component.id === r.data.component.id && e.data.component.name === r.data.component.name && e.data.component.type === r.data.component.type)), Ek = 32, Ck = 720;
   function _k({ id: e, data: r }) {
     if (r.kind !== "busChannel") return null;
-    const o = r, i = wt[o.component.type], { isSelected: l, isDimmed: u } = Lm(e), d = it((m) => m.theme) === "dark";
+    const o = r, i = wt[o.component.type], { isSelected: l, isDimmed: u } = Lm(e), d = nt((m) => m.theme) === "dark";
     return I.jsxs("div", {
       className: Ls("bus-channel-node group relative transition duration-150", u && "opacity-30 grayscale"),
       style: {
@@ -14214,7 +14215,7 @@ Error generating stack: ` + g.message + `
     busChannel: Nk
   }, Op = 0.035, Ik = 2.2, bk = 0.32;
   function Tk() {
-    const e = be((U) => U.nodes), r = be((U) => U.edges), o = be((U) => U.updateNodePosition), i = be((U) => U.setNodes), l = be((U) => U.setEdges), u = be((U) => U.toggleCluster), c = be((U) => U.isLayoutLoading), d = $e((U) => U.selectNode), m = $e((U) => U.clearSelection), h = Zc(), [p, y] = z.useState(false), v = it((U) => U.nonInteractiveThreshold), S = it((U) => U.theme) === "dark", k = e.length > v, _ = e.length > X2;
+    const e = be((U) => U.nodes), r = be((U) => U.edges), o = be((U) => U.updateNodePosition), i = be((U) => U.setNodes), l = be((U) => U.setEdges), u = be((U) => U.toggleCluster), c = be((U) => U.isLayoutLoading), d = $e((U) => U.selectNode), m = $e((U) => U.clearSelection), h = Zc(), [p, y] = z.useState(false), v = nt((U) => U.nonInteractiveThreshold), S = nt((U) => U.theme) === "dark", k = e.length > v, _ = e.length > X2;
     z.useRef(null);
     const [E, $] = z.useState({
       width: 0,
@@ -14836,7 +14837,7 @@ Error generating stack: ` + g.message + `
     };
   }
   function Jc({ children: e, className: r }) {
-    const i = it((l) => l.theme) === "dark";
+    const i = nt((l) => l.theme) === "dark";
     return I.jsx("section", {
       className: Ls("border shadow-xl backdrop-blur-sm", i ? "border-white/10 bg-shell-900/95" : "border-[#e5e0d8] bg-[#fffcf9]/95", r),
       children: e
@@ -14844,7 +14845,7 @@ Error generating stack: ` + g.message + `
   }
   const Vp = JSON.stringify(Pk, null, 2);
   function Fk() {
-    const e = zt((E) => E.loadModel), r = be((E) => E.setNodes), o = be((E) => E.setEdges), i = be((E) => E.setLayoutLoading), l = $e((E) => E.selectNode), u = $e((E) => E.setSearchQuery), d = it((E) => E.theme) === "dark", [m, h] = z.useState(""), [p, y] = z.useState(null), [v, x] = z.useState(false), S = (E) => {
+    const e = zt((E) => E.loadModel), r = be((E) => E.setNodes), o = be((E) => E.setEdges), i = be((E) => E.setLayoutLoading), l = $e((E) => E.selectNode), u = $e((E) => E.setSearchQuery), d = nt((E) => E.theme) === "dark", [m, h] = z.useState(""), [p, y] = z.useState(null), [v, x] = z.useState(false), S = (E) => {
       l(null), u(""), r([]), o([]), i(true), e(E), y(null);
     }, k = () => {
       x(true), setTimeout(() => {
@@ -14958,7 +14959,7 @@ Error generating stack: ` + g.message + `
     });
   }
   function Up({ connections: e, direction: r, getName: o, onSelect: i }) {
-    const u = it((c) => c.theme) === "dark";
+    const u = nt((c) => c.theme) === "dark";
     return e.length === 0 ? I.jsxs("div", {
       className: `rounded-lg py-4 text-center text-sm ${u ? "text-slate-500" : "text-slate-400"}`,
       children: [
@@ -15010,7 +15011,7 @@ Error generating stack: ` + g.message + `
     });
   }
   function vl({ title: e, children: r }) {
-    const i = it((l) => l.theme) === "dark";
+    const i = nt((l) => l.theme) === "dark";
     return I.jsxs("section", {
       className: `border-t pt-4 ${i ? "border-white/10" : "border-slate-200"}`,
       children: [
@@ -15029,7 +15030,7 @@ Error generating stack: ` + g.message + `
   }
   const Wp = [];
   function jk() {
-    const e = $e((y) => y.selectedNodeId), r = zt((y) => e ? y.componentById.get(e) : void 0), o = zt((y) => e ? y.getIncoming(e) : Wp), i = zt((y) => e ? y.getOutgoing(e) : Wp), l = zt((y) => y.getComponent), u = Zc(), c = be((y) => y.sidebarCollapsed), d = be((y) => y.toggleSidebar), h = it((y) => y.theme) === "dark";
+    const e = $e((y) => y.selectedNodeId), r = zt((y) => e ? y.componentById.get(e) : void 0), o = zt((y) => e ? y.getIncoming(e) : Wp), i = zt((y) => e ? y.getOutgoing(e) : Wp), l = zt((y) => y.getComponent), u = Zc(), c = be((y) => y.sidebarCollapsed), d = be((y) => y.toggleSidebar), h = nt((y) => y.theme) === "dark";
     if (!r || c) return null;
     const p = wt[r.type];
     return I.jsxs(Jc, {
@@ -16536,7 +16537,7 @@ Error generating stack: ` + g.message + `
   }
   const Es = 52, Jp = 288, e0 = 5;
   function RE({ results: e, onSelect: r }) {
-    const o = z.useRef(null), [i, l] = z.useState(0), [u, c] = z.useState(Jp), m = it((S) => S.theme) === "dark";
+    const o = z.useRef(null), [i, l] = z.useState(0), [u, c] = z.useState(Jp), m = nt((S) => S.theme) === "dark";
     z.useEffect(() => {
       const S = o.current;
       if (!S) return;
@@ -16602,7 +16603,7 @@ Error generating stack: ` + g.message + `
     });
   }
   function PE() {
-    const [e, r] = z.useState(""), o = $e((h) => h.setSearchQuery), i = $E(), l = Zc(), u = z.useRef(null), d = it((h) => h.theme) === "dark";
+    const [e, r] = z.useState(""), o = $e((h) => h.setSearchQuery), i = $E(), l = Zc(), u = z.useRef(null), d = nt((h) => h.theme) === "dark";
     z.useEffect(() => {
       const h = window.setTimeout(() => o(e), 150);
       return () => window.clearTimeout(h);
@@ -16691,7 +16692,7 @@ Error generating stack: ` + g.message + `
     });
   }
   function LE() {
-    const e = it((o) => o.theme), r = it((o) => o.toggleTheme);
+    const e = nt((o) => o.theme), r = nt((o) => o.toggleTheme);
     return I.jsx("button", {
       className: "flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-slate-200 dark:border-white/10 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-200 border-black/10 bg-black/5 text-slate-600 hover:bg-black/10 hover:text-slate-800",
       onClick: r,
@@ -17034,7 +17035,7 @@ Error generating stack: ` + g.message + `
   }
   async function tC(e) {
     const { preprocessArchitectureWasm: r } = await ZE(async () => {
-      const { preprocessArchitectureWasm: i } = await import("./index-Bxql2t2m.js");
+      const { preprocessArchitectureWasm: i } = await import("./index-BcnA6_2p.js");
       return {
         preprocessArchitectureWasm: i
       };
@@ -17140,7 +17141,7 @@ Error generating stack: ` + g.message + `
     return m;
   }
   function aC(e) {
-    return e <= 1e3, 1001;
+    return 1001;
   }
   function uC(e, r) {
     const o = {
@@ -17485,7 +17486,7 @@ Error generating stack: ` + g.message + `
       if (!e) return;
       if (e.components.length > G2) {
         i(true);
-        const y = new Worker(new URL("/assets/preprocessWorker-BM3Hhgmr.js", import.meta.url), {
+        const y = new Worker(new URL("/assets/preprocessWorker-DBZGLPjR.js", import.meta.url), {
           type: "module"
         });
         return y.onmessage = (v) => {
@@ -18326,7 +18327,7 @@ Error generating stack: ` + g.message + `
     }
   }
   async function jC(e, r = {}) {
-    const o = be.getState(), l = it.getState().theme === "dark", u = r.scope ?? ($e.getState().selectedNodeId ? "selection" : "full"), { nodes: c, edges: d } = LC(o.nodes, o.edges, u);
+    const o = be.getState(), l = nt.getState().theme === "dark", u = r.scope ?? ($e.getState().selectedNodeId ? "selection" : "full"), { nodes: c, edges: d } = LC(o.nodes, o.edges, u);
     if (c.length === 0) throw new Error("There is nothing to export.");
     const h = OC(c, d, l, u === "selection");
     if (e === "svg") {
@@ -18348,7 +18349,7 @@ Error generating stack: ` + g.message + `
     }), o = zt((b) => {
       var _a;
       return ((_a = b.model) == null ? void 0 : _a.connections.length) ?? 0;
-    }), i = zt((b) => b.clearModel), l = $e((b) => b.selectedNodeId), u = $e((b) => b.selectedNodeIds), c = be((b) => b.sidebarCollapsed), d = be((b) => b.setNodes), m = be((b) => b.setEdges), h = be((b) => b.resetExpansion), p = $e((b) => b.clearSelection), y = $e((b) => b.setSearchQuery), v = it((b) => b.theme), x = v === "dark", [S, k] = z.useState(false);
+    }), i = zt((b) => b.clearModel), l = $e((b) => b.selectedNodeId), u = $e((b) => b.selectedNodeIds), c = be((b) => b.sidebarCollapsed), d = be((b) => b.setNodes), m = be((b) => b.setEdges), h = be((b) => b.resetExpansion), p = $e((b) => b.clearSelection), y = $e((b) => b.setSearchQuery), v = nt((b) => b.theme), x = v === "dark", [S, k] = z.useState(false);
     xC(), z.useEffect(() => {
       document.documentElement.setAttribute("data-theme", v), x ? document.documentElement.classList.add("dark") : document.documentElement.classList.remove("dark");
     }, [

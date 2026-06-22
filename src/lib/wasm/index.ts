@@ -32,7 +32,7 @@ interface WasmRawResult {
 }
 
 export async function preprocessArchitectureWasm(modelJson: string): Promise<WasmPreprocessedArchitecture> {
-  const raw: WasmRawResult = JSON.parse(preprocess_architecture(modelJson));
+  const raw: WasmRawResult = JSON.parse(await preprocess_architecture(modelJson));
   return {
     model: raw.model as ArchitectureModel,
     componentMetadata: raw.componentMetadata as Record<string, ComponentMetadata>,
@@ -49,5 +49,5 @@ export async function preprocessArchitectureWasm(modelJson: string): Promise<Was
 }
 
 export async function getTypeBreakdownWasm(modelJson: string): Promise<Record<string, number>> {
-  return JSON.parse(get_type_breakdown(modelJson));
+  return JSON.parse(await get_type_breakdown(modelJson));
 }

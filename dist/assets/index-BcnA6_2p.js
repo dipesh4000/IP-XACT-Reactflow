@@ -1,4 +1,4 @@
-import { _ as x } from "./index-CXBYqcIc.js";
+import { _ as x } from "./index-BcUMPTsP.js";
 const A = "/assets/wasm_preprocess_bg-CK_i6M-u.wasm";
 function T(e) {
   let t, c;
@@ -109,7 +109,7 @@ async function F(e) {
   return await B(), (await x(() => Promise.resolve().then(() => V), void 0)).preprocess_architecture(e);
 }
 async function L(e) {
-  const t = JSON.parse(F(e));
+  const t = JSON.parse(await F(e));
   return { model: t.model, componentMetadata: t.componentMetadata, connectionMetadata: t.connectionMetadata, groups: t.groups, portSides: t.portSides, elkHints: { layerConstraints: t.elkHints.layerConstraints, portConstraints: t.elkHints.portConstraints, groupHints: t.elkHints.groupHints, elkOptions: t.elkHints.elkOptions } };
 }
 export {

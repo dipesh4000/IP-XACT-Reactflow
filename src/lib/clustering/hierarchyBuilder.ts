@@ -139,12 +139,9 @@ function buildSubGroups(
 }
 
 function computeClusterThreshold(componentCount: number): number {
-  // The check below is `componentCount < threshold`.
-  // Thanks to Rust WASM preprocessing, we can comfortably handle up to 1000 components
-  // without needing to summarize them into clusters.
-  if (componentCount <= 1000) return 1001;
-  
-  // For graphs larger than 1000, we start clustering to maintain rendering performance.
+  // Thanks to Rust WASM preprocessing, we can comfortably handle up to 1000
+  // components without needing to summarize them into clusters.
+  // For graphs larger than 1000, clustering maintains rendering performance.
   return 1001;
 }
 
