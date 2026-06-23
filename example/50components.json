@@ -1,0 +1,888 @@
+{
+  "components": {
+    "CPU0": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "rst",
+        "irq"
+      ],
+      "registers": [
+        "PC",
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "CPU1": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "rst",
+        "irq"
+      ],
+      "registers": [
+        "PC",
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "UART0": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "BAUD"
+      ]
+    },
+    "UART1": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "BAUD"
+      ]
+    },
+    "UART2": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "BAUD"
+      ]
+    },
+    "UART3": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "BAUD"
+      ]
+    },
+    "SPI0": {
+      "type": "Component",
+      "ports": [
+        "mosi",
+        "miso",
+        "sclk",
+        "cs"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "DATA"
+      ]
+    },
+    "SPI1": {
+      "type": "Component",
+      "ports": [
+        "mosi",
+        "miso",
+        "sclk",
+        "cs"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "DATA"
+      ]
+    },
+    "SPI2": {
+      "type": "Component",
+      "ports": [
+        "mosi",
+        "miso",
+        "sclk",
+        "cs"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "DATA"
+      ]
+    },
+    "I2C0": {
+      "type": "Component",
+      "ports": [
+        "sda",
+        "scl"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "ADDR"
+      ]
+    },
+    "I2C1": {
+      "type": "Component",
+      "ports": [
+        "sda",
+        "scl"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "ADDR"
+      ]
+    },
+    "I2C2": {
+      "type": "Component",
+      "ports": [
+        "sda",
+        "scl"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS",
+        "ADDR"
+      ]
+    },
+    "GPIO0": {
+      "type": "Component",
+      "ports": [
+        "in",
+        "out"
+      ],
+      "registers": [
+        "DIR",
+        "DATA",
+        "INT"
+      ]
+    },
+    "GPIO1": {
+      "type": "Component",
+      "ports": [
+        "in",
+        "out"
+      ],
+      "registers": [
+        "DIR",
+        "DATA",
+        "INT"
+      ]
+    },
+    "GPIO2": {
+      "type": "Component",
+      "ports": [
+        "in",
+        "out"
+      ],
+      "registers": [
+        "DIR",
+        "DATA",
+        "INT"
+      ]
+    },
+    "GPIO3": {
+      "type": "Component",
+      "ports": [
+        "in",
+        "out"
+      ],
+      "registers": [
+        "DIR",
+        "DATA",
+        "INT"
+      ]
+    },
+    "TIMER0": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "irq"
+      ],
+      "registers": [
+        "COUNT",
+        "COMPARE",
+        "CTRL"
+      ]
+    },
+    "TIMER1": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "irq"
+      ],
+      "registers": [
+        "COUNT",
+        "COMPARE",
+        "CTRL"
+      ]
+    },
+    "TIMER2": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "irq"
+      ],
+      "registers": [
+        "COUNT",
+        "COMPARE",
+        "CTRL"
+      ]
+    },
+    "DMA0": {
+      "type": "Component",
+      "ports": [
+        "req",
+        "ack"
+      ],
+      "registers": [
+        "SRC",
+        "DST",
+        "SIZE"
+      ]
+    },
+    "DMA1": {
+      "type": "Component",
+      "ports": [
+        "req",
+        "ack"
+      ],
+      "registers": [
+        "SRC",
+        "DST",
+        "SIZE"
+      ]
+    },
+    "ADC0": {
+      "type": "Component",
+      "ports": [
+        "analog_in"
+      ],
+      "registers": [
+        "CTRL",
+        "RESULT"
+      ]
+    },
+    "ADC1": {
+      "type": "Component",
+      "ports": [
+        "analog_in"
+      ],
+      "registers": [
+        "CTRL",
+        "RESULT"
+      ]
+    },
+    "DAC0": {
+      "type": "Component",
+      "ports": [
+        "analog_out"
+      ],
+      "registers": [
+        "CTRL",
+        "VALUE"
+      ]
+    },
+    "DAC1": {
+      "type": "Component",
+      "ports": [
+        "analog_out"
+      ],
+      "registers": [
+        "CTRL",
+        "VALUE"
+      ]
+    },
+    "PWM0": {
+      "type": "Component",
+      "ports": [
+        "pwm_out"
+      ],
+      "registers": [
+        "DUTY",
+        "PERIOD"
+      ]
+    },
+    "PWM1": {
+      "type": "Component",
+      "ports": [
+        "pwm_out"
+      ],
+      "registers": [
+        "DUTY",
+        "PERIOD"
+      ]
+    },
+    "PWM2": {
+      "type": "Component",
+      "ports": [
+        "pwm_out"
+      ],
+      "registers": [
+        "DUTY",
+        "PERIOD"
+      ]
+    },
+    "ETH0": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "MAC",
+        "STATUS"
+      ]
+    },
+    "ETH1": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "MAC",
+        "STATUS"
+      ]
+    },
+    "CAN0": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "FILTER"
+      ]
+    },
+    "CAN1": {
+      "type": "Component",
+      "ports": [
+        "tx",
+        "rx"
+      ],
+      "registers": [
+        "CTRL",
+        "FILTER"
+      ]
+    },
+    "USB0": {
+      "type": "Component",
+      "ports": [
+        "dp",
+        "dm"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "USB1": {
+      "type": "Component",
+      "ports": [
+        "dp",
+        "dm"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "CACHE_L1": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data"
+      ],
+      "registers": [
+        "CFG"
+      ]
+    },
+    "CACHE_L2": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data"
+      ],
+      "registers": [
+        "CFG"
+      ]
+    },
+    "SRAM0": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data",
+        "we"
+      ],
+      "registers": [
+        "CFG"
+      ]
+    },
+    "SRAM1": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data",
+        "we"
+      ],
+      "registers": [
+        "CFG"
+      ]
+    },
+    "FLASH0": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data",
+        "we"
+      ],
+      "registers": [
+        "CFG",
+        "STATUS"
+      ]
+    },
+    "DDR0": {
+      "type": "Memory",
+      "ports": [
+        "addr",
+        "data"
+      ],
+      "registers": [
+        "CTRL",
+        "TIMING"
+      ]
+    },
+    "GPU0": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "rst"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "NPU0": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "rst"
+      ],
+      "registers": [
+        "CTRL",
+        "STATUS"
+      ]
+    },
+    "RTC": {
+      "type": "Component",
+      "ports": [
+        "clk",
+        "alarm"
+      ],
+      "registers": [
+        "TIME",
+        "DATE"
+      ]
+    },
+    "WATCHDOG": {
+      "type": "Component",
+      "ports": [
+        "clk"
+      ],
+      "registers": [
+        "COUNT",
+        "CTRL"
+      ]
+    },
+    "INTC": {
+      "type": "Component",
+      "ports": [
+        "irq_in",
+        "irq_out"
+      ],
+      "registers": [
+        "MASK",
+        "PENDING"
+      ]
+    },
+    "APB_BUS": {
+      "type": "Bus",
+      "ports": [
+        "paddr",
+        "pwdata",
+        "prdata"
+      ],
+      "registers": []
+    },
+    "AHB_BUS": {
+      "type": "Bus",
+      "ports": [
+        "haddr",
+        "hwdata",
+        "hrdata"
+      ],
+      "registers": []
+    },
+    "AXI_BUS": {
+      "type": "Bus",
+      "ports": [
+        "awaddr",
+        "wdata",
+        "rdata"
+      ],
+      "registers": []
+    }
+  },
+  "connections": [
+    {
+      "source": "CPU0",
+      "target": "AXI_BUS"
+    },
+    {
+      "source": "CPU1",
+      "target": "AXI_BUS"
+    },
+    {
+      "source": "AXI_BUS",
+      "target": "AHB_BUS"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "APB_BUS"
+    },
+    {
+      "source": "AXI_BUS",
+      "target": "DDR0"
+    },
+    {
+      "source": "AXI_BUS",
+      "target": "CACHE_L2"
+    },
+    {
+      "source": "CPU0",
+      "target": "CACHE_L1"
+    },
+    {
+      "source": "CPU1",
+      "target": "CACHE_L1"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "SRAM0"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "SRAM1"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "FLASH0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "UART0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "UART1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "UART2"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "UART3"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "SPI0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "SPI1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "SPI2"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "I2C0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "I2C1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "I2C2"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "GPIO0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "GPIO1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "GPIO2"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "GPIO3"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "TIMER0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "TIMER1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "TIMER2"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "DMA0"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "DMA1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "ADC0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "ADC1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "DAC0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "DAC1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "PWM0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "PWM1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "PWM2"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "ETH0"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "ETH1"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "CAN0"
+    },
+    {
+      "source": "APB_BUS",
+      "target": "CAN1"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "USB0"
+    },
+    {
+      "source": "AHB_BUS",
+      "target": "USB1"
+    },
+    {
+      "source": "AXI_BUS",
+      "target": "GPU0"
+    },
+    {
+      "source": "AXI_BUS",
+      "target": "NPU0"
+    },
+    {
+      "source": "RTC",
+      "target": "INTC"
+    },
+    {
+      "source": "WATCHDOG",
+      "target": "INTC"
+    },
+    {
+      "source": "UART0",
+      "target": "INTC"
+    },
+    {
+      "source": "UART1",
+      "target": "INTC"
+    },
+    {
+      "source": "UART2",
+      "target": "INTC"
+    },
+    {
+      "source": "UART3",
+      "target": "INTC"
+    },
+    {
+      "source": "TIMER0",
+      "target": "INTC"
+    },
+    {
+      "source": "TIMER1",
+      "target": "INTC"
+    },
+    {
+      "source": "TIMER2",
+      "target": "INTC"
+    },
+    {
+      "source": "GPIO0",
+      "target": "INTC"
+    },
+    {
+      "source": "GPIO1",
+      "target": "INTC"
+    },
+    {
+      "source": "GPIO2",
+      "target": "INTC"
+    },
+    {
+      "source": "GPIO3",
+      "target": "INTC"
+    },
+    {
+      "source": "DMA0",
+      "target": "INTC"
+    },
+    {
+      "source": "DMA1",
+      "target": "INTC"
+    },
+    {
+      "source": "ETH0",
+      "target": "INTC"
+    },
+    {
+      "source": "ETH1",
+      "target": "INTC"
+    },
+    {
+      "source": "USB0",
+      "target": "INTC"
+    },
+    {
+      "source": "USB1",
+      "target": "INTC"
+    },
+    {
+      "source": "GPU0",
+      "target": "INTC"
+    },
+    {
+      "source": "NPU0",
+      "target": "INTC"
+    },
+    {
+      "source": "INTC",
+      "target": "CPU0"
+    },
+    {
+      "source": "INTC",
+      "target": "CPU1"
+    },
+    {
+      "source": "UART0",
+      "target": "DMA0"
+    },
+    {
+      "source": "UART1",
+      "target": "DMA0"
+    },
+    {
+      "source": "SPI0",
+      "target": "DMA1"
+    },
+    {
+      "source": "SPI1",
+      "target": "DMA1"
+    },
+    {
+      "source": "ADC0",
+      "target": "DMA0"
+    },
+    {
+      "source": "ADC1",
+      "target": "DMA1"
+    },
+    {
+      "source": "PWM0",
+      "target": "GPIO0"
+    },
+    {
+      "source": "PWM1",
+      "target": "GPIO1"
+    },
+    {
+      "source": "PWM2",
+      "target": "GPIO2"
+    },
+    {
+      "source": "CAN0",
+      "target": "ETH0"
+    },
+    {
+      "source": "CAN1",
+      "target": "ETH1"
+    },
+    {
+      "source": "USB0",
+      "target": "FLASH0"
+    },
+    {
+      "source": "USB1",
+      "target": "DDR0"
+    },
+    {
+      "source": "GPU0",
+      "target": "DDR0"
+    },
+    {
+      "source": "NPU0",
+      "target": "DDR0"
+    },
+    {
+      "source": "RTC",
+      "target": "CPU0"
+    },
+    {
+      "source": "WATCHDOG",
+      "target": "CPU1"
+    }
+  ]
+}
