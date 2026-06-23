@@ -191,7 +191,7 @@ function serializeSvg(svg: SVGSVGElement): string {
   return new XMLSerializer().serializeToString(svg);
 }
 
-async function svgToPng(svg: SVGSVGElement, isDark: boolean): Promise<string> {
+async function svgToPng(svg: SVGSVGElement, isDark: boolean): Promise<Blob> {
   const serialized = serializeSvg(svg);
   const blob = new Blob([serialized], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -202,18 +202,29 @@ async function svgToPng(svg: SVGSVGElement, isDark: boolean): Promise<string> {
     image.src = url;
     await image.decode();
 
+    const dpr = window.devicePixelRatio || 1;
+    const vbWidth = svg.viewBox.baseVal.width;
+    const vbHeight = svg.viewBox.baseVal.height;
+
     const canvas = document.createElement("canvas");
-    canvas.width = Math.ceil(svg.viewBox.baseVal.width);
-    canvas.height = Math.ceil(svg.viewBox.baseVal.height);
+    canvas.width = Math.ceil(vbWidth * dpr);
+    canvas.height = Math.ceil(vbHeight * dpr);
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       throw new Error("Canvas unavailable");
     }
 
+    ctx.scale(dpr, dpr);
     ctx.fillStyle = isDark ? "#020617" : "#faf8f5";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, 0, 0);
-    return canvas.toDataURL("image/png");
+    ctx.fillRect(0, 0, vbWidth, vbHeight);
+    ctx.drawImage(image, 0, 0, vbWidth, vbHeight);
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("Failed to create PNG blob"))),
+        "image/png"
+      );
+    });
   } finally {
     URL.revokeObjectURL(url);
   }
@@ -228,11 +239,8 @@ function downloadHref(href: string, filename: string): void {
 
 function downloadBlob(blob: Blob, filename: string): void {
   const href = URL.createObjectURL(blob);
-  try {
-    downloadHref(href, filename);
-  } finally {
-    setTimeout(() => URL.revokeObjectURL(href), 0);
-  }
+  downloadHref(href, filename);
+  setTimeout(() => URL.revokeObjectURL(href), 3000);
 }
 
 export async function exportGraph(format: ExportFormat, options: ExportOptions = {}): Promise<void> {
@@ -255,6 +263,6 @@ export async function exportGraph(format: ExportFormat, options: ExportOptions =
     return;
   }
 
-  const png = await svgToPng(svg, isDark);
-  downloadHref(png, `architecture-${scope}.png`);
+  const pngBlob = await svgToPng(svg, isDark);
+  downloadBlob(pngBlob, `architecture-${scope}.png`);
 }

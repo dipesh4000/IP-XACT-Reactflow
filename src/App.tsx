@@ -28,6 +28,7 @@ function AppInner() {
   const theme = useSettingsStore((state) => state.theme);
   const isDark = theme === "dark";
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useElkLayout();
 
@@ -52,10 +53,13 @@ function AppInner() {
 
   async function handleExport(format: "png" | "svg", scope: "full" | "selection" = "full") {
     setIsExporting(true);
+    setExportError(null);
     try {
       await exportGraph(format, { scope });
     } catch (error) {
-      console.error("Export failed:", error);
+      const message = error instanceof Error ? error.message : "Export failed";
+      setExportError(message);
+      setTimeout(() => setExportError(null), 4000);
     } finally {
       setIsExporting(false);
     }
@@ -148,6 +152,18 @@ function AppInner() {
                       : "cursor-not-allowed text-slate-400"
                   }`}
                   disabled={selectedNodeIds.size === 0}
+                  onClick={() => handleExport("png", "selection")}
+                  type="button"
+                >
+                  Export Selected PNG
+                </button>
+                <button
+                  className={`block w-full px-4 py-2 text-left text-xs transition ${
+                    selectedNodeIds.size > 0
+                      ? isDark ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"
+                      : "cursor-not-allowed text-slate-400"
+                  }`}
+                  disabled={selectedNodeIds.size === 0}
                   onClick={() => handleExport("svg", "selection")}
                   type="button"
                 >
@@ -160,6 +176,11 @@ function AppInner() {
         </div>
         <FlowCanvas />
         {!hasModel ? <ModelImportPanel /> : null}
+        {exportError ? (
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg border shadow-lg text-xs font-medium bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800">
+            {exportError}
+          </div>
+        ) : null}
       </section>
       <InspectorPanel />
     </main>

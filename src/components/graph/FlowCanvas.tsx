@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import ReactFlow, { Controls, MarkerType, useReactFlow, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
 import "reactflow/dist/style.css";
 import { CANVAS_THRESHOLD } from "../../lib/constants";
@@ -36,11 +36,16 @@ function FlowCanvasInner() {
   const isNonInteractive = storeNodes.length > nonInteractiveThreshold;
   const useCanvas = storeNodes.length > CANVAS_THRESHOLD;
   const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const reactFlowInstance = useReactFlow();
 
   // Track container size for canvas renderer
   const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
     if (node) {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
@@ -49,8 +54,16 @@ function FlowCanvasInner() {
         }
       });
       observer.observe(node);
-      return () => observer.disconnect();
+      observerRef.current = observer;
     }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
   }, []);
 
   const defaultEdgeOptions = {

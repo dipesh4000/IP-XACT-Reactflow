@@ -7,6 +7,7 @@ import {
   BUS_CHANNEL_HEIGHT,
 } from "../constants";
 import type { ArchitectureFlowNode, ArchitectureFlowEdge } from "../../types";
+import type { PortDirection } from "../../types/architecture";
 import { nodeColorMap } from "../transform/colorMap";
 
 interface Viewport {
@@ -16,6 +17,18 @@ interface Viewport {
   height: number;
   zoom: number;
 }
+
+const FONT_FAMILY = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const MONO_FONT = '"SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace';
+
+const PORT_COLORS: Record<PortDirection, string> = {
+  in: "#22c55e",
+  out: "#3b82f6",
+  inout: "#eab308",
+};
+
+const PORT_RADIUS = 3;
+const MAX_VISIBLE_PORTS = 6;
 
 export function renderToCanvas(
   ctx: CanvasRenderingContext2D,
@@ -28,13 +41,11 @@ export function renderToCanvas(
   const { width, height } = ctx.canvas;
   ctx.clearRect(0, 0, width, height);
 
-  // Calculate visible bounds in graph coordinates
   const left = -viewport.x / viewport.zoom;
   const top = -viewport.y / viewport.zoom;
   const right = left + width / viewport.zoom;
   const bottom = top + height / viewport.zoom;
 
-  // Build spatial index for nodes
   const visibleNodes: ArchitectureFlowNode[] = [];
   for (const node of nodes) {
     const nodeWidth = getNodeWidth(node);
@@ -49,7 +60,6 @@ export function renderToCanvas(
 
   const nodeMap = new Map(visibleNodes.map(n => [n.id, n]));
 
-  // Draw edges (only those connecting visible nodes)
   ctx.save();
   ctx.translate(viewport.x, viewport.y);
   ctx.scale(viewport.zoom, viewport.zoom);
@@ -64,30 +74,48 @@ export function renderToCanvas(
     const targetX = target.position.x + getNodeWidth(target) / 2;
     const targetY = target.position.y + getNodeHeight(target) / 2;
 
+    const isHighlighted = highlightedEdgeIds.has(edge.id);
     ctx.beginPath();
     ctx.moveTo(sourceX, sourceY);
     ctx.lineTo(targetX, targetY);
-    ctx.strokeStyle = highlightedEdgeIds.has(edge.id) ? "#22d3ee" : "#64748b";
-    ctx.lineWidth = 1.5 / viewport.zoom;
-    ctx.globalAlpha = highlightedEdgeIds.has(edge.id) ? 0.9 : 0.4;
+    ctx.strokeStyle = isHighlighted ? "#22d3ee" : "#64748b";
+    ctx.lineWidth = isHighlighted ? 2 : 1.5;
+    ctx.globalAlpha = isHighlighted ? 0.9 : 0.4;
     ctx.stroke();
+
+    if (isHighlighted) {
+      drawArrowhead(ctx, sourceX, sourceY, targetX, targetY);
+    }
   }
 
   ctx.globalAlpha = 1;
 
-  // Draw nodes
   for (const node of visibleNodes) {
     drawNode(ctx, node, viewport.zoom, selectedNodeIds.has(node.id));
   }
 
   ctx.restore();
 
-  // Draw node count overlay
   ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
   ctx.fillRect(8, height - 32, 180, 24);
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "12px Inter, sans-serif";
+  ctx.font = `12px ${FONT_FAMILY}`;
   ctx.fillText(`${visibleNodes.length} / ${nodes.length} nodes visible`, 16, height - 14);
+}
+
+function drawArrowhead(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number) {
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const headLen = 8;
+
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+  ctx.strokeStyle = "#22d3ee";
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.9;
+  ctx.stroke();
 }
 
 function drawNode(
@@ -111,67 +139,123 @@ function drawNode(
     return;
   }
 
-  // Component node
   const componentData = node.data;
   const colors = nodeColorMap[componentData.component.type];
 
-  // Shadow
   ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
   ctx.shadowBlur = 8;
   ctx.shadowOffsetY = 2;
 
-  // Background
   ctx.fillStyle = "#ffffff";
   ctx.strokeStyle = isSelected ? "#22d3ee" : `${colors.border}60`;
-  ctx.lineWidth = isSelected ? 2 / zoom : 1 / zoom;
-  roundRect(ctx, x, y, width, height, 12 / zoom);
+  ctx.lineWidth = isSelected ? 2 : 1;
+  roundRect(ctx, x, y, width, height, 12);
   ctx.fill();
   ctx.shadowColor = "transparent";
 
-  // Left color rail
   ctx.fillStyle = colors.base;
   ctx.beginPath();
-  ctx.roundRect(x, y, 6 / zoom, height, [12 / zoom, 0, 0, 12 / zoom]);
+  ctx.roundRect(x, y, 6, height, [12, 0, 0, 12]);
   ctx.fill();
 
-  // Type icon
-  const iconSize = Math.max(24, 40 * zoom);
-  const iconX = x + 16 / zoom;
+  const iconSize = Math.min(Math.max(24, 40 * zoom), 32);
+  const iconX = x + 16;
   const iconY = y + (height - iconSize) / 2;
 
   ctx.fillStyle = `${colors.border}18`;
   ctx.strokeStyle = `${colors.border}60`;
-  ctx.lineWidth = 1 / zoom;
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.roundRect(iconX, iconY, iconSize, iconSize, 6 / zoom);
+  ctx.roundRect(iconX, iconY, iconSize, iconSize, 6);
   ctx.fill();
   ctx.stroke();
 
-  // Type text
   ctx.fillStyle = colors.border;
-  ctx.font = `bold ${Math.max(8, 10 / zoom)}px Inter, sans-serif`;
+  ctx.font = `bold ${Math.max(8, 10)}px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   const typeIcon = componentData.component.type.slice(0, 3).toUpperCase();
   ctx.fillText(typeIcon, iconX + iconSize / 2, iconY + iconSize / 2);
 
-  // Name
   ctx.fillStyle = "#0f172a";
-  ctx.font = `600 ${Math.max(10, 13 / zoom)}px Inter, sans-serif`;
+  ctx.font = `600 ${Math.max(10, 13)}px ${FONT_FAMILY}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  const nameX = iconX + iconSize + 8 / zoom;
-  const nameMaxWidth = width - (nameX - x) - 8 / zoom;
-  ctx.fillText(truncateText(ctx, componentData.component.name, nameMaxWidth), nameX, y + 14 / zoom);
+  const nameX = iconX + iconSize + 8;
+  const nameMaxWidth = width - (nameX - x) - 8;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.clip();
+  ctx.fillText(truncateText(ctx, componentData.component.name, nameMaxWidth), nameX, y + 14);
 
-  // ID
   ctx.fillStyle = "#64748b";
-  ctx.font = `${Math.max(8, 10 / zoom)}px "SF Mono", monospace`;
-  ctx.fillText(truncateText(ctx, componentData.component.id, nameMaxWidth), nameX, y + 30 / zoom);
+  ctx.font = `${Math.max(8, 10)}px ${MONO_FONT}`;
+  ctx.fillText(truncateText(ctx, componentData.component.id, nameMaxWidth), nameX, y + 30);
+  ctx.restore();
 
-  // Reset
+  drawPortIndicators(ctx, componentData.component.ports, x, y, width, height, zoom);
+
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
+}
+
+function drawPortIndicators(
+  ctx: CanvasRenderingContext2D,
+  ports: { id: string; name: string; direction: PortDirection }[],
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  zoom: number
+) {
+  if (!ports || ports.length === 0) return;
+
+  const inPorts = ports.filter(p => p.direction === "in");
+  const outPorts = ports.filter(p => p.direction === "out");
+  const inoutPorts = ports.filter(p => p.direction === "inout");
+
+  const rightPorts = [...inPorts, ...inoutPorts];
+  const leftPorts = [...outPorts];
+
+  const maxDots = Math.min(Math.max(rightPorts.length, leftPorts.length), MAX_VISIBLE_PORTS);
+
+  const dotSpacing = Math.min(14, (height - 16) / Math.max(maxDots, 1));
+  const startY = y + (height - (maxDots - 1) * dotSpacing) / 2;
+
+  for (let i = 0; i < Math.min(rightPorts.length, MAX_VISIBLE_PORTS); i++) {
+    const port = rightPorts[i];
+    if (!port) continue;
+    const py = startY + i * dotSpacing;
+    ctx.beginPath();
+    ctx.arc(x + width + PORT_RADIUS + 1, py, PORT_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = PORT_COLORS[port.direction];
+    ctx.fill();
+  }
+  if (rightPorts.length > MAX_VISIBLE_PORTS) {
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = `bold ${Math.max(7, 8)}px ${FONT_FAMILY}`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`+${rightPorts.length - MAX_VISIBLE_PORTS}`, x + width + 8, startY + MAX_VISIBLE_PORTS * dotSpacing);
+  }
+
+  for (let i = 0; i < Math.min(leftPorts.length, MAX_VISIBLE_PORTS); i++) {
+    const port = leftPorts[i];
+    if (!port) continue;
+    const py = startY + i * dotSpacing;
+    ctx.beginPath();
+    ctx.arc(x - PORT_RADIUS - 1, py, PORT_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = PORT_COLORS[port.direction];
+    ctx.fill();
+  }
+  if (leftPorts.length > MAX_VISIBLE_PORTS) {
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = `bold ${Math.max(7, 8)}px ${FONT_FAMILY}`;
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`+${leftPorts.length - MAX_VISIBLE_PORTS}`, x - 8, startY + MAX_VISIBLE_PORTS * dotSpacing);
+  }
 }
 
 function drawCluster(
@@ -187,63 +271,56 @@ function drawCluster(
   if (node.data.kind !== "cluster") return;
   const cluster = node.data.cluster;
 
-  // Shadow
   ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
   ctx.shadowBlur = 6;
   ctx.shadowOffsetY = 2;
 
-  // Background
   ctx.fillStyle = "#ffffff";
   ctx.strokeStyle = isSelected ? "#22d3ee" : "#cbd5e1";
-  ctx.lineWidth = isSelected ? 2 / zoom : 1 / zoom;
-  roundRect(ctx, x, y, width, height, 12 / zoom);
+  ctx.lineWidth = isSelected ? 2 : 1;
+  roundRect(ctx, x, y, width, height, 12);
   ctx.fill();
   ctx.shadowColor = "transparent";
 
-  // Left color rail (use first type's color)
   const firstType = Object.keys(cluster.typeBreakdown ?? {})[0];
   const railColor = firstType ? nodeColorMap[firstType as keyof typeof nodeColorMap]?.base : "#94a3b8";
   ctx.fillStyle = railColor;
   ctx.beginPath();
-  ctx.roundRect(x, y, 6 / zoom, height, [12 / zoom, 0, 0, 12 / zoom]);
+  ctx.roundRect(x, y, 6, height, [12, 0, 0, 12]);
   ctx.fill();
 
-  // Name
   ctx.fillStyle = "#0f172a";
-  ctx.font = `600 ${Math.max(10, 13 / zoom)}px Inter, sans-serif`;
+  ctx.font = `600 ${Math.max(10, 13)}px ${FONT_FAMILY}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(truncateText(ctx, cluster.name, width - 20 / zoom), x + 16 / zoom, y + 14 / zoom);
+  ctx.fillText(truncateText(ctx, cluster.name, width - 20), x + 16, y + 14);
 
-  // Component count
   ctx.fillStyle = "#64748b";
-  ctx.font = `${Math.max(8, 11 / zoom)}px Inter, sans-serif`;
-  ctx.fillText(`${cluster.componentCount} blocks`, x + 16 / zoom, y + 34 / zoom);
+  ctx.font = `${Math.max(8, 11)}px ${FONT_FAMILY}`;
+  ctx.fillText(`${cluster.componentCount} blocks`, x + 16, y + 34);
 
-  // Type breakdown
   if (cluster.typeBreakdown) {
     const types = Object.entries(cluster.typeBreakdown);
-    const tagY = y + 52 / zoom;
-    let tagX = x + 16 / zoom;
+    const tagY = y + 52;
+    let tagX = x + 16;
 
     for (const [type, count] of types.slice(0, 3)) {
       const tagText = `${type}:${count}`;
-      const tagWidth = ctx.measureText(tagText).width + 12 / zoom;
+      const tagWidth = ctx.measureText(tagText).width + 12;
 
       ctx.fillStyle = "#f1f5f9";
       ctx.beginPath();
-      ctx.roundRect(tagX, tagY, tagWidth, 16 / zoom, 4 / zoom);
+      ctx.roundRect(tagX, tagY, tagWidth, 16, 4);
       ctx.fill();
 
       ctx.fillStyle = "#64748b";
-      ctx.font = `${Math.max(7, 9 / zoom)}px Inter, sans-serif`;
-      ctx.fillText(tagText, tagX + 6 / zoom, tagY + 3 / zoom);
+      ctx.font = `${Math.max(7, 9)}px ${FONT_FAMILY}`;
+      ctx.fillText(tagText, tagX + 6, tagY + 3);
 
-      tagX += tagWidth + 4 / zoom;
+      tagX += tagWidth + 4;
     }
   }
 
-  // Reset
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
 }
@@ -263,25 +340,23 @@ function drawBusChannel(
 
   ctx.fillStyle = `${colors.base}30`;
   ctx.strokeStyle = `${colors.base}60`;
-  ctx.lineWidth = 1 / zoom;
-  roundRect(ctx, x, y, width, height, 4 / zoom);
+  ctx.lineWidth = 1;
+  roundRect(ctx, x, y, width, height, 4);
   ctx.fill();
   ctx.stroke();
 
-  // Top/bottom accent lines
   ctx.fillStyle = colors.base;
-  ctx.fillRect(x + 2 / zoom, y, width - 4 / zoom, 2 / zoom);
-  ctx.fillRect(x + 2 / zoom, y + height - 2 / zoom, width - 4 / zoom, 2 / zoom);
+  ctx.fillRect(x + 2, y, width - 4, 2);
+  ctx.fillRect(x + 2, y + height - 2, width - 4, 2);
 
-  // Vertical text
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillStyle = colors.text;
-  ctx.font = `600 ${Math.max(8, 10 / zoom)}px Inter, sans-serif`;
+  ctx.font = `600 ${Math.max(8, 10)}px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(busData.component.name, 0, 0);
+  ctx.fillText(truncateText(ctx, busData.component.name, height - 8), 0, 0);
   ctx.restore();
 }
 
