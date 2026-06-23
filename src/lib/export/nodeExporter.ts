@@ -1,21 +1,13 @@
 import { nodeColorMap } from "../transform/colorMap";
 import type { ArchitectureFlowNode } from "../../types";
-import { getNodeSize, createElement, addText, addRoundRect, addRect, formatPortLabel } from "./svgHelpers";
+import { getNodeSize, createElement, addText, addRoundRect, addRect } from "./svgHelpers";
 import { NODE_HEIGHT, CLUSTER_HEIGHT } from "../constants";
 
 function getColorTokens(type: string) {
   return nodeColorMap[type as keyof typeof nodeColorMap] ?? nodeColorMap.custom;
 }
 
-function computeComponentHeight(component: { ports: unknown[]; registers: unknown[] }): number {
-  const headerHeight = 60;
-  const statsHeight = 20;
-  const portsHeight = component.ports.length * 20 + 16;
-  const registersHeight = component.registers.length > 0 ? component.registers.length * 20 + 16 : 0;
-  return Math.max(NODE_HEIGHT, headerHeight + statsHeight + portsHeight + registersHeight + 16);
-}
-
-function makeNodeGroup(node: ArchitectureFlowNode, detailLevel: "compact" | "full"): SVGGElement {
+function makeNodeGroup(node: ArchitectureFlowNode): SVGGElement {
   const group = createElement("g", { class: `node node-${node.data.kind}` });
   const baseSize = getNodeSize(node);
   const width = baseSize.width;
@@ -133,7 +125,7 @@ function makeNodeGroup(node: ArchitectureFlowNode, detailLevel: "compact" | "ful
 
   const component = node.data.component;
   const colors = getColorTokens(component.type);
-  const height = detailLevel === "full" ? computeComponentHeight(component) : NODE_HEIGHT;
+  const height = NODE_HEIGHT;
 
   addRoundRect(group, {
     x: String(node.position.x + 2),
@@ -191,99 +183,6 @@ function makeNodeGroup(node: ArchitectureFlowNode, detailLevel: "compact" | "ful
     "font-size": "10px",
     "font-family": "SFMono-Regular, ui-monospace, monospace"
   });
-
-  if (detailLevel === "full") {
-    let y = node.position.y + 60;
-
-    addText(group, node.position.x + 16, y, `${component.ports.length} ports / ${component.registers.length} registers`, {
-      fill: "#475569",
-      "font-size": "10px",
-      "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
-    });
-    y += 16;
-
-    addRect(group, {
-      x: String(node.position.x + 16),
-      y: String(y),
-      width: String(width - 32),
-      height: "1",
-      fill: "#e2e8f0"
-    });
-    y += 8;
-
-    for (const port of component.ports) {
-      addRoundRect(group, {
-        x: String(node.position.x + 16),
-        y: String(y),
-        width: String(width - 32),
-        height: "16",
-        fill: "#f8fafc",
-        stroke: "#e2e8f0",
-        "stroke-width": "0.5"
-      });
-
-      const dirColor = port.direction === "in" ? "#10b981" : port.direction === "out" ? "#f59e0b" : "#94a3b8";
-      addRect(group, {
-        x: String(node.position.x + 22),
-        y: String(y + 5),
-        width: "4",
-        height: "4",
-        fill: dirColor
-      });
-      addText(group, node.position.x + 30, y + 12, port.name, {
-        fill: "#334155",
-        "font-size": "9px",
-        "font-weight": "500",
-        "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
-      });
-      addText(group, node.position.x + width - 22, y + 12, port.direction.toUpperCase(), {
-        fill: dirColor,
-        "font-size": "8px",
-        "font-weight": "500",
-        "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
-        "text-anchor": "end"
-      });
-      y += 18;
-    }
-
-    if (component.registers.length > 0) {
-      addRect(group, {
-        x: String(node.position.x + 16),
-        y: String(y),
-        width: String(width - 32),
-        height: "1",
-        fill: "#e2e8f0"
-      });
-      y += 8;
-
-      for (const reg of component.registers) {
-        addRoundRect(group, {
-          x: String(node.position.x + 16),
-          y: String(y),
-          width: String(width - 32),
-          height: "16",
-          fill: "#f8fafc",
-          stroke: "#e2e8f0",
-          "stroke-width": "0.5"
-        });
-        addText(group, node.position.x + 22, y + 12, reg.name, {
-          fill: "#334155",
-          "font-size": "9px",
-          "font-weight": "500",
-          "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
-        });
-        if (reg.address) {
-          addText(group, node.position.x + width - 22, y + 12, reg.address, {
-            fill: "#94a3b8",
-            "font-size": "8px",
-            "font-family": "SFMono-Regular, ui-monospace, monospace",
-            "text-anchor": "end"
-          });
-        }
-        y += 18;
-      }
-    }
-  }
 
   return group;
 }

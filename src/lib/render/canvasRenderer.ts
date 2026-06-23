@@ -36,7 +36,8 @@ export function renderToCanvas(
   edges: ArchitectureFlowEdge[],
   viewport: Viewport,
   selectedNodeIds: Set<string>,
-  highlightedEdgeIds: Set<string>
+  highlightedEdgeIds: Set<string>,
+  isDark: boolean = true
 ) {
   const { width, height } = ctx.canvas;
   ctx.clearRect(0, 0, width, height);
@@ -78,32 +79,32 @@ export function renderToCanvas(
     ctx.beginPath();
     ctx.moveTo(sourceX, sourceY);
     ctx.lineTo(targetX, targetY);
-    ctx.strokeStyle = isHighlighted ? "#22d3ee" : "#64748b";
+    ctx.strokeStyle = isHighlighted ? "#22d3ee" : isDark ? "#64748b" : "#94a3b8";
     ctx.lineWidth = isHighlighted ? 2 : 1.5;
-    ctx.globalAlpha = isHighlighted ? 0.9 : 0.4;
+    ctx.globalAlpha = isHighlighted ? 0.9 : isDark ? 0.4 : 0.5;
     ctx.stroke();
 
     if (isHighlighted) {
-      drawArrowhead(ctx, sourceX, sourceY, targetX, targetY);
+      drawArrowhead(ctx, sourceX, sourceY, targetX, targetY, isDark);
     }
   }
 
   ctx.globalAlpha = 1;
 
   for (const node of visibleNodes) {
-    drawNode(ctx, node, viewport.zoom, selectedNodeIds.has(node.id));
+    drawNode(ctx, node, viewport.zoom, selectedNodeIds.has(node.id), isDark);
   }
 
   ctx.restore();
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
+  ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.8)" : "rgba(255, 252, 249, 0.9)";
   ctx.fillRect(8, height - 32, 180, 24);
-  ctx.fillStyle = "#94a3b8";
+  ctx.fillStyle = isDark ? "#94a3b8" : "#64748b";
   ctx.font = `12px ${FONT_FAMILY}`;
   ctx.fillText(`${visibleNodes.length} / ${nodes.length} nodes visible`, 16, height - 14);
 }
 
-function drawArrowhead(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number) {
+function drawArrowhead(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number, isDark: boolean) {
   const angle = Math.atan2(toY - fromY, toX - fromX);
   const headLen = 8;
 
@@ -122,7 +123,8 @@ function drawNode(
   ctx: CanvasRenderingContext2D,
   node: ArchitectureFlowNode,
   zoom: number,
-  isSelected: boolean
+  isSelected: boolean,
+  isDark: boolean
 ) {
   const x = node.position.x;
   const y = node.position.y;
@@ -130,12 +132,12 @@ function drawNode(
   const height = getNodeHeight(node);
 
   if (node.data.kind === "busChannel") {
-    drawBusChannel(ctx, x, y, width, height, node, zoom);
+    drawBusChannel(ctx, x, y, width, height, node, zoom, isDark);
     return;
   }
 
   if (node.data.kind === "cluster") {
-    drawCluster(ctx, x, y, width, height, node, zoom, isSelected);
+    drawCluster(ctx, x, y, width, height, node, zoom, isSelected, isDark);
     return;
   }
 
@@ -146,23 +148,18 @@ function drawNode(
   ctx.shadowBlur = 8;
   ctx.shadowOffsetY = 2;
 
-  ctx.fillStyle = "#ffffff";
-  ctx.strokeStyle = isSelected ? "#22d3ee" : `${colors.border}60`;
+  ctx.fillStyle = colors.base;
+  ctx.strokeStyle = isSelected ? "#ffffff" : colors.border;
   ctx.lineWidth = isSelected ? 2 : 1;
   roundRect(ctx, x, y, width, height, 12);
   ctx.fill();
   ctx.shadowColor = "transparent";
 
-  ctx.fillStyle = colors.base;
-  ctx.beginPath();
-  ctx.roundRect(x, y, 6, height, [12, 0, 0, 12]);
-  ctx.fill();
-
   const iconSize = Math.min(Math.max(24, 40 * zoom), 32);
   const iconX = x + 16;
   const iconY = y + (height - iconSize) / 2;
 
-  ctx.fillStyle = `${colors.border}18`;
+  ctx.fillStyle = `${colors.border}20`;
   ctx.strokeStyle = `${colors.border}60`;
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -170,14 +167,14 @@ function drawNode(
   ctx.fill();
   ctx.stroke();
 
-  ctx.fillStyle = colors.border;
+  ctx.fillStyle = colors.text;
   ctx.font = `bold ${Math.max(8, 10)}px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   const typeIcon = componentData.component.type.slice(0, 3).toUpperCase();
   ctx.fillText(typeIcon, iconX + iconSize / 2, iconY + iconSize / 2);
 
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = "#ffffff";
   ctx.font = `600 ${Math.max(10, 13)}px ${FONT_FAMILY}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
@@ -189,7 +186,7 @@ function drawNode(
   ctx.clip();
   ctx.fillText(truncateText(ctx, componentData.component.name, nameMaxWidth), nameX, y + 14);
 
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
   ctx.font = `${Math.max(8, 10)}px ${MONO_FONT}`;
   ctx.fillText(truncateText(ctx, componentData.component.id, nameMaxWidth), nameX, y + 30);
   ctx.restore();
@@ -266,36 +263,33 @@ function drawCluster(
   height: number,
   node: ArchitectureFlowNode,
   zoom: number,
-  isSelected: boolean
+  isSelected: boolean,
+  isDark: boolean
 ) {
   if (node.data.kind !== "cluster") return;
   const cluster = node.data.cluster;
+
+  const firstType = Object.keys(cluster.typeBreakdown ?? {})[0];
+  const clusterColor = firstType ? nodeColorMap[firstType as keyof typeof nodeColorMap] : nodeColorMap.custom;
 
   ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
   ctx.shadowBlur = 6;
   ctx.shadowOffsetY = 2;
 
-  ctx.fillStyle = "#ffffff";
-  ctx.strokeStyle = isSelected ? "#22d3ee" : "#cbd5e1";
+  ctx.fillStyle = clusterColor.base;
+  ctx.strokeStyle = isSelected ? "#ffffff" : clusterColor.border;
   ctx.lineWidth = isSelected ? 2 : 1;
   roundRect(ctx, x, y, width, height, 12);
   ctx.fill();
   ctx.shadowColor = "transparent";
 
-  const firstType = Object.keys(cluster.typeBreakdown ?? {})[0];
-  const railColor = firstType ? nodeColorMap[firstType as keyof typeof nodeColorMap]?.base : "#94a3b8";
-  ctx.fillStyle = railColor;
-  ctx.beginPath();
-  ctx.roundRect(x, y, 6, height, [12, 0, 0, 12]);
-  ctx.fill();
-
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = "#ffffff";
   ctx.font = `600 ${Math.max(10, 13)}px ${FONT_FAMILY}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(truncateText(ctx, cluster.name, width - 20), x + 16, y + 14);
 
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
   ctx.font = `${Math.max(8, 11)}px ${FONT_FAMILY}`;
   ctx.fillText(`${cluster.componentCount} blocks`, x + 16, y + 34);
 
@@ -308,12 +302,12 @@ function drawCluster(
       const tagText = `${type}:${count}`;
       const tagWidth = ctx.measureText(tagText).width + 12;
 
-      ctx.fillStyle = "#f1f5f9";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
       ctx.beginPath();
       ctx.roundRect(tagX, tagY, tagWidth, 16, 4);
       ctx.fill();
 
-      ctx.fillStyle = "#64748b";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
       ctx.font = `${Math.max(7, 9)}px ${FONT_FAMILY}`;
       ctx.fillText(tagText, tagX + 6, tagY + 3);
 
@@ -332,14 +326,15 @@ function drawBusChannel(
   width: number,
   height: number,
   node: ArchitectureFlowNode,
-  zoom: number
+  zoom: number,
+  isDark: boolean
 ) {
   if (node.data.kind !== "busChannel") return;
   const busData = node.data;
   const colors = nodeColorMap[busData.component.type];
 
-  ctx.fillStyle = `${colors.base}30`;
-  ctx.strokeStyle = `${colors.base}60`;
+  ctx.fillStyle = isDark ? `${colors.base}30` : `${colors.base}35`;
+  ctx.strokeStyle = isDark ? `${colors.base}60` : `${colors.base}80`;
   ctx.lineWidth = 1;
   roundRect(ctx, x, y, width, height, 4);
   ctx.fill();
@@ -352,7 +347,7 @@ function drawBusChannel(
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(-Math.PI / 2);
-  ctx.fillStyle = colors.text;
+  ctx.fillStyle = isDark ? colors.text : colors.border;
   ctx.font = `600 ${Math.max(8, 10)}px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

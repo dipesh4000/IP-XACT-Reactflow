@@ -7,10 +7,10 @@ export function MiniMapPanel() {
 
   return (
     <MiniMap
-      className={`!border ${
-        isDark ? "!border-white/10 !bg-shell-950/90" : "!border-slate-300 !bg-white/90"
+      className={`!border !shadow-lg ${
+        isDark ? "!border-white/10 !bg-shell-950/90" : "!border-[#d6cfc4] !bg-[#f5f0e8]/95"
       }`}
-      maskColor={isDark ? "rgba(2, 6, 23, 0.58)" : "rgba(255, 252, 249, 0.58)"}
+      maskColor={isDark ? "rgba(2, 6, 23, 0.58)" : "rgba(6, 8, 13, 0.12)"}
       nodeBorderRadius={8}
       nodeColor={isDark ? "#334155" : "#94a3b8"}
       pannable

@@ -9,7 +9,6 @@ import { buildSidebarPanel, SIDEBAR_WIDTH } from "./sidebarExporter";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-type ExportFormat = "png" | "svg";
 type ExportScope = "auto" | "selection" | "full";
 
 interface ExportOptions {
@@ -92,10 +91,9 @@ function buildSvg(
     throw new Error("Unable to determine export bounds.");
   }
 
-  const detailLevel: "compact" | "full" = nodes.length <= 40 ? "full" : "compact";
-  const padding = detailLevel === "full" ? 96 : 128;
+  const padding = 96;
   const graphWidth = bounds.maxX - bounds.minX + padding * 2;
-  const height = bounds.maxY - bounds.minY + padding * 2;
+  const graphHeight = bounds.maxY - bounds.minY + padding * 2;
   const viewX = bounds.minX - padding;
   const viewY = bounds.minY - padding;
 
@@ -106,9 +104,8 @@ function buildSvg(
 
   const svg = createElement("svg", {
     xmlns: SVG_NS,
-    width: String(totalWidth),
-    height: String(height),
-    viewBox: `${viewX} ${viewY} ${totalWidth} ${height}`,
+    viewBox: `${viewX} ${viewY} ${totalWidth} ${graphHeight}`,
+    style: "width: 100%; height: 100%;",
     "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
   }) as SVGSVGElement;
 
@@ -119,9 +116,9 @@ function buildSvg(
   addRect(svg, {
     x: String(viewX),
     y: String(viewY),
-    width: String(graphWidth),
-    height: String(height),
-    fill: isDark ? "#020617" : "#faf8f5"
+    width: String(totalWidth),
+    height: String(graphHeight),
+    fill: isDark ? "#020617" : "#f5f0e8"
   });
 
   const edgeLayer = createElement("g", { class: "edges" }) as SVGGElement;
@@ -171,7 +168,7 @@ function buildSvg(
 
   const nodeLayer = createElement("g", { class: "nodes" }) as SVGGElement;
   for (const node of nodes) {
-    nodeLayer.appendChild(makeNodeGroup(node, detailLevel));
+    nodeLayer.appendChild(makeNodeGroup(node));
   }
   svg.appendChild(nodeLayer);
 
@@ -180,70 +177,23 @@ function buildSvg(
     if (selectedNode) {
       const sidebarX = viewX + graphWidth + sidebarGap;
       const sidebarY = viewY;
-      svg.appendChild(buildSidebarPanel(selectedNode, isDark, sidebarX, sidebarY, height));
+      svg.appendChild(buildSidebarPanel(selectedNode, isDark, sidebarX, sidebarY, graphHeight));
     }
   }
 
   return svg;
 }
 
-function serializeSvg(svg: SVGSVGElement): string {
-  return new XMLSerializer().serializeToString(svg);
-}
-
-async function svgToPng(svg: SVGSVGElement, isDark: boolean): Promise<Blob> {
-  const serialized = serializeSvg(svg);
-  const blob = new Blob([serialized], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  try {
-    const image = new Image();
-    image.decoding = "async";
-    image.src = url;
-    await image.decode();
-
-    const dpr = window.devicePixelRatio || 1;
-    const vbWidth = svg.viewBox.baseVal.width;
-    const vbHeight = svg.viewBox.baseVal.height;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.ceil(vbWidth * dpr);
-    canvas.height = Math.ceil(vbHeight * dpr);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      throw new Error("Canvas unavailable");
-    }
-
-    ctx.scale(dpr, dpr);
-    ctx.fillStyle = isDark ? "#020617" : "#faf8f5";
-    ctx.fillRect(0, 0, vbWidth, vbHeight);
-    ctx.drawImage(image, 0, 0, vbWidth, vbHeight);
-
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(
-        (b) => (b ? resolve(b) : reject(new Error("Failed to create PNG blob"))),
-        "image/png"
-      );
-    });
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
-function downloadHref(href: string, filename: string): void {
+function downloadBlob(blob: Blob, filename: string): void {
+  const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;
   link.download = filename;
   link.click();
-}
-
-function downloadBlob(blob: Blob, filename: string): void {
-  const href = URL.createObjectURL(blob);
-  downloadHref(href, filename);
   setTimeout(() => URL.revokeObjectURL(href), 3000);
 }
 
-export async function exportGraph(format: ExportFormat, options: ExportOptions = {}): Promise<void> {
+export async function exportGraph(format: "svg", options: ExportOptions = {}): Promise<void> {
   const graphState = useGraphStore.getState();
   const theme = useSettingsStore.getState().theme;
   const isDark = theme === "dark";
@@ -256,13 +206,7 @@ export async function exportGraph(format: ExportFormat, options: ExportOptions =
 
   const showSidebar = scope === "selection";
   const svg = buildSvg(nodes, edges, isDark, showSidebar);
-
-  if (format === "svg") {
-    const blob = new Blob([serializeSvg(svg)], { type: "image/svg+xml;charset=utf-8" });
-    downloadBlob(blob, `architecture-${scope}.svg`);
-    return;
-  }
-
-  const pngBlob = await svgToPng(svg, isDark);
-  downloadBlob(pngBlob, `architecture-${scope}.png`);
+  const serialized = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([serialized], { type: "image/svg+xml;charset=utf-8" });
+  downloadBlob(blob, `architecture-${scope}.svg`);
 }

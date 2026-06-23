@@ -14,6 +14,7 @@ export const BUS_CHANNEL_HEIGHT = 720;
 export const EXPAND_THRESHOLD = 12;
 export const MIN_COLUMNS = 3;
 export const MAX_COLUMNS = 32;
+export const MAX_LAYER_COLUMNS = 6;
 
 export const LAYER_X: Record<number, number> = {
   0: 0,

@@ -1,5 +1,5 @@
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
-import { NODE_HEIGHT, CLUSTER_HEIGHT } from "../constants";
+import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../constants";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -20,25 +20,14 @@ export interface Point {
   y: number;
 }
 
-function computeExportHeight(node: ArchitectureFlowNode): number {
-  if (node.data.kind === "busChannel") return 720;
-  if (node.data.kind === "cluster") return CLUSTER_HEIGHT;
-  const c = node.data.component;
-  const headerHeight = 60;
-  const statsHeight = 20;
-  const portsHeight = c.ports.length * 20 + 16;
-  const registersHeight = c.registers.length > 0 ? c.registers.length * 20 + 16 : 0;
-  return Math.max(NODE_HEIGHT, headerHeight + statsHeight + portsHeight + registersHeight + 16);
-}
-
 export function getNodeSize(node: ArchitectureFlowNode): Size {
   if (node.data.kind === "busChannel") {
-    return { width: 32, height: 720 };
+    return { width: BUS_CHANNEL_WIDTH, height: BUS_CHANNEL_HEIGHT };
   }
   if (node.data.kind === "cluster") {
-    return { width: 280, height: CLUSTER_HEIGHT };
+    return { width: CLUSTER_WIDTH, height: CLUSTER_HEIGHT };
   }
-  return { width: 220, height: computeExportHeight(node) };
+  return { width: NODE_WIDTH, height: NODE_HEIGHT };
 }
 
 export function getNodeBounds(node: ArchitectureFlowNode): Bounds {
@@ -133,8 +122,4 @@ export function addRect(parent: SVGGElement | SVGSVGElement, attrs: Record<strin
 
 export function addRoundRect(parent: SVGGElement | SVGSVGElement, attrs: Record<string, string>): SVGRectElement {
   return addRect(parent, { rx: "10", ry: "10", ...attrs });
-}
-
-export function formatPortLabel(port: { name: string; direction: string; width?: number }): string {
-  return `${port.name} (${port.direction}${port.width ? ` ${port.width}b` : ""})`;
 }

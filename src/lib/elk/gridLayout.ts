@@ -5,7 +5,9 @@ import {
   BUS_CHANNEL_HEIGHT,
   CLUSTER_WIDTH,
   CLUSTER_HEIGHT,
-  LAYER_X,
+  NODE_X_SPACING,
+  NODE_Y_SPACING,
+  MAX_LAYER_COLUMNS,
 } from "../constants";
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
 
@@ -44,24 +46,6 @@ function getDegreeMap(edges: ArchitectureFlowEdge[]): Map<string, number> {
   return degree;
 }
 
-function getColumns(count: number, layer: number): number {
-  if (count <= 3) return count;
-  if (layer === 1) return 1;
-  if (count <= 8) return 2;
-  if (count <= 20) return 3;
-  if (count <= 45) return 4;
-  if (count <= 80) return 5;
-  return 6;
-}
-
-function getRowSpacing(count: number, layer: number): number {
-  if (layer === 1) return 260;
-  if (count > 80) return 210;
-  if (count > 40) return 195;
-  if (count > 15) return 180;
-  return 160;
-}
-
 export function computeGridLayout(
   nodes: ArchitectureFlowNode[],
   edges: ArchitectureFlowEdge[]
@@ -82,8 +66,12 @@ export function computeGridLayout(
   const result: ArchitectureFlowNode[] = [];
   const layers = [...layerGroups.keys()].sort((a, b) => a - b);
 
+  let currentX = 0;
+  let maxHeight = 0;
+
   for (const layer of layers) {
     const layerNodes = layerGroups.get(layer)!;
+
     const sorted = [...layerNodes].sort((a, b) => {
       const kindDelta = (KIND_ORDER[a.data.kind] ?? 99) - (KIND_ORDER[b.data.kind] ?? 99);
       if (kindDelta !== 0) return kindDelta;
@@ -94,31 +82,69 @@ export function computeGridLayout(
       return a.id.localeCompare(b.id);
     });
 
-    const columns = getColumns(sorted.length, layer);
-    const rows = Math.ceil(sorted.length / columns);
-    const rowSpacing = getRowSpacing(sorted.length, layer);
-    const columnSpacing = layer === 1 ? 460 : layer === 4 ? 340 : 300;
-    const centerX = LAYER_X[layer] ?? layer * 420;
-    const startX = centerX - ((columns - 1) * columnSpacing) / 2;
-    const startY = -((rows - 1) * rowSpacing) / 2;
+    const isBusLayer = sorted.every(n => n.data.kind === "busChannel");
 
-    for (let index = 0; index < sorted.length; index++) {
-      const node = sorted[index];
-      if (!node) continue;
+    if (isBusLayer) {
+      for (const node of sorted) {
+        const { width, height } = getNodeSize(node);
+        result.push({
+          ...node,
+          id: node.id,
+          position: { x: currentX, y: -height / 2 }
+        } as ArchitectureFlowNode);
+      }
+      currentX += BUS_CHANNEL_WIDTH + 120;
+      maxHeight = Math.max(maxHeight, BUS_CHANNEL_HEIGHT);
+    } else {
+      const count = sorted.length;
+      const columns = count <= 6 ? 1
+        : count <= 14 ? 2
+        : count <= 28 ? 3
+        : count <= 48 ? 4
+        : count <= 72 ? 5
+        : MAX_LAYER_COLUMNS;
+      const rows = Math.ceil(sorted.length / columns);
 
-      const { width, height } = getNodeSize(node);
-      const col = index % columns;
-      const row = Math.floor(index / columns);
+      const colSpacing = NODE_X_SPACING;
+      const rowSpacing = NODE_Y_SPACING;
 
-      result.push({
-        ...node,
-        position: {
-          x: startX + col * columnSpacing - width / 2,
-          y: startY + row * rowSpacing
-        }
-      });
+      const layerWidth = columns * colSpacing;
+      const layerHeight = rows * rowSpacing;
+
+      const startX = currentX;
+      const startY = -layerHeight / 2;
+
+      for (let i = 0; i < sorted.length; i++) {
+        const node = sorted[i];
+        if (!node) continue;
+        const { width, height } = getNodeSize(node);
+        const col = i % columns;
+        const row = Math.floor(i / columns);
+
+        result.push({
+          ...node,
+          id: node.id,
+          position: {
+            x: startX + col * colSpacing,
+            y: startY + row * rowSpacing
+          }
+        } as ArchitectureFlowNode);
+      }
+
+      currentX += layerWidth + 160;
+      maxHeight = Math.max(maxHeight, layerHeight);
     }
   }
 
-  return result;
+  const totalWidth = currentX - 160;
+  const offsetX = -totalWidth / 2;
+
+  return result.map(node => ({
+    ...node,
+    id: node.id,
+    position: {
+      x: node.position.x + offsetX,
+      y: node.position.y
+    }
+  } as ArchitectureFlowNode));
 }

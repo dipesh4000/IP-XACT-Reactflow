@@ -7,7 +7,6 @@ import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
 import { useSettingsStore } from "../../store/settingsStore";
 import type { ArchitectureEdgeData, ArchitectureFlowEdge, ArchitectureFlowNode, ArchitectureNodeData } from "../../types";
-import { BackgroundGrid } from "./BackgroundGrid";
 import { CanvasOverlay } from "./CanvasOverlay";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { MiniMapPanel } from "./MiniMapPanel";
@@ -185,10 +184,11 @@ function FlowCanvasInner() {
             </marker>
           </defs>
         </svg>
-        <BackgroundGrid />
         <Controls
-          className={`!border !bg-shell-950/90 !fill-slate-200 !text-slate-200 ${
-            isDark ? "!border-white/10" : "!border-black/10"
+          className={`!border !fill-slate-200 !text-slate-200 ${
+            isDark
+              ? "!border-white/10 !bg-shell-950/90"
+              : "!border-slate-700 !bg-slate-700/90 !shadow-lg"
           }`}
         />
         <MiniMapPanel />

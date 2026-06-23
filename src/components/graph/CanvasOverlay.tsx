@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback, useState } from "react";
 import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../../lib/constants";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
+import { useSettingsStore } from "../../store/settingsStore";
 import { renderToCanvas } from "../../lib/render/canvasRenderer";
 import type { ArchitectureFlowNode } from "../../types";
 
@@ -18,6 +19,8 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
   const clearSelection = useSelectionStore((state) => state.clearSelection);
   const selectedNodeIds = useSelectionStore((state) => state.selectedNodeIds);
   const highlightedEdgeIds = useSelectionStore((state) => state.highlightedEdgeIds);
+  const theme = useSettingsStore((state) => state.theme);
+  const isDark = theme === "dark";
 
   const [viewport, setViewport] = useState({
     x: 0,
@@ -73,8 +76,8 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    renderToCanvas(ctx, nodes, edges, { ...viewport, width, height }, selectedNodeIds, highlightedEdgeIds);
-  }, [nodes, edges, viewport, width, height, selectedNodeIds, highlightedEdgeIds]);
+    renderToCanvas(ctx, nodes, edges, { ...viewport, width, height }, selectedNodeIds, highlightedEdgeIds, isDark);
+  }, [nodes, edges, viewport, width, height, selectedNodeIds, highlightedEdgeIds, isDark]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

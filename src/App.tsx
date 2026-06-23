@@ -51,11 +51,11 @@ function AppInner() {
     clearModel();
   }
 
-  async function handleExport(format: "png" | "svg", scope: "full" | "selection" = "full") {
+  async function handleExport(scope: "full" | "selection" = "full") {
     setIsExporting(true);
     setExportError(null);
     try {
-      await exportGraph(format, { scope });
+      await exportGraph("svg", { scope });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Export failed";
       setExportError(message);
@@ -66,7 +66,7 @@ function AppInner() {
   }
 
   const mainClass = `grid h-screen overflow-hidden transition-colors duration-200 ${
-    isDark ? "bg-shell-950 text-slate-100" : "bg-[#faf8f5] text-[#1a1a1a]"
+    isDark ? "bg-shell-950 text-slate-100" : "bg-[#f5f0e8] text-[#1a1a1a]"
   } ${selectedNodeId && !sidebarCollapsed ? "grid-cols-[minmax(0,1fr)_360px]" : "grid-cols-[minmax(0,1fr)]"}`;
 
   return (
@@ -109,7 +109,7 @@ function AppInner() {
         </div>
         <div className="absolute right-5 top-5 z-10 flex items-center gap-2">
           {hasModel ? (
-            <div className="relative group">
+            <div className="flex items-center gap-2">
               <button
                 className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition ${
                   isDark
@@ -117,59 +117,31 @@ function AppInner() {
                     : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
                 }`}
                 disabled={isExporting}
+                onClick={() => handleExport("full")}
                 type="button"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                {isExporting ? "Exporting..." : "Export"}
+                {isExporting ? "Exporting..." : "Export SVG"}
               </button>
-              <div className={`invisible group-hover:visible absolute right-0 top-full mt-1 rounded-lg border shadow-lg py-1 z-50 ${
-                isDark ? "border-white/10 bg-shell-900" : "border-slate-200 bg-white"
-              }`}>
+              {selectedNodeIds.size > 0 && (
                 <button
-                  className={`block w-full px-4 py-2 text-left text-xs transition ${
-                    isDark ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"
+                  className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition ${
+                    isDark
+                      ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:bg-cyan-300/15"
+                      : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
                   }`}
-                  onClick={() => handleExport("png", "full")}
+                  disabled={isExporting}
+                  onClick={() => handleExport("selection")}
                   type="button"
                 >
-                  Export as PNG
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Export Selected ({selectedNodeIds.size})
                 </button>
-                <button
-                  className={`block w-full px-4 py-2 text-left text-xs transition ${
-                    isDark ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"
-                  }`}
-                  onClick={() => handleExport("svg", "full")}
-                  type="button"
-                >
-                  Export Full SVG
-                </button>
-                <button
-                  className={`block w-full px-4 py-2 text-left text-xs transition ${
-                    selectedNodeIds.size > 0
-                      ? isDark ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"
-                      : "cursor-not-allowed text-slate-400"
-                  }`}
-                  disabled={selectedNodeIds.size === 0}
-                  onClick={() => handleExport("png", "selection")}
-                  type="button"
-                >
-                  Export Selected PNG
-                </button>
-                <button
-                  className={`block w-full px-4 py-2 text-left text-xs transition ${
-                    selectedNodeIds.size > 0
-                      ? isDark ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"
-                      : "cursor-not-allowed text-slate-400"
-                  }`}
-                  disabled={selectedNodeIds.size === 0}
-                  onClick={() => handleExport("svg", "selection")}
-                  type="button"
-                >
-                  Export Selected SVG
-                </button>
-              </div>
+              )}
             </div>
           ) : null}
           <ThemeToggle />

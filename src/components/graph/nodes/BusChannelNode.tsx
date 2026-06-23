@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { memo, type CSSProperties } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import { nodeColorMap } from "../../../lib/transform/colorMap";
-import { useSettingsStore } from "../../../store/settingsStore";
 import type { ArchitectureNodeData, BusChannelNodeData } from "../../../types";
 import { useNodeHighlighting } from "../../../hooks/useNodeHighlighting";
 
@@ -15,8 +14,6 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
   const busData = data as BusChannelNodeData;
   const colors = nodeColorMap[busData.component.type];
   const { isSelected, isDimmed } = useNodeHighlighting(id);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
 
   return (
     <div
@@ -35,14 +32,14 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
       }
     >
       <Handle
-        className={`!h-3 !w-1 !rounded-full !border-0 hover:!bg-cyan-400 ${isDark ? "!bg-slate-500" : "!bg-slate-500"}`}
+        className="!h-3 !w-1 !rounded-full !border-0 !bg-white/60 hover:!bg-white"
         id={`left:${id}`}
         type="target"
         position={Position.Left}
         style={{ top: "50%" }}
       />
       <Handle
-        className={`!h-3 !w-1 !rounded-full !border-0 hover:!bg-cyan-400 ${isDark ? "!bg-slate-500" : "!bg-slate-500"}`}
+        className="!h-3 !w-1 !rounded-full !border-0 !bg-white/60 hover:!bg-white"
         id={`right:${id}`}
         type="source"
         position={Position.Right}
@@ -52,33 +49,33 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
       <div
         className={clsx(
           "absolute inset-0 rounded-md border-2 transition-all duration-150",
-          isSelected && "ring-2 ring-cyan-400 shadow-lg"
+          isSelected && "ring-2 ring-white shadow-lg"
         )}
         style={{
-          backgroundColor: isDark ? `${colors.base}25` : `${colors.base}35`,
-          borderColor: isSelected ? colors.border : isDark ? `${colors.base}50` : `${colors.base}80`,
-          boxShadow: isSelected ? `0 0 20px ${colors.glow}` : isDark ? "none" : `0 2px 8px ${colors.base}30`
+          backgroundColor: colors.base,
+          borderColor: isSelected ? "#ffffff" : colors.border,
+          boxShadow: isSelected ? `0 0 20px ${colors.glow}` : "none"
         }}
       >
         {/* Top accent */}
         <div
           className="absolute left-0 top-0 h-1.5 w-full rounded-t-md"
-          style={{ backgroundColor: colors.base }}
+          style={{ backgroundColor: colors.border }}
         />
         {/* Bottom accent */}
         <div
           className="absolute bottom-0 left-0 h-1.5 w-full rounded-b-md"
-          style={{ backgroundColor: colors.base }}
+          style={{ backgroundColor: colors.border }}
         />
         {/* Left accent line */}
         <div
           className="absolute left-0 top-1.5 h-[calc(100%-12px)] w-1"
-          style={{ backgroundColor: colors.base }}
+          style={{ backgroundColor: colors.border }}
         />
         {/* Right accent line */}
         <div
           className="absolute right-0 top-1.5 h-[calc(100%-12px)] w-1"
-          style={{ backgroundColor: colors.base }}
+          style={{ backgroundColor: colors.border }}
         />
         {/* Vertical text */}
         <div
@@ -89,18 +86,14 @@ function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) 
             <div
               className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[8px] font-black"
               style={{
-                borderColor: colors.border,
                 color: colors.text,
-                backgroundColor: isDark ? `${colors.base}30` : `${colors.base}40`,
+                backgroundColor: `${colors.border}30`,
                 border: `2px solid ${colors.border}`
               }}
             >
               BUS
             </div>
-            <span
-              className="text-xs font-bold"
-              style={{ color: isDark ? colors.text : colors.border }}
-            >
+            <span className="text-xs font-bold text-white">
               {busData.component.name}
             </span>
           </div>
