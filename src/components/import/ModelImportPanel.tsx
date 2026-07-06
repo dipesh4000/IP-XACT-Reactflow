@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import sampleArchitecture from "../../data/sample-architecture.json";
 import { parseArchitectureModel } from "../../lib/validateArchitectureModel";
 import { useArchitectureStore } from "../../store/architectureStore";
@@ -22,6 +22,16 @@ export function ModelImportPanel() {
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleOpenFile() {
+      fileInputRef.current?.click();
+    }
+
+    window.addEventListener("ipxact:open-file", handleOpenFile);
+    return () => window.removeEventListener("ipxact:open-file", handleOpenFile);
+  }, []);
 
   const loadParsedModel = (model: ArchitectureModel) => {
     selectNode(null);
@@ -84,7 +94,7 @@ export function ModelImportPanel() {
                 : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
             }`}>
               {isParsing ? "Reading file..." : "Choose JSON file"}
-              <input accept="application/json,.json" className="sr-only" onChange={handleFileChange} type="file" />
+              <input ref={fileInputRef} accept="application/json,.json" className="sr-only" onChange={handleFileChange} type="file" />
             </label>
             <button
               className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition ${

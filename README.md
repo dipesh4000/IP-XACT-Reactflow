@@ -474,12 +474,38 @@ See `Example/` folder for sample JSON files:
 
 ## Interaction
 
+### Mouse
+
 - **Single click** — Select component, show in inspector
+- **Ctrl/Cmd + click** — Add to multi-selection (for export)
 - **Double-click** — Expand cluster or zoom to fit node
 - **Pane click** — Deselect all
 - **Drag** — Reposition nodes (disabled above 5000 nodes)
+- **Scroll wheel** — Zoom in/out on the graph
 - **Search bar** — Fuzzy search components
-- **Export** — Download as PNG or SVG (dark background)
+
+### Keyboard Shortcuts
+
+Use `Ctrl` on Windows/Linux or `Cmd` on macOS.
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd` + `+` or `=` | Zoom in |
+| `Ctrl/Cmd` + `-` | Zoom out |
+| `Ctrl/Cmd` + `0` | Fit graph to view |
+| `Ctrl/Cmd` + `O` | Open a new JSON file (clears current model if one is loaded) |
+| `Ctrl/Cmd` + `E` | Export full graph as SVG |
+| `Ctrl/Cmd` + `Shift` + `E` | Export selected nodes as SVG |
+| `/` | Focus search bar |
+| `Ctrl/Cmd` + `K` | Focus search bar |
+| `Esc` | Clear search (when search bar is focused) |
+
+Shortcuts are disabled while typing in an input or textarea (for example, the JSON import panel).
+
+### Export
+
+- **Export SVG** button — Download the full graph as SVG (dark background)
+- **Export Selected** button — Download only the selected nodes as SVG
 
 ## Performance
 

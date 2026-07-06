@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { ReactFlowProvider } from "reactflow";
 import { FlowCanvas } from "./components/graph/FlowCanvas";
 import { ModelImportPanel } from "./components/import/ModelImportPanel";
@@ -42,16 +43,27 @@ function AppInner() {
     }
   }, [theme, isDark]);
 
-  function handleClearModel() {
+  const handleClearModel = useCallback(() => {
     clearSelection();
     setSearchQuery("");
     setGraphNodes([]);
     setGraphEdges([]);
     resetExpansion();
     clearModel();
-  }
+  }, [clearModel, clearSelection, resetExpansion, setGraphEdges, setGraphNodes, setSearchQuery]);
 
-  async function handleExport(scope: "full" | "selection" = "full") {
+  const handleOpenFile = useCallback(() => {
+    if (hasModel) {
+      handleClearModel();
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("ipxact:open-file"));
+      }, 0);
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("ipxact:open-file"));
+  }, [handleClearModel, hasModel]);
+
+  const handleExport = useCallback(async (scope: "full" | "selection" = "full") => {
     setIsExporting(true);
     setExportError(null);
     try {
@@ -63,7 +75,24 @@ function AppInner() {
     } finally {
       setIsExporting(false);
     }
-  }
+  }, []);
+
+  useKeyboardShortcuts(
+    {
+      onOpenFile: handleOpenFile,
+      onExport: () => {
+        if (hasModel && !isExporting) {
+          void handleExport("full");
+        }
+      },
+      onExportSelection: () => {
+        if (hasModel && selectedNodeIds.size > 0 && !isExporting) {
+          void handleExport("selection");
+        }
+      }
+    },
+    true
+  );
 
   const mainClass = `grid h-screen overflow-hidden transition-colors duration-200 ${
     isDark ? "bg-shell-950 text-slate-100" : "bg-[#f5f0e8] text-[#1a1a1a]"
@@ -117,7 +146,7 @@ function AppInner() {
                     : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
                 }`}
                 disabled={isExporting}
-                onClick={() => handleExport("full")}
+                onClick={() => void handleExport("full")}
                 type="button"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +162,7 @@ function AppInner() {
                       : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
                   }`}
                   disabled={isExporting}
-                  onClick={() => handleExport("selection")}
+                  onClick={() => void handleExport("selection")}
                   type="button"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../../lib/constants";
+import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
 import { useSettingsStore } from "../../store/settingsStore";
@@ -32,16 +33,19 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [viewportStart, setViewportStart] = useState({ x: 0, y: 0 });
 
-  // Fit view on initial load
-  useEffect(() => {
-    if (nodes.length === 0) return;
+  const fitView = useCallback(() => {
+    if (nodes.length === 0 || width === 0 || height === 0) {
+      return;
+    }
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const node of nodes) {
+      const nodeWidth = node.data.kind === "busChannel" ? BUS_CHANNEL_WIDTH : node.data.kind === "cluster" ? CLUSTER_WIDTH : NODE_WIDTH;
+      const nodeHeight = node.data.kind === "busChannel" ? BUS_CHANNEL_HEIGHT : node.data.kind === "cluster" ? CLUSTER_HEIGHT : NODE_HEIGHT;
       minX = Math.min(minX, node.position.x);
       minY = Math.min(minY, node.position.y);
-      maxX = Math.max(maxX, node.position.x + NODE_WIDTH);
-      maxY = Math.max(maxY, node.position.y + NODE_HEIGHT);
+      maxX = Math.max(maxX, node.position.x + nodeWidth);
+      maxY = Math.max(maxY, node.position.y + nodeHeight);
     }
 
     const graphWidth = maxX - minX;
@@ -60,7 +64,37 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
       y: height / 2 - centerY * zoom,
       zoom
     });
-  }, [nodes, width, height]);
+  }, [height, nodes, width]);
+
+  const zoomAtCenter = useCallback((factor: number) => {
+    setViewport((current) => {
+      const newZoom = Math.max(0.02, Math.min(1, current.zoom * factor));
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const graphX = (centerX - current.x) / current.zoom;
+      const graphY = (centerY - current.y) / current.zoom;
+
+      return {
+        x: centerX - graphX * newZoom,
+        y: centerY - graphY * newZoom,
+        zoom: newZoom
+      };
+    });
+  }, [height, width]);
+
+  useKeyboardShortcuts(
+    {
+      onZoomIn: () => zoomAtCenter(1.2),
+      onZoomOut: () => zoomAtCenter(1 / 1.2),
+      onFitView: fitView
+    },
+    nodes.length > 0
+  );
+
+  // Fit view on initial load
+  useEffect(() => {
+    fitView();
+  }, [fitView]);
 
   // Render loop
   useEffect(() => {

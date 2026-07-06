@@ -3,6 +3,7 @@ import ReactFlow, { Controls, MarkerType, useReactFlow, type Node, type OnNodesC
 import "reactflow/dist/style.css";
 import { CANVAS_THRESHOLD } from "../../lib/constants";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
+import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
 import { useSettingsStore } from "../../store/settingsStore";
@@ -131,6 +132,27 @@ function FlowCanvasInner() {
       return current === next ? current : next;
     });
   }, []);
+
+  const handleZoomIn = useCallback(() => {
+    reactFlowInstance.zoomIn({ duration: 200 });
+  }, [reactFlowInstance]);
+
+  const handleZoomOut = useCallback(() => {
+    reactFlowInstance.zoomOut({ duration: 200 });
+  }, [reactFlowInstance]);
+
+  const handleFitView = useCallback(() => {
+    reactFlowInstance.fitView({ padding: 0.18, duration: 300 });
+  }, [reactFlowInstance]);
+
+  useKeyboardShortcuts(
+    {
+      onZoomIn: handleZoomIn,
+      onZoomOut: handleZoomOut,
+      onFitView: handleFitView
+    },
+    !useCanvas && storeNodes.length > 0
+  );
 
   // Use canvas renderer for very large graphs
   if (useCanvas && containerSize.width > 0) {
