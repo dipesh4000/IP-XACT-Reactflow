@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type DragEvent } from "react"
 import { useReactFlow } from "reactflow";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { ReactFlowProvider } from "reactflow";
+import { Analytics } from "@vercel/analytics/react";
 import { FlowCanvas } from "./components/graph/FlowCanvas";
 import { ModelImportPanel } from "./components/import/ModelImportPanel";
 import { InspectorPanel } from "./components/inspector/InspectorPanel";
@@ -266,6 +267,7 @@ export function App() {
   return (
     <ReactFlowProvider>
       <AppInner />
+      <Analytics />
     </ReactFlowProvider>
   );
 }
