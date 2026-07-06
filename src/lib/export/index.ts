@@ -1,10 +1,9 @@
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
-import { useSettingsStore } from "../../store/settingsStore";
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
-import { getGraphBounds, getNodeHandlePoint, createElement, addText, addRect } from "./svgHelpers";
+import { getGraphBounds, getNodeHandlePoint, createElement, addText, addRect, addExportFilters, addExportBackgroundPattern } from "./svgHelpers";
 import { getExportEdgeStyle, makeSmoothStepPath, getEdgeLabel } from "./edgeExport";
-import { makeNodeGroup } from "./nodeExporter";
+import { makeNodeGroup, registerNodeExportDefs } from "./nodeExporter";
 import { buildSidebarPanel, SIDEBAR_WIDTH } from "./sidebarExporter";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -63,7 +62,7 @@ function getSelectedNode(nodes: ArchitectureFlowNode[]): ArchitectureFlowNode | 
   return nodes.find((n) => n.id === firstId) ?? null;
 }
 
-function createArrowMarker(defs: SVGDefsElement, isDark: boolean): void {
+function createArrowMarker(defs: SVGDefsElement): void {
   const marker = createElement("marker", {
     id: "export-arrow",
     markerWidth: "10",
@@ -71,11 +70,11 @@ function createArrowMarker(defs: SVGDefsElement, isDark: boolean): void {
     refX: "8",
     refY: "5",
     orient: "auto",
-    markerUnits: "strokeWidth"
+    markerUnits: "strokeWidth",
   });
   marker.appendChild(createElement("path", {
     d: "M 0 0 L 10 5 L 0 10 z",
-    fill: isDark ? "#67e8f9" : "#0f172a"
+    fill: "#67e8f9",
   }));
   defs.appendChild(marker);
 }
@@ -83,7 +82,6 @@ function createArrowMarker(defs: SVGDefsElement, isDark: boolean): void {
 function buildSvg(
   nodes: ArchitectureFlowNode[],
   edges: ArchitectureFlowEdge[],
-  isDark: boolean,
   showSidebar: boolean
 ): SVGSVGElement {
   const bounds = getGraphBounds(nodes, edges);
@@ -109,8 +107,11 @@ function buildSvg(
     "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
   }) as SVGSVGElement;
 
-  const defs = createElement("defs");
-  createArrowMarker(defs as SVGDefsElement, isDark);
+  const defs = createElement("defs") as SVGDefsElement;
+  addExportBackgroundPattern(defs);
+  addExportFilters(defs);
+  registerNodeExportDefs(defs, nodes);
+  createArrowMarker(defs);
   svg.appendChild(defs);
 
   addRect(svg, {
@@ -118,7 +119,14 @@ function buildSvg(
     y: String(viewY),
     width: String(totalWidth),
     height: String(graphHeight),
-    fill: isDark ? "#020617" : "#f5f0e8"
+    fill: "url(#export-bg-gradient)",
+  });
+  addRect(svg, {
+    x: String(viewX),
+    y: String(viewY),
+    width: String(totalWidth),
+    height: String(graphHeight),
+    fill: "url(#export-dot-grid)",
   });
 
   const edgeLayer = createElement("g", { class: "edges" }) as SVGGElement;
@@ -128,7 +136,7 @@ function buildSvg(
     if (!source || !target) continue;
 
     const isClusterEdge = edge.source.startsWith("hierarchy:") || edge.target.startsWith("hierarchy:");
-    const style = getExportEdgeStyle(edge.data?.connectionType, isDark, isClusterEdge);
+    const style = getExportEdgeStyle(edge.data?.connectionType, isClusterEdge);
 
     const sp = getNodeHandlePoint(source, "right");
     const tp = getNodeHandlePoint(target, "left");
@@ -153,11 +161,11 @@ function buildSvg(
         width: String(labelWidth),
         height: "18",
         rx: "9",
-        fill: isDark ? "#0f172a" : "#ffffff",
-        stroke: isDark ? "#334155" : "#cbd5e1"
+        fill: "#141414",
+        stroke: "#333333",
       }));
       addText(edgeLayer, labelX, labelY + 3, connectionLabel, {
-        fill: isDark ? "#e2e8f0" : "#334155",
+        fill: "#e2e8f0",
         "font-size": "9px",
         "text-anchor": "middle",
         "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -177,7 +185,7 @@ function buildSvg(
     if (selectedNode) {
       const sidebarX = viewX + graphWidth + sidebarGap;
       const sidebarY = viewY;
-      svg.appendChild(buildSidebarPanel(selectedNode, isDark, sidebarX, sidebarY, graphHeight));
+      svg.appendChild(buildSidebarPanel(selectedNode, sidebarX, sidebarY, graphHeight));
     }
   }
 
@@ -195,8 +203,6 @@ function downloadBlob(blob: Blob, filename: string): void {
 
 export async function exportGraph(format: "svg", options: ExportOptions = {}): Promise<void> {
   const graphState = useGraphStore.getState();
-  const theme = useSettingsStore.getState().theme;
-  const isDark = theme === "dark";
   const scope = options.scope ?? (useSelectionStore.getState().selectedNodeId ? "selection" : "full");
   const { nodes, edges } = getExportSubset(graphState.nodes, graphState.edges, scope);
 
@@ -205,7 +211,7 @@ export async function exportGraph(format: "svg", options: ExportOptions = {}): P
   }
 
   const showSidebar = scope === "selection";
-  const svg = buildSvg(nodes, edges, isDark, showSidebar);
+  const svg = buildSvg(nodes, edges, showSidebar);
   const serialized = new XMLSerializer().serializeToString(svg);
   const blob = new Blob([serialized], { type: "image/svg+xml;charset=utf-8" });
   downloadBlob(blob, `architecture-${scope}.svg`);

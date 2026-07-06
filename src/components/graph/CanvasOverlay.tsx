@@ -1,9 +1,8 @@
 import { useRef, useEffect, useCallback, useState } from "react";
-import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../../lib/constants";
+import { getNodeSize } from "../../lib/export/svgHelpers";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 import { useGraphStore } from "../../store/graphStore";
 import { useSelectionStore } from "../../store/selectionStore";
-import { useSettingsStore } from "../../store/settingsStore";
 import { renderToCanvas } from "../../lib/render/canvasRenderer";
 import type { ArchitectureFlowNode } from "../../types";
 
@@ -20,8 +19,6 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
   const clearSelection = useSelectionStore((state) => state.clearSelection);
   const selectedNodeIds = useSelectionStore((state) => state.selectedNodeIds);
   const highlightedEdgeIds = useSelectionStore((state) => state.highlightedEdgeIds);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
 
   const [viewport, setViewport] = useState({
     x: 0,
@@ -40,8 +37,7 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const node of nodes) {
-      const nodeWidth = node.data.kind === "busChannel" ? BUS_CHANNEL_WIDTH : node.data.kind === "cluster" ? CLUSTER_WIDTH : NODE_WIDTH;
-      const nodeHeight = node.data.kind === "busChannel" ? BUS_CHANNEL_HEIGHT : node.data.kind === "cluster" ? CLUSTER_HEIGHT : NODE_HEIGHT;
+      const { width: nodeWidth, height: nodeHeight } = getNodeSize(node);
       minX = Math.min(minX, node.position.x);
       minY = Math.min(minY, node.position.y);
       maxX = Math.max(maxX, node.position.x + nodeWidth);
@@ -110,8 +106,8 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    renderToCanvas(ctx, nodes, edges, { ...viewport, width, height }, selectedNodeIds, highlightedEdgeIds, isDark);
-  }, [nodes, edges, viewport, width, height, selectedNodeIds, highlightedEdgeIds, isDark]);
+    renderToCanvas(ctx, nodes, edges, { ...viewport, width, height }, selectedNodeIds, highlightedEdgeIds, true);
+  }, [nodes, edges, viewport, width, height, selectedNodeIds, highlightedEdgeIds]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -174,8 +170,7 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
     const graphY = (mouseY - viewport.y) / viewport.zoom;
 
     for (const node of nodes) {
-      const nodeWidth = node.data.kind === "busChannel" ? BUS_CHANNEL_WIDTH : node.data.kind === "cluster" ? CLUSTER_WIDTH : NODE_WIDTH;
-      const nodeHeight = node.data.kind === "busChannel" ? BUS_CHANNEL_HEIGHT : node.data.kind === "cluster" ? CLUSTER_HEIGHT : NODE_HEIGHT;
+      const { width: nodeWidth, height: nodeHeight } = getNodeSize(node);
 
       if (
         graphX >= node.position.x &&
@@ -183,7 +178,7 @@ export function CanvasOverlay({ width, height }: CanvasOverlayProps) {
         graphY >= node.position.y &&
         graphY <= node.position.y + nodeHeight
       ) {
-        if (node.data.kind === "component") {
+        if (node.data.kind === "component" || node.data.kind === "busChannel") {
           selectNode(node.id, { additive: e.ctrlKey || e.metaKey || e.shiftKey });
         } else {
           clearSelection();

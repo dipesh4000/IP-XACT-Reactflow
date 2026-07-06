@@ -1,22 +1,26 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type DragEvent } from "react";
+import { useReactFlow } from "reactflow";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { ReactFlowProvider } from "reactflow";
 import { FlowCanvas } from "./components/graph/FlowCanvas";
 import { ModelImportPanel } from "./components/import/ModelImportPanel";
 import { InspectorPanel } from "./components/inspector/InspectorPanel";
-import { SearchBar } from "./components/search/SearchBar";
-import { ThemeToggle } from "./components/ui/ThemeToggle";
-import { useElkLayout } from "./hooks/useElkLayout";
+import { AppNavbar } from "./components/layout/AppNavbar";
+import type { SearchBarHandle } from "./components/search/SearchBar";
+import { useGraphLayout } from "./hooks/useGraphLayout";
+import { useLoadArchitecture } from "./hooks/useLoadArchitecture";
 import { exportGraph } from "./lib/export";
-import { useArchitectureStore } from "./store/architectureStore";
+import { isConvertibleCircuitFile } from "./lib/api/circuitApi";
+import { RECOMMENDED_MAX_COMPONENTS } from "./lib/constants";
+import { loadPersistedModel, useArchitectureStore } from "./store/architectureStore";
 import { useGraphStore } from "./store/graphStore";
 import { useSelectionStore } from "./store/selectionStore";
-import { useSettingsStore } from "./store/settingsStore";
 
 function AppInner() {
   const hasModel = useArchitectureStore((state) => state.model !== null);
   const componentCount = useArchitectureStore((state) => state.model?.components.length ?? 0);
   const connectionCount = useArchitectureStore((state) => state.model?.connections.length ?? 0);
+  const loadModel = useArchitectureStore((state) => state.loadModel);
   const clearModel = useArchitectureStore((state) => state.clearModel);
   const selectedNodeId = useSelectionStore((state) => state.selectedNodeId);
   const selectedNodeIds = useSelectionStore((state) => state.selectedNodeIds);
@@ -24,24 +28,34 @@ function AppInner() {
   const setGraphNodes = useGraphStore((state) => state.setNodes);
   const setGraphEdges = useGraphStore((state) => state.setEdges);
   const resetExpansion = useGraphStore((state) => state.resetExpansion);
+  const setLayoutLoading = useGraphStore((state) => state.setLayoutLoading);
   const clearSelection = useSelectionStore((state) => state.clearSelection);
   const setSearchQuery = useSelectionStore((state) => state.setSearchQuery);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [restoredFromStorage, setRestoredFromStorage] = useState(false);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const [isImportOverlayOpen, setIsImportOverlayOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<SearchBarHandle>(null);
+  const { fitView } = useReactFlow();
+  const { loadFromText, loadFromFile } = useLoadArchitecture();
 
-  useElkLayout();
+  useGraphLayout();
 
-  // Apply theme to document
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    try {
+      const persisted = loadPersistedModel();
+      if (persisted && persisted.components.length > 0) {
+        setLayoutLoading(true);
+        loadModel(persisted);
+      }
+    } catch {
+      // Invalid persisted model is cleared in loadPersistedModel
     }
-  }, [theme, isDark]);
+    setRestoredFromStorage(true);
+  }, [loadModel, setLayoutLoading]);
 
   const handleClearModel = useCallback(() => {
     clearSelection();
@@ -50,18 +64,100 @@ function AppInner() {
     setGraphEdges([]);
     resetExpansion();
     clearModel();
+    setImportError(null);
   }, [clearModel, clearSelection, resetExpansion, setGraphEdges, setGraphNodes, setSearchQuery]);
+
+  const handleImportText = useCallback(
+    (text: string) => {
+      loadFromText(text);
+      setImportError(null);
+      setIsImportOverlayOpen(false);
+    },
+    [loadFromText]
+  );
+
+  const handleImportFile = useCallback(
+    async (file: File) => {
+      if (hasModel) {
+        handleClearModel();
+      }
+      await loadFromFile(file);
+      setImportError(null);
+      setIsImportOverlayOpen(false);
+    },
+    [handleClearModel, hasModel, loadFromFile]
+  );
 
   const handleOpenFile = useCallback(() => {
     if (hasModel) {
       handleClearModel();
-      window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("ipxact:open-file"));
-      }, 0);
-      return;
     }
-    window.dispatchEvent(new CustomEvent("ipxact:open-file"));
+    setIsImportOverlayOpen(true);
   }, [handleClearModel, hasModel]);
+
+  const handleFitView = useCallback(() => {
+    if (!hasModel) return;
+    fitView({ padding: 0.18, duration: 300 });
+  }, [fitView, hasModel]);
+
+  const handleFind = useCallback(() => {
+    if (!hasModel) return;
+    searchRef.current?.focus();
+  }, [hasModel]);
+
+  const importDroppedFile = useCallback(
+    async (file: File) => {
+      try {
+        if (hasModel) {
+          handleClearModel();
+        }
+        if (isConvertibleCircuitFile(file)) {
+          await loadFromFile(file);
+        } else {
+          const contents = await file.text();
+          loadFromText(contents);
+        }
+        setImportError(null);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unable to read architecture file.";
+        setImportError(message);
+        setLayoutLoading(false);
+      }
+    },
+    [handleClearModel, hasModel, loadFromFile, loadFromText, setLayoutLoading]
+  );
+
+  const handleFileInputChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) return;
+      await importDroppedFile(file);
+    },
+    [importDroppedFile]
+  );
+
+  const handleDragOver = useCallback((event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsDraggingFile(true);
+  }, []);
+
+  const handleDragLeave = useCallback((event: DragEvent<HTMLElement>) => {
+    if (event.currentTarget === event.target) {
+      setIsDraggingFile(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    async (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      setIsDraggingFile(false);
+      const file = event.dataTransfer.files[0];
+      if (!file) return;
+      await importDroppedFile(file);
+    },
+    [importDroppedFile]
+  );
 
   const handleExport = useCallback(async (scope: "full" | "selection" = "full") => {
     setIsExporting(true);
@@ -80,6 +176,8 @@ function AppInner() {
   useKeyboardShortcuts(
     {
       onOpenFile: handleOpenFile,
+      onFitView: handleFitView,
+      onFind: handleFind,
       onExport: () => {
         if (hasModel && !isExporting) {
           void handleExport("full");
@@ -89,101 +187,77 @@ function AppInner() {
         if (hasModel && selectedNodeIds.size > 0 && !isExporting) {
           void handleExport("selection");
         }
-      }
+      },
     },
     true
   );
 
-  const mainClass = `grid h-screen overflow-hidden transition-colors duration-200 ${
-    isDark ? "bg-shell-950 text-slate-100" : "bg-[#f5f0e8] text-[#1a1a1a]"
-  } ${selectedNodeId && !sidebarCollapsed ? "grid-cols-[minmax(0,1fr)_360px]" : "grid-cols-[minmax(0,1fr)]"}`;
+  const showLargeModelWarning = hasModel && componentCount > RECOMMENDED_MAX_COMPONENTS;
+  const workspaceClass = `grid min-h-0 flex-1 ${
+    selectedNodeId && !sidebarCollapsed ? "grid-cols-[minmax(0,1fr)_360px]" : "grid-cols-[minmax(0,1fr)]"
+  }`;
 
   return (
-    <main className={mainClass}>
-      <section className="relative min-w-0 overflow-hidden">
-        <div className="absolute left-5 top-5 z-10 flex items-start gap-3">
-          <div className="flex items-center gap-3">
-            <h1 className={`text-lg font-semibold ${isDark ? "text-slate-50" : "text-slate-900"}`}>ip-xact</h1>
-            {hasModel ? (
-              <button
-                className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition ${
-                  isDark
-                    ? "border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
-                    : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
-                }`}
-                onClick={handleClearModel}
-                title="Load new architecture"
-                type="button"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-                New
-              </button>
-            ) : null}
-          </div>
-          {hasModel ? (
-            <>
-              <p className={`mt-1 text-xs font-medium ${isDark ? "text-slate-500" : "text-slate-500"}`}>
-                {componentCount} components / {connectionCount} connections
+    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-neutral-950 text-slate-100">
+      <input
+        ref={fileInputRef}
+        accept=".json,.xlsx,.xls,.xml,application/json"
+        className="sr-only"
+        onChange={handleFileInputChange}
+        type="file"
+      />
+
+      <AppNavbar
+        componentCount={componentCount}
+        connectionCount={connectionCount}
+        hasModel={hasModel}
+        isExporting={isExporting}
+        onExport={() => void handleExport("full")}
+        onExportSelection={() => void handleExport("selection")}
+        onFitView={handleFitView}
+        onOpenFile={handleOpenFile}
+        searchRef={searchRef}
+        selectedCount={selectedNodeIds.size}
+      />
+
+      <div className={workspaceClass}>
+        <section
+          className="dot-grid-bg relative min-w-0 overflow-hidden"
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          {isDraggingFile ? (
+            <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center border-2 border-dashed border-white/20 bg-white/5 backdrop-blur-sm">
+              <p className="rounded-lg bg-neutral-950/90 px-4 py-2 text-sm font-medium text-slate-200">
+                Drop JSON, Excel, or XML file to load
               </p>
-              {selectedNodeIds.size > 1 ? (
-                <p className={`mt-0.5 text-[11px] font-medium ${isDark ? "text-cyan-300/80" : "text-cyan-700"}`}>
-                  {selectedNodeIds.size} selected for export
-                </p>
-              ) : null}
-            </>
-          ) : null}
-          <SearchBar />
-        </div>
-        <div className="absolute right-5 top-5 z-10 flex items-center gap-2">
-          {hasModel ? (
-            <div className="flex items-center gap-2">
-              <button
-                className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition ${
-                  isDark
-                    ? "border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
-                    : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 shadow-sm"
-                }`}
-                disabled={isExporting}
-                onClick={() => void handleExport("full")}
-                type="button"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                {isExporting ? "Exporting..." : "Export SVG"}
-              </button>
-              {selectedNodeIds.size > 0 && (
-                <button
-                  className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition ${
-                    isDark
-                      ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:bg-cyan-300/15"
-                      : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
-                  }`}
-                  disabled={isExporting}
-                  onClick={() => void handleExport("selection")}
-                  type="button"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Export Selected ({selectedNodeIds.size})
-                </button>
-              )}
             </div>
           ) : null}
-          <ThemeToggle />
-        </div>
-        <FlowCanvas />
-        {!hasModel ? <ModelImportPanel /> : null}
-        {exportError ? (
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg border shadow-lg text-xs font-medium bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800">
-            {exportError}
-          </div>
-        ) : null}
-      </section>
-      <InspectorPanel />
+
+          {showLargeModelWarning ? (
+            <div className="absolute left-1/2 top-3 z-10 max-w-lg -translate-x-1/2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-center text-xs text-amber-100">
+              {componentCount} components exceeds the recommended {RECOMMENDED_MAX_COMPONENTS}. Layout may be dense.
+            </div>
+          ) : null}
+
+          <FlowCanvas />
+          {((!hasModel && restoredFromStorage) || isImportOverlayOpen) && (
+            <ModelImportPanel error={importError} onLoad={handleImportText} onLoadFile={handleImportFile} />
+          )}
+          {exportError ? (
+            <div className="absolute bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-red-800 bg-red-950 px-4 py-2.5 text-xs font-medium text-red-300 shadow-lg">
+              {exportError}
+            </div>
+          ) : null}
+          {importError && hasModel ? (
+            <div className="absolute bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-red-800 bg-red-950 px-4 py-2.5 text-xs font-medium text-red-300 shadow-lg">
+              {importError}
+            </div>
+          ) : null}
+        </section>
+        <InspectorPanel />
+      </div>
     </main>
   );
 }

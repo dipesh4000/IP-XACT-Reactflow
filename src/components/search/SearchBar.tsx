@@ -1,19 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
 import { useSearch } from "../../hooks/useSearch";
 import { useSelectionStore } from "../../store/selectionStore";
-import { useSettingsStore } from "../../store/settingsStore";
-import { Panel } from "../ui/Panel";
 import { SearchResultsList } from "./SearchResultsList";
 
-export function SearchBar() {
+export interface SearchBarHandle {
+  focus: () => void;
+}
+
+interface SearchBarProps {
+  className?: string;
+}
+
+export const SearchBar = forwardRef<SearchBarHandle, SearchBarProps>(function SearchBar({ className }, ref) {
   const [value, setValue] = useState("");
   const setSearchQuery = useSelectionStore((state) => state.setSearchQuery);
+  const setSearchMatches = useSelectionStore((state) => state.setSearchMatches);
   const results = useSearch();
   const focusNode = useFitViewOnSelect();
   const inputRef = useRef<HTMLInputElement>(null);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
+  const [expanded, setExpanded] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      setExpanded(true);
+      inputRef.current?.focus();
+    },
+  }));
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setSearchQuery(value), 150);
@@ -23,60 +36,47 @@ export function SearchBar() {
   useEffect(() => {
     const trimmed = value.trim();
     if (!trimmed) {
-      useSelectionStore.setState({ highlightedNodeIds: new Set<string>(), highlightedEdgeIds: new Set<string>() });
+      setSearchMatches(new Set());
       return;
     }
-    const ids = new Set(results.map((r) => r.id));
-    useSelectionStore.setState({ highlightedNodeIds: ids, highlightedEdgeIds: new Set<string>() });
-  }, [results, value]);
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "/" && !e.ctrlKey && !e.metaKey && document.activeElement !== inputRef.current) {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-      if (e.key === "Escape" && document.activeElement === inputRef.current) {
-        setValue("");
-        setSearchQuery("");
-        inputRef.current?.blur();
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [setSearchQuery]);
+    setSearchMatches(new Set(results.map((r) => r.id)));
+  }, [results, setSearchMatches, value]);
 
   function handleSelect(id: string) {
     focusNode(id);
     setValue("");
     setSearchQuery("");
+    setExpanded(false);
+    inputRef.current?.blur();
   }
 
   return (
-    <Panel className="w-[280px] overflow-hidden rounded-lg">
-      <div className="flex items-center gap-2 px-3 py-2.5">
-        <svg className={`h-4 w-4 shrink-0 ${isDark ? "text-slate-500" : "text-slate-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className={className}>
+      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-neutral-900/80 px-3 py-2">
+        <svg className="h-4 w-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input
           ref={inputRef}
-          className={`w-full border-0 bg-transparent text-sm outline-none ${
-            isDark
-              ? "text-slate-100 placeholder:text-slate-600"
-              : "text-slate-800 placeholder:text-slate-400"
-          }`}
+          className="w-full min-w-0 border-0 bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
+          onBlur={() => {
+            if (!value.trim()) setExpanded(false);
+          }}
           onChange={(event) => setValue(event.target.value)}
-          placeholder="Search components... (/)"
+          onFocus={() => setExpanded(true)}
+          placeholder="Find component… (Ctrl+F)"
           value={value}
         />
+        <kbd className="hidden shrink-0 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 sm:inline">
+          Ctrl+F
+        </kbd>
         {value.trim() ? (
           <button
-            className={`shrink-0 ${isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-400 hover:text-slate-600"}`}
-            onClick={() => { setValue(""); setSearchQuery(""); }}
+            className="shrink-0 text-slate-500 hover:text-slate-300"
+            onClick={() => {
+              setValue("");
+              setSearchQuery("");
+            }}
             type="button"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,11 @@ export function SearchBar() {
           </button>
         ) : null}
       </div>
-      {value.trim() ? <SearchResultsList results={results} onSelect={handleSelect} /> : null}
-    </Panel>
+      {expanded && value.trim() ? (
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-white/10 bg-neutral-950 shadow-xl">
+          <SearchResultsList results={results} onSelect={handleSelect} />
+        </div>
+      ) : null}
+    </div>
   );
-}
+});

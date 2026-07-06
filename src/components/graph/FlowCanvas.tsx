@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
-import ReactFlow, { Controls, MarkerType, useReactFlow, type Node, type OnNodesChange, type OnEdgesChange, type Viewport, applyNodeChanges, applyEdgeChanges } from "reactflow";
+import ReactFlow, {
+  Controls,
+  MarkerType,
+  useReactFlow,
+  type Node,
+  type OnNodesChange,
+  type OnEdgesChange,
+  type Viewport,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from "reactflow";
 import "reactflow/dist/style.css";
 import { CANVAS_THRESHOLD } from "../../lib/constants";
 import { useFitViewOnSelect } from "../../hooks/useFitViewOnSelect";
@@ -9,6 +19,7 @@ import { useSelectionStore } from "../../store/selectionStore";
 import { useSettingsStore } from "../../store/settingsStore";
 import type { ArchitectureEdgeData, ArchitectureFlowEdge, ArchitectureFlowNode, ArchitectureNodeData } from "../../types";
 import { CanvasOverlay } from "./CanvasOverlay";
+import { BackgroundGrid } from "./BackgroundGrid";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { MiniMapPanel } from "./MiniMapPanel";
 import { edgeTypes } from "./edges/edgeTypeRegistry";
@@ -17,6 +28,17 @@ import { nodeTypes } from "./nodes/nodeTypeRegistry";
 const MIN_ZOOM = 0.035;
 const MAX_ZOOM = 2.2;
 const OVERVIEW_ZOOM = 0.32;
+
+const defaultEdgeOptions = {
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: "#64748b",
+  },
+  style: {
+    stroke: "#64748b",
+    strokeWidth: 2,
+  },
+};
 
 function FlowCanvasInner() {
   const storeNodes = useGraphStore((state) => state.nodes);
@@ -31,8 +53,6 @@ function FlowCanvasInner() {
   const focusNode = useFitViewOnSelect();
   const [isOverview, setIsOverview] = useState(false);
   const nonInteractiveThreshold = useSettingsStore((state) => state.nonInteractiveThreshold);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
   const isNonInteractive = storeNodes.length > nonInteractiveThreshold;
   const useCanvas = storeNodes.length > CANVAS_THRESHOLD;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +60,6 @@ function FlowCanvasInner() {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const reactFlowInstance = useReactFlow();
 
-  // Track container size for canvas renderer
   const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
     if (observerRef.current) {
       observerRef.current.disconnect();
@@ -66,21 +85,10 @@ function FlowCanvasInner() {
     };
   }, []);
 
-  const defaultEdgeOptions = {
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      color: isDark ? "#64748b" : "#1e293b"
-    },
-    style: {
-      stroke: isDark ? "#64748b" : "#334155",
-      strokeWidth: isDark ? 2 : 2.5
-    }
-  };
-
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {
       const currentNodes = useGraphStore.getState().nodes;
-      setNodes(applyNodeChanges(changes, currentNodes as any) as ArchitectureFlowNode[]);
+      setNodes(applyNodeChanges(changes, currentNodes as Node[]) as ArchitectureFlowNode[]);
     },
     [setNodes]
   );
@@ -88,7 +96,7 @@ function FlowCanvasInner() {
   const handleEdgesChange: OnEdgesChange = useCallback(
     (changes) => {
       const currentEdges = useGraphStore.getState().edges;
-      setEdges(applyEdgeChanges(changes, currentEdges as any) as ArchitectureFlowEdge[]);
+      setEdges(applyEdgeChanges(changes, currentEdges as ArchitectureFlowEdge[]) as ArchitectureFlowEdge[]);
     },
     [setEdges]
   );
@@ -96,7 +104,7 @@ function FlowCanvasInner() {
   const handleNodeClick = useCallback(
     (event: MouseEvent, node: Node<ArchitectureNodeData>) => {
       const additive = event.ctrlKey || event.metaKey || event.shiftKey;
-      if (node.data.kind === "component") {
+      if (node.data.kind === "component" || node.data.kind === "busChannel") {
         selectNode(node.id, additive ? { additive: true } : undefined);
       } else {
         clearSelection();
@@ -113,8 +121,9 @@ function FlowCanvasInner() {
         selectNode(null);
         return;
       }
-
-      focusNode(node.id);
+      if (node.data.kind === "component" || node.data.kind === "busChannel") {
+        focusNode(node.id);
+      }
     },
     [focusNode, selectNode, toggleCluster]
   );
@@ -149,22 +158,17 @@ function FlowCanvasInner() {
     {
       onZoomIn: handleZoomIn,
       onZoomOut: handleZoomOut,
-      onFitView: handleFitView
+      onFitView: handleFitView,
     },
     !useCanvas && storeNodes.length > 0
   );
 
-  // Use canvas renderer for very large graphs
   if (useCanvas && containerSize.width > 0) {
     return (
       <div ref={handleContainerRef} className="relative h-full w-full">
         <CanvasOverlay width={containerSize.width} height={containerSize.height} />
         {isLayoutLoading && <LoadingSkeleton />}
-        <div className={`absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border px-3 py-1.5 text-xs font-medium ${
-          isDark
-            ? "border-white/10 bg-shell-950/90 text-slate-400"
-            : "border-slate-300 bg-white/90 text-slate-600 shadow-sm"
-        }`}>
+        <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border border-white/10 bg-shell-950/90 px-3 py-1.5 text-xs font-medium text-slate-400">
           Canvas Mode — {storeNodes.length} nodes
         </div>
       </div>
@@ -202,25 +206,16 @@ function FlowCanvasInner() {
         <svg>
           <defs>
             <marker id="architecture-arrow" markerHeight="12" markerWidth="12" orient="auto" refX="10" refY="6">
-              <path d="M2,2 L10,6 L2,10 z" fill={isDark ? "#67e8f9" : "#0891b2"} />
+              <path d="M2,2 L10,6 L2,10 z" fill="#67e8f9" />
             </marker>
           </defs>
         </svg>
-        <Controls
-          className={`!border !fill-slate-200 !text-slate-200 ${
-            isDark
-              ? "!border-white/10 !bg-shell-950/90"
-              : "!border-slate-700 !bg-slate-700/90 !shadow-lg"
-          }`}
-        />
+        <BackgroundGrid />
+        <Controls className="!border !border-white/10 !bg-neutral-950/90 !fill-slate-200 !text-slate-200" />
         <MiniMapPanel />
       </ReactFlow>
       {isNonInteractive && (
-        <div className={`absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border px-3 py-1.5 text-xs ${
-          isDark
-            ? "border-white/10 bg-shell-950/90 text-slate-400"
-            : "border-black/10 bg-white/90 text-slate-600"
-        }`}>
+        <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-md border border-white/10 bg-shell-950/90 px-3 py-1.5 text-xs text-slate-400">
           Static View — {storeNodes.length} nodes
         </div>
       )}

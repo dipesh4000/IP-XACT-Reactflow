@@ -1,29 +1,16 @@
 :root {
   color-scheme: dark;
-  --eda-bg: #06080d;
-  --eda-panel: #0b1018;
-  --eda-panel-soft: #101721;
+  --eda-bg: #0a0a0a;
+  --eda-bg-accent: #111111;
+  --eda-panel: #141414;
+  --eda-panel-soft: #1a1a1a;
   --eda-border: rgba(255, 255, 255, 0.1);
-  --eda-text: #e2e8f0;
-  --eda-text-muted: #94a3b8;
-  --eda-accent: #22d3ee;
-  --eda-node-bg: #0f172a;
-  --eda-node-border: rgba(148, 163, 184, 0.12);
-  --eda-grid-color: rgba(148, 163, 184, 0.04);
-  --eda-grid-accent: rgba(34, 211, 238, 0.055);
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-  --eda-bg: #f5f0e8;
-  --eda-panel: #fffcf9;
-  --eda-panel-soft: #f5f2ed;
-  --eda-border: rgba(0, 0, 0, 0.12);
-  --eda-text: #1a1a1a;
-  --eda-text-muted: #5a5a5a;
-  --eda-accent: #0066a4;
-  --eda-node-bg: #ffffff;
-  --eda-node-border: rgba(0, 0, 0, 0.18);
-  --eda-grid-color: rgba(0, 0, 0, 0.04);
-  --eda-grid-accent: rgba(0, 102, 164, 0.06);
+  --eda-text: #f5f5f5;
+  --eda-text-muted: #a3a3a3;
+  --eda-accent: #e5e5e5;
+  --eda-node-bg: #171717;
+  --eda-node-border: rgba(255, 255, 255, 0.12);
+  --eda-grid-color: rgba(255, 255, 255, 0.08);
+  --eda-grid-size: 28px;
+  --eda-grid-accent: rgba(255, 255, 255, 0.04);
 }

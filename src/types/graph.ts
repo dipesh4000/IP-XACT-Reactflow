@@ -25,6 +25,8 @@ export interface BusChannelNodeData {
   kind: "busChannel";
   component: Component;
   layer: LayoutLayer;
+  channelHeight?: number;
+  display?: "pillar" | "compact";
   portPositions?: PortPosition[];
 }
 

@@ -1,138 +1,131 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import sampleArchitecture from "../../data/sample-architecture.json";
-import { parseArchitectureModel } from "../../lib/validateArchitectureModel";
-import { useArchitectureStore } from "../../store/architectureStore";
-import { useGraphStore } from "../../store/graphStore";
-import { useSelectionStore } from "../../store/selectionStore";
-import { useSettingsStore } from "../../store/settingsStore";
-import type { ArchitectureModel } from "../../types";
+import { AppLogo } from "../brand/AppLogo";
 import { Panel } from "../ui/Panel";
 
 const sampleText = JSON.stringify(sampleArchitecture, null, 2);
 
-export function ModelImportPanel() {
-  const loadModel = useArchitectureStore((state) => state.loadModel);
-  const setNodes = useGraphStore((state) => state.setNodes);
-  const setEdges = useGraphStore((state) => state.setEdges);
-  const setLayoutLoading = useGraphStore((state) => state.setLayoutLoading);
-  const selectNode = useSelectionStore((state) => state.selectNode);
-  const setSearchQuery = useSelectionStore((state) => state.setSearchQuery);
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
+interface ModelImportPanelProps {
+  onLoad: (text: string) => void;
+  onLoadFile: (file: File) => Promise<void>;
+  error?: string | null;
+}
+
+export function ModelImportPanel({ onLoad, onLoadFile, error: externalError }: ModelImportPanelProps) {
   const [text, setText] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    function handleOpenFile() {
-      fileInputRef.current?.click();
-    }
+  const error = externalError ?? localError;
 
-    window.addEventListener("ipxact:open-file", handleOpenFile);
-    return () => window.removeEventListener("ipxact:open-file", handleOpenFile);
-  }, []);
-
-  const loadParsedModel = (model: ArchitectureModel) => {
-    selectNode(null);
-    setSearchQuery("");
-    setNodes([]);
-    setEdges([]);
-    setLayoutLoading(true);
-    loadModel(model);
-    setError(null);
-  };
-
-  const handleLoadText = () => {
-    setIsParsing(true);
-    setTimeout(() => {
-      try {
-        loadParsedModel(parseArchitectureModel(text));
-      } catch (parseError) {
-        setError(parseError instanceof Error ? parseError.message : "Unable to parse architecture JSON.");
-        setLayoutLoading(false);
-      } finally {
-        setIsParsing(false);
-      }
-    }, 50);
-  };
-
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
+  const runWithLoading = async (task: () => Promise<void> | void) => {
     setIsParsing(true);
     try {
-      const contents = await file.text();
-      setText(contents);
-      loadParsedModel(parseArchitectureModel(contents));
-    } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : "Unable to read architecture JSON file.");
-      setLayoutLoading(false);
+      await task();
+      setLocalError(null);
+    } catch (parseError) {
+      setLocalError(parseError instanceof Error ? parseError.message : "Unable to load architecture.");
     } finally {
       setIsParsing(false);
     }
   };
 
+  const handleLoadText = () => {
+    void runWithLoading(() => onLoad(text));
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    await runWithLoading(async () => {
+      if (file.name.toLowerCase().endsWith(".json")) {
+        const contents = await file.text();
+        setText(contents);
+        onLoad(contents);
+      } else {
+        await onLoadFile(file);
+      }
+    });
+  };
+
   return (
-    <div className={`pointer-events-none absolute inset-0 z-20 grid place-items-center p-6 backdrop-blur-sm ${isDark ? "bg-shell-950/80" : "bg-slate-200/80"}`}>
+    <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center bg-neutral-950/85 p-6 backdrop-blur-sm">
       <Panel className="pointer-events-auto w-full max-w-3xl overflow-hidden rounded-xl shadow-2xl">
-        <div className={`border-b p-6 ${isDark ? "border-white/10" : "border-slate-200"}`}>
-          <h2 className={`text-xl font-semibold ${isDark ? "text-slate-50" : "text-slate-900"}`}>Load architecture JSON</h2>
-          <p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-            Choose a JSON file or paste an architecture model to render the graph.
-          </p>
+        <div className="border-b border-white/10 p-6">
+          <div className="flex items-center gap-3">
+            <AppLogo size={40} />
+            <div>
+              <h2 className="text-xl font-semibold text-slate-50">Import architecture</h2>
+              <p className="mt-1 text-sm text-slate-400">
+                Upload Excel or IP-XACT XML (converted via API), paste JSON, or load the sample SoC.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <label className={`inline-flex cursor-pointer items-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition ${
-              isDark
-                ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:bg-cyan-300/15"
-                : "border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
-            }`}>
-              {isParsing ? "Reading file..." : "Choose JSON file"}
-              <input ref={fileInputRef} accept="application/json,.json" className="sr-only" onChange={handleFileChange} type="file" />
+            <label className="inline-flex cursor-pointer items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-white/15">
+              {isParsing ? "Processing..." : "Choose file"}
+              <input
+                accept=".json,.xlsx,.xls,.xml,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/xml,text/xml"
+                className="sr-only"
+                onChange={handleFileChange}
+                type="file"
+              />
             </label>
             <button
-              className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition ${
-                isDark
-                  ? "border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
-                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shadow-sm"
-              }`}
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
               onClick={() => {
-                setIsParsing(true);
-                setTimeout(() => {
+                void runWithLoading(() => {
                   setText(sampleText);
-                  loadParsedModel(parseArchitectureModel(sampleText));
-                  setIsParsing(false);
-                }, 50);
+                  onLoad(sampleText);
+                });
               }}
               type="button"
             >
               Load sample SoC
             </button>
+            <a
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-slate-100"
+              href="/docs.html"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              View docs
+            </a>
+            <a
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-slate-100"
+              href="/format.html"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              View format
+            </a>
           </div>
 
+          <p className="text-xs text-slate-500">
+            Excel (.xlsx) and XML (.xml) files are sent to the circuit API and converted to JSON automatically.
+            JSON can also be pasted below.
+          </p>
+
           <textarea
-            className={`h-72 resize-none rounded-lg border p-4 font-mono text-xs leading-5 outline-none transition ${
-              isDark
-                ? "border-white/10 bg-shell-950 text-slate-200 placeholder:text-slate-600 focus:border-cyan-300/40"
-                : "border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
-            }`}
+            className="h-64 resize-none rounded-lg border border-white/10 bg-neutral-950 p-4 font-mono text-xs leading-5 text-slate-200 outline-none transition placeholder:text-neutral-600 focus:border-white/25"
             onChange={(event) => setText(event.target.value)}
-            placeholder='{"components": [...], "connections": [...]}'
+            placeholder='{"components": {...}, "connections": [...]}'
             spellCheck={false}
             value={text}
           />
 
-          {error ? <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+          {error ? (
+            <div className="rounded-lg border border-red-800 bg-red-950 px-4 py-3 text-sm text-red-300">{error}</div>
+          ) : null}
 
           <div className="flex justify-end">
             <button
-              className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+              className="rounded-lg bg-neutral-200 px-5 py-2.5 text-sm font-bold text-neutral-950 shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
               disabled={!text.trim() || isParsing}
               onClick={handleLoadText}
               type="button"

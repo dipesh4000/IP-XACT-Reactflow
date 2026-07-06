@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipxact:component
+    xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.accellera.org/XMLSchema/IPXACT/1685-2014 http://www.accellera.org/XMLSchema/IPXACT/1685-2014/index.xsd">
+
+  <ipxact:vendor>Synopsys</ipxact:vendor>
+  <ipxact:library>DesignWareCores</ipxact:library>
+  <ipxact:name>dwc_uciephy_top</ipxact:name>
+  <ipxact:version>1.00</ipxact:version>
+
+  <ipxact:memoryMaps>
+    <ipxact:memoryMap>
+      <ipxact:name>regmap_UCIE</ipxact:name>
+      <ipxact:description>UCIE Memory Map</ipxact:description>
+
+      <ipxact:addressBlock>
+        <ipxact:name>UCIEMMPLSECTION0</ipxact:name>
+        <ipxact:description>UCIeMMPLSECTION0 Block Registers</ipxact:description>
+        <ipxact:baseAddress>'h1000</ipxact:baseAddress>
+        <ipxact:range>'h10</ipxact:range>
+        <ipxact:width>32</ipxact:width>
+
+        <ipxact:register>
+          <ipxact:name>UciePhyCapabilty</ipxact:name>
+          <ipxact:description>UCIe PHY capability.</ipxact:description>
+          <ipxact:addressOffset>'h0</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UciePhyCapabilty</ipxact:name>
+            <ipxact:description>UCIe PHY capability.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h8868</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>17</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>17</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>15</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UciePhyControl</ipxact:name>
+          <ipxact:description>UCIe PHY control.</ipxact:description>
+          <ipxact:addressOffset>'h4</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UciePhyControl</ipxact:name>
+            <ipxact:description>UCIe PHY control.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h8</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>7</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>7</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>25</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UciePhyStatus</ipxact:name>
+          <ipxact:description>UCIe PHY status.</ipxact:description>
+          <ipxact:addressOffset>'h8</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UciePhyStatus</ipxact:name>
+            <ipxact:description>UCIe PHY status.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h8</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>8</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>8</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>24</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UciePhyInitDebug</ipxact:name>
+          <ipxact:description>UCIe PHY initialization and debug.</ipxact:description>
+          <ipxact:addressOffset>'hc</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UciePhyInitDebug</ipxact:name>
+            <ipxact:description>UCIe PHY initialization and debug.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>3</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>3</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>28</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>UciePhyInitDebugRun</ipxact:name>
+            <ipxact:description>Triggers this debug-mode initialization. Starts running until to the LTSM state specified in AcsmLtsmDebugState</ipxact:description>
+            <ipxact:bitOffset>31</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>1</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-write</ipxact:access>
+            <ipxact:modifiedWriteValue>clear</ipxact:modifiedWriteValue>
+          </ipxact:field>
+        </ipxact:register>
+      </ipxact:addressBlock>
+
+      <ipxact:addressBlock>
+        <ipxact:name>UCIEDWORDSECTION0_0</ipxact:name>
+        <ipxact:description>UCIeDWORDSECTION0 Block Registers</ipxact:description>
+        <ipxact:baseAddress>'h1010</ipxact:baseAddress>
+        <ipxact:range>'ha0</ipxact:range>
+        <ipxact:width>32</ipxact:width>
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup1</ipxact:name>
+          <ipxact:description>UCIe training setup 1.</ipxact:description>
+          <ipxact:addressOffset>'h0</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup1</ipxact:name>
+            <ipxact:description>UCIe training setup 1.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h800000</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>27</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>27</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>5</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup2</ipxact:name>
+          <ipxact:description>UCIe training setup 2.</ipxact:description>
+          <ipxact:addressOffset>'h10</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup2</ipxact:name>
+            <ipxact:description>UCIe training setup 2.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h10000</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup3Lwr</ipxact:name>
+          <ipxact:description>UCIe training setup 3.</ipxact:description>
+          <ipxact:addressOffset>'h20</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup3Lwr</ipxact:name>
+            <ipxact:description>UCIe training setup 3.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup3Upr</ipxact:name>
+          <ipxact:description>UCIe training setup 3.</ipxact:description>
+          <ipxact:addressOffset>'h24</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup3Upr</ipxact:name>
+            <ipxact:description>UCIe training setup 3.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup4</ipxact:name>
+          <ipxact:description>UCIe training setup 4.</ipxact:description>
+          <ipxact:addressOffset>'h40</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup4</ipxact:name>
+            <ipxact:description>UCIe training setup 4.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieCurrentLaneMapLwr</ipxact:name>
+          <ipxact:description>UCIe current lane map.</ipxact:description>
+          <ipxact:addressOffset>'h50</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieCurrentLaneMapLwr</ipxact:name>
+            <ipxact:description>UCIe current lane map.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieCurrentLaneMapUpr</ipxact:name>
+          <ipxact:description>UCIe current lane map.</ipxact:description>
+          <ipxact:addressOffset>'h54</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieCurrentLaneMapUpr</ipxact:name>
+            <ipxact:description>UCIe current lane map.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieErrorLog0</ipxact:name>
+          <ipxact:description>UCIe error log 0.</ipxact:description>
+          <ipxact:addressOffset>'h70</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieErrorLog0</ipxact:name>
+            <ipxact:description>UCIe error log 0.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieErrorLog1</ipxact:name>
+          <ipxact:description>UCIe error log 1.</ipxact:description>
+          <ipxact:addressOffset>'h80</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieErrorLog1</ipxact:name>
+            <ipxact:description>UCIe error log 1.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+      </ipxact:addressBlock>
+
+      <ipxact:addressBlock>
+        <ipxact:name>UCIEDWORDSECTION0_1</ipxact:name>
+        <ipxact:description>UCIeDWORDSECTION0 Block Registers</ipxact:description>
+        <ipxact:baseAddress>'h11010</ipxact:baseAddress>
+        <ipxact:range>'ha0</ipxact:range>
+        <ipxact:width>32</ipxact:width>
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup1</ipxact:name>
+          <ipxact:description>UCIe training setup 1.</ipxact:description>
+          <ipxact:addressOffset>'h0</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup1</ipxact:name>
+            <ipxact:description>UCIe training setup 1.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h800000</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>27</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+          <ipxact:field>
+            <ipxact:name>Reserved_1</ipxact:name>
+            <ipxact:description>Reserved.</ipxact:description>
+            <ipxact:bitOffset>27</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>5</ipxact:bitWidth>
+            <ipxact:access>read-only</ipxact:access>
+            <ipxact:reserved>1</ipxact:reserved>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup2</ipxact:name>
+          <ipxact:description>UCIe training setup 2.</ipxact:description>
+          <ipxact:addressOffset>'h10</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup2</ipxact:name>
+            <ipxact:description>UCIe training setup 2.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h10000</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup3Lwr</ipxact:name>
+          <ipxact:description>UCIe training setup 3.</ipxact:description>
+          <ipxact:addressOffset>'h20</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup3Lwr</ipxact:name>
+            <ipxact:description>UCIe training setup 3.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup3Upr</ipxact:name>
+          <ipxact:description>UCIe training setup 3.</ipxact:description>
+          <ipxact:addressOffset>'h24</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup3Upr</ipxact:name>
+            <ipxact:description>UCIe training setup 3.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieTrainingSetup4</ipxact:name>
+          <ipxact:description>UCIe training setup 4.</ipxact:description>
+          <ipxact:addressOffset>'h40</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieTrainingSetup4</ipxact:name>
+            <ipxact:description>UCIe training setup 4.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieCurrentLaneMapLwr</ipxact:name>
+          <ipxact:description>UCIe current lane map.</ipxact:description>
+          <ipxact:addressOffset>'h50</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieCurrentLaneMapLwr</ipxact:name>
+            <ipxact:description>UCIe current lane map.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieCurrentLaneMapUpr</ipxact:name>
+          <ipxact:description>UCIe current lane map.</ipxact:description>
+          <ipxact:addressOffset>'h54</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-write</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieCurrentLaneMapUpr</ipxact:name>
+            <ipxact:description>UCIe current lane map.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:access>read-write</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieErrorLog0</ipxact:name>
+          <ipxact:description>UCIe error log 0.</ipxact:description>
+          <ipxact:addressOffset>'h70</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieErrorLog0</ipxact:name>
+            <ipxact:description>UCIe error log 0.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+
+        <ipxact:register>
+          <ipxact:name>UcieErrorLog1</ipxact:name>
+          <ipxact:description>UCIe error log 1.</ipxact:description>
+          <ipxact:addressOffset>'h80</ipxact:addressOffset>
+          <ipxact:size>32</ipxact:size>
+          <ipxact:access>read-only</ipxact:access>
+          <ipxact:field>
+            <ipxact:name>UcieErrorLog1</ipxact:name>
+            <ipxact:description>UCIe error log 1.</ipxact:description>
+            <ipxact:bitOffset>0</ipxact:bitOffset>
+            <ipxact:resets>
+              <ipxact:reset>
+                <ipxact:value>'h0</ipxact:value>
+              </ipxact:reset>
+            </ipxact:resets>
+            <ipxact:bitWidth>32</ipxact:bitWidth>
+            <ipxact:volatile>true</ipxact:volatile>
+            <ipxact:access>read-only</ipxact:access>
+          </ipxact:field>
+        </ipxact:register>
+      </ipxact:addressBlock>
+
+    </ipxact:memoryMap>
+  </ipxact:memoryMaps>
+</ipxact:component>

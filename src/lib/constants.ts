@@ -1,15 +1,19 @@
 import type { ComponentType } from "../types";
 
-export const NODE_WIDTH = 220;
-export const NODE_HEIGHT = 88;
-export const NODE_X_SPACING = 340;
-export const NODE_Y_SPACING = 160;
+export const NODE_WIDTH = 280;
+export const NODE_HEIGHT = 104;
+export const NODE_X_SPACING = 400;
+export const NODE_Y_SPACING = 208;
 
-export const CLUSTER_WIDTH = 280;
-export const CLUSTER_HEIGHT = 118;
+export const CLUSTER_WIDTH = 320;
+export const CLUSTER_HEIGHT = 140;
 
 export const BUS_CHANNEL_WIDTH = 32;
 export const BUS_CHANNEL_HEIGHT = 720;
+export const BUS_PILLAR_WIDTH = 36;
+export const BUS_COMPACT_WIDTH = 280;
+export const BUS_COMPACT_HEIGHT = 52;
+export const BUS_COMPACT_GAP = 16;
 
 export const EXPAND_THRESHOLD = 12;
 export const MIN_COLUMNS = 3;
@@ -65,5 +69,5 @@ export const TYPE_GROUP_ORDER: ComponentType[] = [
   "debug",
 ];
 
-export const LARGE_GRAPH_THRESHOLD = 1000;
+export const RECOMMENDED_MAX_COMPONENTS = 150;
 export const CANVAS_THRESHOLD = 2000;

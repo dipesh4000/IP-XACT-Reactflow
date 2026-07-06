@@ -7,19 +7,24 @@ interface SelectionStore {
   selectedNodeIds: Set<string>;
   expandedNodeId: string | null;
   searchQuery: string;
+  /** Selected node(s) and their direct neighbors — used for selection focus. */
   highlightedNodeIds: Set<string>;
   highlightedEdgeIds: Set<string>;
+  /** Name matches while the search field has a query. */
+  searchMatchNodeIds: Set<string>;
   selectNode: (id: string | null, options?: { additive?: boolean }) => void;
   clearSelection: () => void;
   expandNode: (id: string | null) => void;
   setSearchQuery: (query: string) => void;
+  setSearchMatches: (ids: Set<string>) => void;
 }
 
 function emptySets() {
   return {
     highlightedNodeIds: new Set<string>(),
     highlightedEdgeIds: new Set<string>(),
-    selectedNodeIds: new Set<string>()
+    selectedNodeIds: new Set<string>(),
+    searchMatchNodeIds: new Set<string>(),
   };
 }
 
@@ -117,5 +122,6 @@ export const useSelectionStore = create<SelectionStore>((set) => ({
     set({ selectedNodeId: null, ...emptySets() });
   },
   expandNode: (id) => set((state) => ({ expandedNodeId: state.expandedNodeId === id ? null : id })),
-  setSearchQuery: (query) => set({ searchQuery: query })
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  setSearchMatches: (ids) => set({ searchMatchNodeIds: ids }),
 }));

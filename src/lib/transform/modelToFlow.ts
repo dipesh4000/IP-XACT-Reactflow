@@ -1,16 +1,13 @@
 import { MarkerType } from "reactflow";
 import {
-  NODE_X_SPACING,
   NODE_Y_SPACING,
-  NODE_HEIGHT,
-  BUS_CHANNEL_HEIGHT,
-  BUS_CHANNEL_WIDTH,
+  BUS_PILLAR_WIDTH,
+  BUS_COMPACT_WIDTH,
+  BUS_COMPACT_HEIGHT,
+  BUS_COMPACT_GAP,
   NODE_WIDTH,
   CLUSTER_WIDTH,
   EXPAND_THRESHOLD,
-  MIN_COLUMNS,
-  MAX_COLUMNS,
-  LAYER_X,
 } from "../constants";
 import type {
   ArchitectureCluster,
@@ -27,14 +24,19 @@ import type {
 } from "../../types";
 import type { LayoutLayer } from "../preprocess/types";
 import type { PreprocessedArchitecture } from "../preprocess";
-import { buildHierarchy, findHierarchyNode, getDescendantIds } from "../clustering/hierarchyBuilder";
-
-function getFallbackColumnCount(nodeCount: number): number {
-  if (nodeCount <= MIN_COLUMNS) {
-    return Math.max(nodeCount, 1);
-  }
-  return Math.min(MAX_COLUMNS, Math.max(MIN_COLUMNS, Math.ceil(Math.sqrt(nodeCount * 1.2))));
-}
+import { buildHierarchy } from "../clustering/hierarchyBuilder";
+import { getComponentLayer } from "./layerAssignment";
+import { assignBusLayers } from "./busLayerAssignment";
+import {
+  centerLayoutHorizontally,
+  getBusChannelHeight,
+  getBusChannelTopY,
+  getBusColumnWidth,
+  getCompactBusStackHeight,
+  getLayerGridLayout,
+  getLayerGridPosition,
+  LAYER_BLOCK_GAP,
+} from "./layerGridLayout";
 
 function getDegreeMap(model: ArchitectureModel): Map<string, number> {
   const degree = new Map(model.components.map((component) => [component.id, 0]));
@@ -89,7 +91,9 @@ function makeBusChannelNode(
   component: Component,
   layer: LayoutLayer,
   x: number,
-  y: number
+  y: number,
+  channelHeight?: number,
+  display: "pillar" | "compact" = "pillar"
 ): ArchitectureFlowNode {
   return {
     id: component.id,
@@ -98,7 +102,9 @@ function makeBusChannelNode(
     data: {
       kind: "busChannel",
       component,
-      layer
+      layer,
+      channelHeight: display === "pillar" ? channelHeight : undefined,
+      display,
     } as BusChannelNodeData
   };
 }
@@ -291,19 +297,23 @@ function walkHierarchy(
 function layoutWithLayers(
   components: Component[],
   clusters: ArchitectureCluster[],
-  preprocessed?: PreprocessedArchitecture
+  preprocessed?: PreprocessedArchitecture,
+  degree?: Map<string, number>
 ): ArchitectureFlowNode[] {
   const nodes: ArchitectureFlowNode[] = [];
 
   const buses: Array<{ component: Component; layer: LayoutLayer }> = [];
   const nonBuses: Array<{ component: Component; layer: LayoutLayer }> = [];
+  const busComponents = components.filter((comp) => isBusType(comp.type));
+  const busLayerOverrides = assignBusLayers(busComponents, degree ?? new Map());
 
   for (const comp of components) {
     const meta = preprocessed?.componentMetadata.get(comp.id);
-    const layer = (meta?.layer ?? 3) as LayoutLayer;
     if (isBusType(comp.type)) {
+      const layer = busLayerOverrides.get(comp.id) ?? getComponentLayer(comp, meta?.layer);
       buses.push({ component: comp, layer });
     } else {
+      const layer = getComponentLayer(comp, meta?.layer);
       nonBuses.push({ component: comp, layer });
     }
   }
@@ -318,22 +328,6 @@ function layoutWithLayers(
     }
   }
 
-  const sortedLayers = [...layerGroups.keys()].sort((a, b) => a - b);
-
-  for (const layer of sortedLayers) {
-    const items = layerGroups.get(layer)!;
-    const x = LAYER_X[layer] ?? layer * 300;
-    const totalHeight = items.length * NODE_Y_SPACING;
-    const startY = -(totalHeight / 2) + (NODE_HEIGHT / 2);
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (!item) continue;
-      const y = startY + i * NODE_Y_SPACING;
-      nodes.push(makeComponentNode(item.component, item.layer, x, y));
-    }
-  }
-
   const busLayers = new Map<number, Array<{ component: Component; layer: LayoutLayer }>>();
   for (const item of buses) {
     const existing = busLayers.get(item.layer);
@@ -344,28 +338,75 @@ function layoutWithLayers(
     }
   }
 
-  for (const [layer, busItems] of busLayers) {
-    const x = LAYER_X[layer] ?? layer * 300;
-    const totalBusHeight = busItems.length * (BUS_CHANNEL_HEIGHT + 40);
-    const startY = -(totalBusHeight / 2) + (BUS_CHANNEL_HEIGHT / 2);
+  const layerIndices = new Set([...layerGroups.keys(), ...busLayers.keys()]);
+  const sortedLayers = [...layerIndices].sort((a, b) => a - b);
 
-    for (let i = 0; i < busItems.length; i++) {
-      const item = busItems[i];
-      if (!item) continue;
-      const y = startY + i * (BUS_CHANNEL_HEIGHT + 40);
-      nodes.push(makeBusChannelNode(item.component, item.layer, x, y));
+  const layerHeightsByIndex = new Map<number, number>();
+  for (const layer of sortedLayers) {
+    const compCount = layerGroups.get(layer)?.length ?? 0;
+    if (compCount > 0) {
+      layerHeightsByIndex.set(layer, getLayerGridLayout(compCount).height);
+    }
+  }
+
+  const busChannelHeight = getBusChannelHeight([...layerHeightsByIndex.values()]);
+  let cursorX = 0;
+
+  for (const layer of sortedLayers) {
+    const busItems = busLayers.get(layer) ?? [];
+    const compItems = layerGroups.get(layer)
+      ? [...layerGroups.get(layer)!].sort((a, b) => {
+          const degreeDelta = (degree?.get(b.component.id) ?? 0) - (degree?.get(a.component.id) ?? 0);
+          if (degreeDelta !== 0) return degreeDelta;
+          return a.component.name.localeCompare(b.component.name);
+        })
+      : [];
+
+    if (busItems.length > 0) {
+      if (busItems.length === 1) {
+        const item = busItems[0];
+        if (item) {
+          const busY = getBusChannelTopY(busChannelHeight);
+          nodes.push(
+            makeBusChannelNode(item.component, item.layer, cursorX, busY, busChannelHeight, "pillar")
+          );
+        }
+      } else {
+        const stackHeight = getCompactBusStackHeight(busItems.length);
+        const startY = -stackHeight / 2;
+        for (let i = 0; i < busItems.length; i++) {
+          const item = busItems[i];
+          if (!item) continue;
+          const y = startY + i * (BUS_COMPACT_HEIGHT + BUS_COMPACT_GAP);
+          nodes.push(makeBusChannelNode(item.component, item.layer, cursorX, y, undefined, "compact"));
+        }
+      }
+
+      cursorX += getBusColumnWidth(busItems.length) + LAYER_BLOCK_GAP;
+    }
+
+    if (compItems.length > 0) {
+      const grid = getLayerGridLayout(compItems.length);
+
+      for (let i = 0; i < compItems.length; i++) {
+        const item = compItems[i];
+        if (!item) continue;
+        const { x, y } = getLayerGridPosition(i, cursorX, grid);
+        nodes.push(makeComponentNode(item.component, item.layer, x, y));
+      }
+
+      cursorX += grid.width + LAYER_BLOCK_GAP;
     }
   }
 
   for (let i = 0; i < clusters.length; i++) {
     const cluster = clusters[i];
     if (!cluster) continue;
-    const clusterX = LAYER_X[4] ?? 1600;
     const clusterY = -200 + i * (CLUSTER_WIDTH + 80);
-    nodes.push(makeClusterNode(cluster, clusterX + 400, clusterY));
+    nodes.push(makeClusterNode(cluster, cursorX + 400, clusterY));
   }
 
-  return nodes;
+  return centerLayoutHorizontally(nodes);
 }
 
 export function modelToFlow(
@@ -402,7 +443,7 @@ export function modelToFlow(
     }
   }
 
-  const nodes = layoutWithLayers(visibleComponents, clusters, preprocessed);
+  const nodes = layoutWithLayers(visibleComponents, clusters, preprocessed, degree);
   const edges = aggregateEdges(model, componentToVisibleId, preprocessed?.connectionMetadata);
 
   return { nodes, edges };

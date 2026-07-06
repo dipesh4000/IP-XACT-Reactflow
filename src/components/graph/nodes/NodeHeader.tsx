@@ -1,19 +1,26 @@
 import { memo } from "react";
-import { TYPE_ICON } from "../../../lib/constants";
+import { TYPE_ICON, TYPE_LABEL } from "../../../lib/constants";
 import type { ComponentType } from "../../../types";
 
 interface NodeHeaderProps {
   name: string;
   type: ComponentType;
   color: string;
-  expanded: boolean;
   depth?: number;
   isExpandable?: boolean;
   isExpanded?: boolean;
   onExpand?: () => void;
 }
 
-export const NodeHeader = memo(function NodeHeader({ name, type, color, expanded, depth = 0, isExpandable, isExpanded, onExpand }: NodeHeaderProps) {
+export const NodeHeader = memo(function NodeHeader({
+  name,
+  type,
+  color,
+  depth = 0,
+  isExpandable,
+  isExpanded,
+  onExpand,
+}: NodeHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-3">
       {depth > 0 && (
@@ -24,22 +31,23 @@ export const NodeHeader = memo(function NodeHeader({ name, type, color, expanded
         </div>
       )}
       <div
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border text-[10px] font-black"
+        className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border text-xs font-black"
         style={{ borderColor: `${color}60`, color, backgroundColor: `${color}20` }}
       >
         {TYPE_ICON[type]}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-white">{name}</div>
-        {expanded ? <div className="mt-0.5 text-[11px] uppercase text-white/50">Component</div> : null}
+        <div className="truncate text-lg font-semibold leading-tight text-white drop-shadow-sm">{name}</div>
+        <div className="mt-0.5 truncate text-sm font-medium text-white/75">{TYPE_LABEL[type]}</div>
       </div>
       {isExpandable && (
         <button
-          className="shrink-0 rounded-lg p-1.5 transition text-white/60 hover:bg-white/10 hover:text-white"
+          className="shrink-0 rounded-lg p-1.5 text-white/60 transition hover:bg-white/10 hover:text-white"
           onClick={(e) => {
             e.stopPropagation();
             onExpand?.();
           }}
+          type="button"
         >
           <svg
             className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""}`}

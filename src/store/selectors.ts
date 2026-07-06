@@ -1,15 +1,24 @@
 import { useArchitectureStore } from "./architectureStore";
 import { useSelectionStore } from "./selectionStore";
+import { isEdgeDimmed, isEdgeHighlighted } from "../lib/focus/nodeFocus";
 import type { EdgeVisualState } from "../types";
 
 export function getEdgeVisualState(edgeId: string): EdgeVisualState {
   const selection = useSelectionStore.getState();
 
-  if (selection.highlightedEdgeIds.has(edgeId)) {
+  if (isEdgeHighlighted(edgeId, selection.highlightedEdgeIds)) {
     return "highlighted";
   }
 
-  if (selection.selectedNodeIds.size > 0) {
+  if (
+    isEdgeDimmed(edgeId, {
+      selectedNodeIds: selection.selectedNodeIds,
+      selectionFocusNodeIds: selection.highlightedNodeIds,
+      selectionFocusEdgeIds: selection.highlightedEdgeIds,
+      searchQuery: selection.searchQuery,
+      searchMatchNodeIds: selection.searchMatchNodeIds,
+    })
+  ) {
     return "dimmed";
   }
 

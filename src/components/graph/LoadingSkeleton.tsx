@@ -8,7 +8,7 @@ interface SkeletonNodeProps {
   delay?: number;
 }
 
-function SkeletonNodeComponent({ x, y, width = 220, height = 88, delay = 0 }: SkeletonNodeProps) {
+function SkeletonNodeComponent({ x, y, width = 280, height = 104, delay = 0 }: SkeletonNodeProps) {
   return (
     <div
       className="absolute animate-pulse rounded-xl border border-white/5 bg-gradient-to-br from-shell-800/50 to-shell-950/50"

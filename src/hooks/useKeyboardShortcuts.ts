@@ -4,6 +4,7 @@ export interface KeyboardShortcutHandlers {
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onFitView?: () => void;
+  onFind?: () => void;
   onOpenFile?: () => void;
   onExport?: () => void;
   onExportSelection?: () => void;
@@ -47,6 +48,18 @@ export function useKeyboardShortcuts(handlers: KeyboardShortcutHandlers, enabled
       if (mod && event.key === "-") {
         event.preventDefault();
         current.onZoomOut?.();
+        return;
+      }
+
+      if (mod && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        current.onFind?.();
+        return;
+      }
+
+      if (!mod && !event.shiftKey && !event.altKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        current.onFitView?.();
         return;
       }
 

@@ -7,15 +7,16 @@ export interface NodeColorTokens {
   text: string;
 }
 
+/** Bold, saturated palette shared by canvas nodes and SVG export. */
 export const nodeColorMap = {
-  cpu: { base: "#2563eb", border: "#60a5fa", glow: "rgba(37, 99, 235, 0.38)", text: "#dbeafe" },
-  bus: { base: "#7c3aed", border: "#a78bfa", glow: "rgba(124, 58, 237, 0.36)", text: "#ede9fe" },
-  memory: { base: "#16a34a", border: "#4ade80", glow: "rgba(22, 163, 74, 0.34)", text: "#dcfce7" },
-  peripheral: { base: "#ea580c", border: "#fb923c", glow: "rgba(234, 88, 12, 0.32)", text: "#ffedd5" },
-  interface: { base: "#0891b2", border: "#22d3ee", glow: "rgba(8, 145, 178, 0.34)", text: "#cffafe" },
-  clockReset: { base: "#dc2626", border: "#f87171", glow: "rgba(220, 38, 38, 0.34)", text: "#fee2e2" },
-  custom: { base: "#64748b", border: "#94a3b8", glow: "rgba(100, 116, 139, 0.34)", text: "#f1f5f9" },
-  dma: { base: "#0d9488", border: "#2dd4bf", glow: "rgba(13, 148, 136, 0.34)", text: "#ccfbf1" },
-  interruptController: { base: "#c026d3", border: "#e879f9", glow: "rgba(192, 38, 211, 0.34)", text: "#f5d0fe" },
-  debug: { base: "#475569", border: "#94a3b8", glow: "rgba(71, 85, 105, 0.34)", text: "#e2e8f0" }
+  cpu: { base: "#1d4ed8", border: "#3b82f6", glow: "rgba(59, 130, 246, 0.55)", text: "#eff6ff" },
+  bus: { base: "#6d28d9", border: "#8b5cf6", glow: "rgba(139, 92, 246, 0.52)", text: "#f5f3ff" },
+  memory: { base: "#15803d", border: "#22c55e", glow: "rgba(34, 197, 94, 0.5)", text: "#ecfdf5" },
+  peripheral: { base: "#c2410c", border: "#f97316", glow: "rgba(249, 115, 22, 0.5)", text: "#fff7ed" },
+  interface: { base: "#0e7490", border: "#06b6d4", glow: "rgba(6, 182, 212, 0.5)", text: "#ecfeff" },
+  clockReset: { base: "#b91c1c", border: "#ef4444", glow: "rgba(239, 68, 68, 0.5)", text: "#fef2f2" },
+  custom: { base: "#7e22ce", border: "#a855f7", glow: "rgba(168, 85, 247, 0.5)", text: "#faf5ff" },
+  dma: { base: "#0f766e", border: "#14b8a6", glow: "rgba(20, 184, 166, 0.5)", text: "#f0fdfa" },
+  interruptController: { base: "#a21caf", border: "#d946ef", glow: "rgba(217, 70, 239, 0.5)", text: "#fdf4ff" },
+  debug: { base: "#3f3f46", border: "#71717a", glow: "rgba(113, 113, 122, 0.45)", text: "#fafafa" },
 } satisfies Record<ComponentType, NodeColorTokens>;

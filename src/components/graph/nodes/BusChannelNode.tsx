@@ -1,118 +1,96 @@
 import clsx from "clsx";
 import { memo, type CSSProperties } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
+import {
+  BUS_COMPACT_HEIGHT,
+  BUS_COMPACT_WIDTH,
+  BUS_CHANNEL_HEIGHT,
+  BUS_PILLAR_WIDTH,
+} from "../../../lib/constants";
 import { nodeColorMap } from "../../../lib/transform/colorMap";
 import type { ArchitectureNodeData, BusChannelNodeData } from "../../../types";
-import { useNodeHighlighting } from "../../../hooks/useNodeHighlighting";
+import { useNodeFocus } from "../../../hooks/useNodeFocus";
+import { NodeDimOverlay } from "./NodeShell";
 
-const BUS_CHANNEL_WIDTH = 32;
-const BUS_CHANNEL_HEIGHT = 720;
+const handleClass =
+  "!h-2.5 !w-2.5 !rounded-full !border-2 !border-white/30 !bg-white/75 hover:!border-white hover:!bg-white";
 
 function BusChannelNodeComponent({ id, data }: NodeProps<ArchitectureNodeData>) {
   if (data.kind !== "busChannel") return null;
 
   const busData = data as BusChannelNodeData;
   const colors = nodeColorMap[busData.component.type];
-  const { isSelected, isDimmed } = useNodeHighlighting(id);
+  const { isSelected, isDimmed } = useNodeFocus(id);
+  const isCompact = busData.display === "compact";
+  const width = isCompact ? BUS_COMPACT_WIDTH : BUS_PILLAR_WIDTH;
+  const height = isCompact ? BUS_COMPACT_HEIGHT : (busData.channelHeight ?? BUS_CHANNEL_HEIGHT);
+
+  const shellClass = clsx(
+    "bus-channel-node group relative cursor-pointer transition-[filter,transform] duration-200",
+    isDimmed && "brightness-[0.42] saturate-[0.7]",
+    !isDimmed && "hover:brightness-110"
+  );
+
+  if (isCompact) {
+    return (
+      <div className={shellClass} style={{ width, height }}>
+        <Handle className={handleClass} id={`left:${id}`} type="target" position={Position.Left} style={{ top: "50%" }} />
+        <Handle className={handleClass} id={`right:${id}`} type="source" position={Position.Right} style={{ top: "50%" }} />
+
+        <div
+          className={clsx(
+            "relative flex h-full items-center gap-2.5 overflow-hidden rounded-lg border-2 px-3 shadow-node transition-all duration-150",
+            isSelected ? "z-10 border-white ring-2 ring-white ring-offset-2 ring-offset-neutral-950" : "border-white/30"
+          )}
+          style={{
+            background: `linear-gradient(135deg, ${colors.base} 0%, ${colors.border} 100%)`,
+            boxShadow: isSelected ? `0 0 28px ${colors.glow}, 0 0 0 1px rgba(255,255,255,0.2)` : undefined,
+          }}
+        >
+          <NodeDimOverlay dimmed={isDimmed} />
+          <span className="relative z-[2] shrink-0 rounded-md border border-white/25 bg-white/20 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-white">
+            Bus
+          </span>
+          <span className="relative z-[2] min-w-0 truncate text-base font-semibold text-white">{busData.component.name}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className={clsx(
-        "bus-channel-node group relative transition duration-150",
-        isDimmed && "opacity-30 grayscale"
-      )}
+      className={shellClass}
       style={
         {
-          width: BUS_CHANNEL_WIDTH,
-          height: BUS_CHANNEL_HEIGHT,
-          "--bus-color": colors.base,
-          "--bus-border": colors.border,
-          "--bus-glow": colors.glow
+          width,
+          height,
+          "--bus-glow": colors.glow,
         } as CSSProperties
       }
     >
-      <Handle
-        className="!h-3 !w-1 !rounded-full !border-0 !bg-white/60 hover:!bg-white"
-        id={`left:${id}`}
-        type="target"
-        position={Position.Left}
-        style={{ top: "50%" }}
-      />
-      <Handle
-        className="!h-3 !w-1 !rounded-full !border-0 !bg-white/60 hover:!bg-white"
-        id={`right:${id}`}
-        type="source"
-        position={Position.Right}
-        style={{ top: "50%" }}
-      />
+      <Handle className={handleClass} id={`left:${id}`} type="target" position={Position.Left} style={{ top: "50%" }} />
+      <Handle className={handleClass} id={`right:${id}`} type="source" position={Position.Right} style={{ top: "50%" }} />
 
       <div
         className={clsx(
-          "absolute inset-0 rounded-md border-2 transition-all duration-150",
-          isSelected && "ring-2 ring-white shadow-lg"
+          "absolute inset-0 rounded-md border-2 shadow-node transition-all duration-150",
+          isSelected ? "z-10 border-white ring-2 ring-white ring-offset-2 ring-offset-neutral-950" : "border-white/35"
         )}
         style={{
-          backgroundColor: colors.base,
-          borderColor: isSelected ? "#ffffff" : colors.border,
-          boxShadow: isSelected ? `0 0 20px ${colors.glow}` : "none"
+          background: `linear-gradient(180deg, ${colors.base} 0%, ${colors.border} 100%)`,
+          boxShadow: isSelected ? `0 0 28px ${colors.glow}, 0 0 0 1px rgba(255,255,255,0.2)` : undefined,
         }}
       >
-        {/* Top accent */}
+        <NodeDimOverlay dimmed={isDimmed} />
         <div
-          className="absolute left-0 top-0 h-1.5 w-full rounded-t-md"
-          style={{ backgroundColor: colors.border }}
-        />
-        {/* Bottom accent */}
-        <div
-          className="absolute bottom-0 left-0 h-1.5 w-full rounded-b-md"
-          style={{ backgroundColor: colors.border }}
-        />
-        {/* Left accent line */}
-        <div
-          className="absolute left-0 top-1.5 h-[calc(100%-12px)] w-1"
-          style={{ backgroundColor: colors.border }}
-        />
-        {/* Right accent line */}
-        <div
-          className="absolute right-0 top-1.5 h-[calc(100%-12px)] w-1"
-          style={{ backgroundColor: colors.border }}
-        />
-        {/* Vertical text */}
-        <div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-x-1 top-2 bottom-2 z-[2] flex items-center justify-center"
           style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         >
-          <div className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[8px] font-black"
-              style={{
-                color: colors.text,
-                backgroundColor: `${colors.border}30`,
-                border: `2px solid ${colors.border}`
-              }}
-            >
-              BUS
-            </div>
-            <span className="text-xs font-bold text-white">
-              {busData.component.name}
-            </span>
-          </div>
+          <span className="text-sm font-bold tracking-wide text-white">{busData.component.name}</span>
         </div>
       </div>
     </div>
   );
 }
 
-export const BusChannelNode = memo(BusChannelNodeComponent, (previous, next) => {
-  if (previous.id !== next.id) return false;
-  if (previous.selected !== next.selected) return false;
-  if (previous.data.kind !== "busChannel" || next.data.kind !== "busChannel") return false;
-  const prev = previous.data as BusChannelNodeData;
-  const nextData = next.data as BusChannelNodeData;
-  return (
-    prev.component.id === nextData.component.id &&
-    prev.component.name === nextData.component.name &&
-    prev.component.type === nextData.component.type &&
-    prev.layer === nextData.layer
-  );
-});
+export const BusChannelNode = memo(BusChannelNodeComponent);

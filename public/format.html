@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ip-xact — Excel Format</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #06080d;
+        --panel: #0b1018;
+        --border: rgba(255, 255, 255, 0.1);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #22d3ee;
+        --header: #1e293b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      main { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+      h1 { font-size: 1.75rem; margin: 0 0 8px; }
+      h2 { font-size: 1.1rem; margin: 28px 0 10px; color: #f8fafc; }
+      p { color: var(--muted); }
+      a { color: var(--accent); }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+        font-size: 0.92rem;
+      }
+      th, td {
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        text-align: left;
+      }
+      th {
+        background: var(--header);
+        color: #f1f5f9;
+        font-weight: 600;
+      }
+      td { background: var(--panel); color: #cbd5e1; }
+      .note {
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(34, 211, 238, 0.25);
+        background: rgba(34, 211, 238, 0.06);
+        color: #bae6fd;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Excel circuit format</h1>
+      <p>
+        Each row describes one node and its primary connection. The first row must be the header row shown below.
+        Upload the workbook to the viewer or POST it to the circuit API.
+      </p>
+
+      <h2>Required columns</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Node</th>
+            <th>Connects_To</th>
+            <th>Type</th>
+            <th>Ports</th>
+            <th>Registers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>UART</td>
+            <td>APB_BUS</td>
+            <td>Component</td>
+            <td>clk,rst,tx,rx</td>
+            <td>CTRL,STATUS</td>
+          </tr>
+          <tr>
+            <td>APB_BUS</td>
+            <td>CPU</td>
+            <td>Bus</td>
+            <td>paddr,pwrite</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>CPU</td>
+            <td>UART</td>
+            <td>Component</td>
+            <td>irq</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Column reference</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Description</th>
+            <th>Required</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Node</strong></td>
+            <td>Unique name of the component or bus instance.</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><strong>Connects_To</strong></td>
+            <td>Name of the node this row connects to (creates a directed edge).</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><strong>Type</strong></td>
+            <td><code>Component</code>, <code>Bus</code>, <code>CPU</code>, <code>Memory</code>, etc.</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><strong>Ports</strong></td>
+            <td>Comma-separated port names (no spaces), e.g. <code>clk,rst,tx,rx</code>.</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><strong>Registers</strong></td>
+            <td>Comma-separated register names. Leave empty if none.</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        Ports and registers use comma separation only — do not add spaces after commas.
+        Type values are mapped to viewer categories (e.g. Bus → bus, Component → peripheral).
+      </div>
+
+      <p style="margin-top: 24px">
+        <a href="/docs.html">Back to docs</a> ·
+        <a href="/sample-circuit.xlsx" download>Download sample .xlsx</a>
+      </p>
+    </main>
+  </body>
+</html>

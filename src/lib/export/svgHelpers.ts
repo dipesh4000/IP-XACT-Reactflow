@@ -1,5 +1,5 @@
 import type { ArchitectureFlowEdge, ArchitectureFlowNode } from "../../types";
-import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_WIDTH, BUS_CHANNEL_HEIGHT } from "../constants";
+import { NODE_WIDTH, NODE_HEIGHT, CLUSTER_WIDTH, CLUSTER_HEIGHT, BUS_CHANNEL_HEIGHT, BUS_PILLAR_WIDTH, BUS_COMPACT_WIDTH, BUS_COMPACT_HEIGHT } from "../constants";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -22,7 +22,13 @@ export interface Point {
 
 export function getNodeSize(node: ArchitectureFlowNode): Size {
   if (node.data.kind === "busChannel") {
-    return { width: BUS_CHANNEL_WIDTH, height: BUS_CHANNEL_HEIGHT };
+    if (node.data.display === "compact") {
+      return { width: BUS_COMPACT_WIDTH, height: BUS_COMPACT_HEIGHT };
+    }
+    return {
+      width: BUS_PILLAR_WIDTH,
+      height: node.data.channelHeight ?? BUS_CHANNEL_HEIGHT,
+    };
   }
   if (node.data.kind === "cluster") {
     return { width: CLUSTER_WIDTH, height: CLUSTER_HEIGHT };
@@ -122,4 +128,59 @@ export function addRect(parent: SVGGElement | SVGSVGElement, attrs: Record<strin
 
 export function addRoundRect(parent: SVGGElement | SVGSVGElement, attrs: Record<string, string>): SVGRectElement {
   return addRect(parent, { rx: "10", ry: "10", ...attrs });
+}
+
+export function addLinearGradient(
+  defs: SVGDefsElement,
+  id: string,
+  from: string,
+  to: string,
+  direction: "horizontal" | "vertical" = "vertical"
+): void {
+  const gradient = createElement("linearGradient", {
+    id,
+    x1: "0%",
+    y1: direction === "vertical" ? "0%" : "0%",
+    x2: direction === "horizontal" ? "100%" : "0%",
+    y2: direction === "vertical" ? "100%" : "0%",
+  });
+  gradient.appendChild(createElement("stop", { offset: "0%", "stop-color": from }));
+  gradient.appendChild(createElement("stop", { offset: "100%", "stop-color": to }));
+  defs.appendChild(gradient);
+}
+
+export function addExportFilters(defs: SVGDefsElement): void {
+  const filter = createElement("filter", {
+    id: "export-node-shadow",
+    x: "-20%",
+    y: "-20%",
+    width: "140%",
+    height: "140%",
+  });
+  filter.appendChild(createElement("feDropShadow", {
+    dx: "0",
+    dy: "4",
+    stdDeviation: "6",
+    "flood-color": "#000000",
+    "flood-opacity": "0.45",
+  }));
+  defs.appendChild(filter);
+}
+
+export function addExportBackgroundPattern(defs: SVGDefsElement): void {
+  const pattern = createElement("pattern", {
+    id: "export-dot-grid",
+    width: "24",
+    height: "24",
+    patternUnits: "userSpaceOnUse",
+  });
+  pattern.appendChild(createElement("circle", {
+    cx: "1",
+    cy: "1",
+    r: "1",
+    fill: "rgba(148, 163, 184, 0.12)",
+  }));
+  defs.appendChild(pattern);
+
+  addLinearGradient(defs, "export-bg-gradient", "#0a0a0a", "#111111", "vertical");
 }

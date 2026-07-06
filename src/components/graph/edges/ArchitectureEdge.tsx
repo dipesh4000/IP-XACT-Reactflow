@@ -1,49 +1,48 @@
 import { memo, useMemo } from "react";
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath } from "reactflow";
 import { getEdgeStyle as getEdgeStyleBase } from "../../../lib/edgeStyles";
+import { isEdgeDimmed, isEdgeHighlighted } from "../../../lib/focus/nodeFocus";
 import { useSelectionStore } from "../../../store/selectionStore";
-import { useSettingsStore } from "../../../store/settingsStore";
 import type { ArchitectureEdgeData } from "../../../types";
 
 function getEdgeStyle(
   connectionType: ArchitectureEdgeData["connectionType"],
   highlighted: boolean,
   dimmed: boolean,
-  isClusterEdge: boolean,
-  isDark: boolean
+  isClusterEdge: boolean
 ): React.CSSProperties {
   if (highlighted) {
     return {
-      stroke: isDark ? "#67e8f9" : "#0369a1",
+      stroke: "#e5e5e5",
       strokeWidth: 4,
       opacity: 0.96,
-      strokeDasharray: "7 5"
+      strokeDasharray: "7 5",
     };
   }
 
   if (dimmed) {
     return {
-      stroke: isDark ? "#64748b" : "#94a3b8",
-      strokeWidth: 1.5,
-      opacity: 0.15
+      stroke: "#404040",
+      strokeWidth: 1.25,
+      opacity: 0.07,
     };
   }
 
   if (isClusterEdge) {
     return {
-      stroke: isDark ? "#818cf8" : "#6366f1",
+      stroke: "#a3a3a3",
       strokeWidth: 2,
       opacity: 0.6,
-      strokeDasharray: "4 3"
+      strokeDasharray: "4 3",
     };
   }
 
-  const style = getEdgeStyleBase(connectionType, isDark);
+  const style = getEdgeStyleBase(connectionType);
   return {
     stroke: style.color,
     strokeWidth: style.width,
     opacity: style.opacity,
-    strokeDasharray: style.dash
+    strokeDasharray: style.dash,
   };
 }
 
@@ -57,14 +56,18 @@ function ArchitectureEdgeComponent({
   targetPosition,
   data,
   source,
-  target
+  target,
 }: EdgeProps<ArchitectureEdgeData>) {
-  const highlighted = useSelectionStore((state) => state.highlightedEdgeIds.has(id));
-  const hasSelection = useSelectionStore((state) => state.selectedNodeIds.size > 0);
-  const dimmed = hasSelection && !highlighted;
-  const theme = useSettingsStore((state) => state.theme);
-  const isDark = theme === "dark";
-
+  const highlighted = useSelectionStore((state) => isEdgeHighlighted(id, state.highlightedEdgeIds));
+  const dimmed = useSelectionStore((state) =>
+    isEdgeDimmed(id, {
+      selectedNodeIds: state.selectedNodeIds,
+      selectionFocusNodeIds: state.highlightedNodeIds,
+      selectionFocusEdgeIds: state.highlightedEdgeIds,
+      searchQuery: state.searchQuery,
+      searchMatchNodeIds: state.searchMatchNodeIds,
+    })
+  );
   const isClusterEdge = source.startsWith("hierarchy:") || target.startsWith("hierarchy:");
 
   const pathFn = useMemo(() => {
@@ -75,19 +78,12 @@ function ArchitectureEdgeComponent({
       targetY,
       sourcePosition,
       targetPosition,
-      borderRadius: 8
+      borderRadius: 8,
     });
   }, [sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition]);
 
   const [edgePath, labelX, labelY] = pathFn;
-
-  const style = getEdgeStyle(
-    data?.connectionType,
-    highlighted,
-    dimmed,
-    isClusterEdge,
-    isDark
-  );
+  const style = getEdgeStyle(data?.connectionType, highlighted, dimmed, isClusterEdge);
 
   return (
     <>
@@ -100,21 +96,17 @@ function ArchitectureEdgeComponent({
       {highlighted && data ? (
         <EdgeLabelRenderer>
           <div
-            className={`pointer-events-none absolute rounded-lg border px-2.5 py-1.5 text-[10px] shadow-lg ${
-              isDark
-                ? "border-cyan-300/30 bg-shell-950/95 text-cyan-100"
-                : "border-slate-300 bg-white text-slate-800"
-            }`}
+            className="pointer-events-none absolute rounded-lg border border-white/15 bg-neutral-950/95 px-2.5 py-1.5 text-[10px] text-slate-200 shadow-lg"
             style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
           >
-            <div className="font-medium">{data.connection.sourcePortId} → {data.connection.targetPortId}</div>
+            <div className="font-medium">
+              {data.connection.sourcePortId} → {data.connection.targetPortId}
+            </div>
             {data.connectionType && (
-              <div className={`mt-0.5 text-[9px] uppercase tracking-wide ${isDark ? "text-cyan-300/80" : "text-cyan-700"}`}>
-                {data.connectionType}
-              </div>
+              <div className="mt-0.5 text-[9px] uppercase tracking-wide text-slate-400">{data.connectionType}</div>
             )}
             {data.connectionCount && data.connectionCount > 1 && (
-              <span className={isDark ? "text-cyan-300" : "text-cyan-600"}>({data.connectionCount}x)</span>
+              <span className="text-slate-300">({data.connectionCount}x)</span>
             )}
           </div>
         </EdgeLabelRenderer>

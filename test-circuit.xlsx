@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<circuit>
+  <node name="UART" type="Component" connects_to="APB_BUS" ports="clk,rst,tx,rx" registers="CTRL,STATUS"/>
+  <node name="APB_BUS" type="Bus" connects_to="CPU" ports="paddr,pwrite"/>
+  <node name="CPU" type="Component" connects_to="UART" ports="irq"/>
+</circuit>

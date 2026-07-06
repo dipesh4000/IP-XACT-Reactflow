@@ -13,7 +13,6 @@ function getPortDirectionColor(direction: string): { dot: string; bg: string; te
 
 function buildSidebarPanel(
   node: ArchitectureFlowNode,
-  isDark: boolean,
   sidebarX: number,
   sidebarY: number,
   panelHeight: number
@@ -25,8 +24,8 @@ function buildSidebarPanel(
     y: String(sidebarY),
     width: String(SIDEBAR_WIDTH),
     height: String(panelHeight),
-    fill: isDark ? "#0b1018" : "#fffcf9",
-    stroke: isDark ? "rgba(255,255,255,0.1)" : "#e5e0d8",
+    fill: "#0b1018",
+    stroke: "rgba(255,255,255,0.1)",
     "stroke-width": "1"
   });
 
@@ -36,7 +35,7 @@ function buildSidebarPanel(
     const cx = sidebarX + SIDEBAR_WIDTH / 2;
     const cy = sidebarY + panelHeight / 2;
     addText(group, cx, cy, `Bus Channel: ${comp.name}`, {
-      fill: isDark ? "#e2e8f0" : "#1a1a1a",
+      fill: "#e2e8f0",
       "font-size": "16px",
       "font-weight": "600",
       "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
@@ -100,13 +99,13 @@ function buildSidebarPanel(
   });
 
   addText(group, textX, y + 38, name, {
-    fill: isDark ? "#f8fafc" : "#0f172a",
+    fill: "#f8fafc",
     "font-size": "16px",
     "font-weight": "600",
     "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
   });
   addText(group, textX, y + 56, id, {
-    fill: isDark ? "#64748b" : "#94a3b8",
+    fill: "#64748b",
     "font-size": "11px",
     "font-family": "SFMono-Regular, ui-monospace, monospace"
   });
@@ -117,7 +116,7 @@ function buildSidebarPanel(
     y: String(y),
     width: String(SIDEBAR_WIDTH),
     height: "1",
-    fill: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"
+    fill: "rgba(255,255,255,0.1)"
   });
   y += 4;
 
@@ -132,14 +131,14 @@ function buildSidebarPanel(
       const label = i === 0 ? "Ports" : i === 1 ? "Registers" : "Connections";
       const value = i === 0 ? ports : i === 1 ? registers : ports + registers;
       addText(group, sx + statWidth / 2, statsY + 4, String(value), {
-        fill: isDark ? "#e2e8f0" : "#334155",
+        fill: "#e2e8f0",
         "font-size": "18px",
         "font-weight": "600",
         "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
         "text-anchor": "middle"
       });
       addText(group, sx + statWidth / 2, statsY + 20, label.toUpperCase(), {
-        fill: isDark ? "#64748b" : "#94a3b8",
+        fill: "#64748b",
         "font-size": "10px",
         "font-weight": "500",
         "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
@@ -153,12 +152,12 @@ function buildSidebarPanel(
       y: String(y),
       width: String(SIDEBAR_WIDTH),
       height: "1",
-      fill: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"
+      fill: "rgba(255,255,255,0.1)"
     });
     y += 12;
 
     addText(group, sidebarX + SIDEBAR_PADDING, y + 4, "PORTS", {
-      fill: isDark ? "#64748b" : "#94a3b8",
+      fill: "#64748b",
       "font-size": "11px",
       "font-weight": "600",
       "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
@@ -173,8 +172,8 @@ function buildSidebarPanel(
         y: String(y),
         width: String(SIDEBAR_WIDTH - SIDEBAR_PADDING * 2),
         height: "28",
-        fill: isDark ? "rgba(255,255,255,0.03)" : "#f8fafc",
-        stroke: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+        fill: "rgba(255,255,255,0.03)",
+        stroke: "rgba(255,255,255,0.05)",
         "stroke-width": "1"
       });
 
@@ -186,7 +185,7 @@ function buildSidebarPanel(
         fill: dirColors.dot
       });
       addText(group, sidebarX + SIDEBAR_PADDING + 24, y + 18, port.name, {
-        fill: isDark ? "#e2e8f0" : "#334155",
+        fill: "#e2e8f0",
         "font-size": "13px",
         "font-weight": "500",
         "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -208,7 +207,7 @@ function buildSidebarPanel(
 
       if (port.width) {
         addText(group, sidebarX + SIDEBAR_WIDTH - SIDEBAR_PADDING - 16, y + 18, `${port.width}b`, {
-          fill: isDark ? "#64748b" : "#94a3b8",
+          fill: "#64748b",
           "font-size": "11px",
           "font-family": "SFMono-Regular, ui-monospace, monospace",
           "text-anchor": "end"
@@ -224,12 +223,12 @@ function buildSidebarPanel(
         y: String(y),
         width: String(SIDEBAR_WIDTH),
         height: "1",
-        fill: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"
+        fill: "rgba(255,255,255,0.1)"
       });
       y += 12;
 
       addText(group, sidebarX + SIDEBAR_PADDING, y + 4, "REGISTERS", {
-        fill: isDark ? "#64748b" : "#94a3b8",
+        fill: "#64748b",
         "font-size": "11px",
         "font-weight": "600",
         "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
@@ -243,12 +242,12 @@ function buildSidebarPanel(
           y: String(y),
           width: String(SIDEBAR_WIDTH - SIDEBAR_PADDING * 2),
           height: "28",
-          fill: isDark ? "rgba(255,255,255,0.03)" : "#f8fafc",
-          stroke: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+          fill: "rgba(255,255,255,0.03)",
+          stroke: "rgba(255,255,255,0.05)",
           "stroke-width": "1"
         });
         addText(group, sidebarX + SIDEBAR_PADDING + 12, y + 18, reg.name, {
-          fill: isDark ? "#e2e8f0" : "#334155",
+          fill: "#e2e8f0",
           "font-size": "13px",
           "font-weight": "500",
           "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -259,10 +258,10 @@ function buildSidebarPanel(
             y: String(y + 6),
             width: String(reg.address.length * 7 + 12),
             height: "16",
-            fill: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"
+            fill: "rgba(255,255,255,0.05)"
           });
           addText(group, sidebarX + SIDEBAR_WIDTH - SIDEBAR_PADDING - 70 + 6, y + 17, reg.address, {
-            fill: isDark ? "#94a3b8" : "#64748b",
+            fill: "#94a3b8",
             "font-size": "10px",
             "font-family": "SFMono-Regular, ui-monospace, monospace"
           });
@@ -272,7 +271,7 @@ function buildSidebarPanel(
     }
   } else if (cluster) {
     addText(group, sidebarX + SIDEBAR_PADDING, y + 4, "CLUSTER", {
-      fill: isDark ? "#64748b" : "#94a3b8",
+      fill: "#64748b",
       "font-size": "11px",
       "font-weight": "600",
       "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",
@@ -281,7 +280,7 @@ function buildSidebarPanel(
     y += 16;
 
     addText(group, sidebarX + SIDEBAR_PADDING, y + 4, `${cluster.componentCount} components`, {
-      fill: isDark ? "#e2e8f0" : "#334155",
+      fill: "#e2e8f0",
       "font-size": "13px",
       "font-weight": "500",
       "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -296,8 +295,8 @@ function buildSidebarPanel(
           y: String(y),
           width: String(SIDEBAR_WIDTH - SIDEBAR_PADDING * 2),
           height: "28",
-          fill: isDark ? "rgba(255,255,255,0.03)" : "#f8fafc",
-          stroke: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+          fill: "rgba(255,255,255,0.03)",
+          stroke: "rgba(255,255,255,0.05)",
           "stroke-width": "1"
         });
         addRect(group, {
@@ -308,13 +307,13 @@ function buildSidebarPanel(
           fill: tColors.base
         });
         addText(group, sidebarX + SIDEBAR_PADDING + 24, y + 18, t, {
-          fill: isDark ? "#e2e8f0" : "#334155",
+          fill: "#e2e8f0",
           "font-size": "13px",
           "font-weight": "500",
           "font-family": "Inter, ui-sans-serif, system-ui, sans-serif"
         });
         addText(group, sidebarX + SIDEBAR_WIDTH - SIDEBAR_PADDING - 12, y + 18, `×${count}`, {
-          fill: isDark ? "#94a3b8" : "#64748b",
+          fill: "#94a3b8",
           "font-size": "13px",
           "font-weight": "600",
           "font-family": "Inter, ui-sans-serif, system-ui, sans-serif",

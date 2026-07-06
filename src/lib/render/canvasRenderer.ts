@@ -362,7 +362,7 @@ function getNodeWidth(node: ArchitectureFlowNode): number {
 }
 
 function getNodeHeight(node: ArchitectureFlowNode): number {
-  if (node.data.kind === "busChannel") return BUS_CHANNEL_HEIGHT;
+  if (node.data.kind === "busChannel") return node.data.channelHeight ?? BUS_CHANNEL_HEIGHT;
   if (node.data.kind === "cluster") return CLUSTER_HEIGHT;
   return NODE_HEIGHT;
 }
