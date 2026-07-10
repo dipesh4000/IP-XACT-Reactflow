@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <component name="CPU0" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="rst"/>
+            <port name="irq"/>
+        </ports>
+        <registers>
+            <register name="PC"/>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="CPU1" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="rst"/>
+            <port name="irq"/>
+        </ports>
+        <registers>
+            <register name="PC"/>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="UART0" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="BAUD"/>
+        </registers>
+    </component>
+    <component name="UART1" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="BAUD"/>
+        </registers>
+    </component>
+    <component name="UART2" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="BAUD"/>
+        </registers>
+    </component>
+    <component name="UART3" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="BAUD"/>
+        </registers>
+    </component>
+    <component name="SPI0" type="Component">
+        <ports>
+            <port name="mosi"/>
+            <port name="miso"/>
+            <port name="sclk"/>
+            <port name="cs"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="DATA"/>
+        </registers>
+    </component>
+    <component name="SPI1" type="Component">
+        <ports>
+            <port name="mosi"/>
+            <port name="miso"/>
+            <port name="sclk"/>
+            <port name="cs"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="DATA"/>
+        </registers>
+    </component>
+    <component name="SPI2" type="Component">
+        <ports>
+            <port name="mosi"/>
+            <port name="miso"/>
+            <port name="sclk"/>
+            <port name="cs"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="DATA"/>
+        </registers>
+    </component>
+    <component name="I2C0" type="Component">
+        <ports>
+            <port name="sda"/>
+            <port name="scl"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="ADDR"/>
+        </registers>
+    </component>
+    <component name="I2C1" type="Component">
+        <ports>
+            <port name="sda"/>
+            <port name="scl"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="ADDR"/>
+        </registers>
+    </component>
+    <component name="I2C2" type="Component">
+        <ports>
+            <port name="sda"/>
+            <port name="scl"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+            <register name="ADDR"/>
+        </registers>
+    </component>
+    <component name="GPIO0" type="Component">
+        <ports>
+            <port name="in"/>
+            <port name="out"/>
+        </ports>
+        <registers>
+            <register name="DIR"/>
+            <register name="DATA"/>
+            <register name="INT"/>
+        </registers>
+    </component>
+    <component name="GPIO1" type="Component">
+        <ports>
+            <port name="in"/>
+            <port name="out"/>
+        </ports>
+        <registers>
+            <register name="DIR"/>
+            <register name="DATA"/>
+            <register name="INT"/>
+        </registers>
+    </component>
+    <component name="GPIO2" type="Component">
+        <ports>
+            <port name="in"/>
+            <port name="out"/>
+        </ports>
+        <registers>
+            <register name="DIR"/>
+            <register name="DATA"/>
+            <register name="INT"/>
+        </registers>
+    </component>
+    <component name="GPIO3" type="Component">
+        <ports>
+            <port name="in"/>
+            <port name="out"/>
+        </ports>
+        <registers>
+            <register name="DIR"/>
+            <register name="DATA"/>
+            <register name="INT"/>
+        </registers>
+    </component>
+    <component name="TIMER0" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="irq"/>
+        </ports>
+        <registers>
+            <register name="COUNT"/>
+            <register name="COMPARE"/>
+            <register name="CTRL"/>
+        </registers>
+    </component>
+    <component name="TIMER1" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="irq"/>
+        </ports>
+        <registers>
+            <register name="COUNT"/>
+            <register name="COMPARE"/>
+            <register name="CTRL"/>
+        </registers>
+    </component>
+    <component name="TIMER2" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="irq"/>
+        </ports>
+        <registers>
+            <register name="COUNT"/>
+            <register name="COMPARE"/>
+            <register name="CTRL"/>
+        </registers>
+    </component>
+    <component name="DMA0" type="Component">
+        <ports>
+            <port name="req"/>
+            <port name="ack"/>
+        </ports>
+        <registers>
+            <register name="SRC"/>
+            <register name="DST"/>
+            <register name="SIZE"/>
+        </registers>
+    </component>
+    <component name="DMA1" type="Component">
+        <ports>
+            <port name="req"/>
+            <port name="ack"/>
+        </ports>
+        <registers>
+            <register name="SRC"/>
+            <register name="DST"/>
+            <register name="SIZE"/>
+        </registers>
+    </component>
+    <component name="ADC0" type="Component">
+        <ports>
+            <port name="analog_in"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="RESULT"/>
+        </registers>
+    </component>
+    <component name="ADC1" type="Component">
+        <ports>
+            <port name="analog_in"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="RESULT"/>
+        </registers>
+    </component>
+    <component name="DAC0" type="Component">
+        <ports>
+            <port name="analog_out"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="VALUE"/>
+        </registers>
+    </component>
+    <component name="DAC1" type="Component">
+        <ports>
+            <port name="analog_out"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="VALUE"/>
+        </registers>
+    </component>
+    <component name="PWM0" type="Component">
+        <ports>
+            <port name="pwm_out"/>
+        </ports>
+        <registers>
+            <register name="DUTY"/>
+            <register name="PERIOD"/>
+        </registers>
+    </component>
+    <component name="PWM1" type="Component">
+        <ports>
+            <port name="pwm_out"/>
+        </ports>
+        <registers>
+            <register name="DUTY"/>
+            <register name="PERIOD"/>
+        </registers>
+    </component>
+    <component name="PWM2" type="Component">
+        <ports>
+            <port name="pwm_out"/>
+        </ports>
+        <registers>
+            <register name="DUTY"/>
+            <register name="PERIOD"/>
+        </registers>
+    </component>
+    <component name="ETH0" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="MAC"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="ETH1" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="MAC"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="CAN0" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="FILTER"/>
+        </registers>
+    </component>
+    <component name="CAN1" type="Component">
+        <ports>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="FILTER"/>
+        </registers>
+    </component>
+    <component name="USB0" type="Component">
+        <ports>
+            <port name="dp"/>
+            <port name="dm"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="USB1" type="Component">
+        <ports>
+            <port name="dp"/>
+            <port name="dm"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="CACHE_L1" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+        </ports>
+        <registers>
+            <register name="CFG"/>
+        </registers>
+    </component>
+    <component name="CACHE_L2" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+        </ports>
+        <registers>
+            <register name="CFG"/>
+        </registers>
+    </component>
+    <component name="SRAM0" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+            <port name="we"/>
+        </ports>
+        <registers>
+            <register name="CFG"/>
+        </registers>
+    </component>
+    <component name="SRAM1" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+            <port name="we"/>
+        </ports>
+        <registers>
+            <register name="CFG"/>
+        </registers>
+    </component>
+    <component name="FLASH0" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+            <port name="we"/>
+        </ports>
+        <registers>
+            <register name="CFG"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="DDR0" type="Memory">
+        <ports>
+            <port name="addr"/>
+            <port name="data"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="TIMING"/>
+        </registers>
+    </component>
+    <component name="GPU0" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="rst"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="NPU0" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="rst"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <component name="RTC" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="alarm"/>
+        </ports>
+        <registers>
+            <register name="TIME"/>
+            <register name="DATE"/>
+        </registers>
+    </component>
+    <component name="WATCHDOG" type="Component">
+        <ports>
+            <port name="clk"/>
+        </ports>
+        <registers>
+            <register name="COUNT"/>
+            <register name="CTRL"/>
+        </registers>
+    </component>
+    <component name="INTC" type="Component">
+        <ports>
+            <port name="irq_in"/>
+            <port name="irq_out"/>
+        </ports>
+        <registers>
+            <register name="MASK"/>
+            <register name="PENDING"/>
+        </registers>
+    </component>
+    <bus name="APB_BUS" type="Bus">
+        <ports>
+            <port name="paddr"/>
+            <port name="pwdata"/>
+            <port name="prdata"/>
+        </ports>
+        <registers/>
+    </bus>
+    <bus name="AHB_BUS" type="Bus">
+        <ports>
+            <port name="haddr"/>
+            <port name="hwdata"/>
+            <port name="hrdata"/>
+        </ports>
+        <registers/>
+    </bus>
+    <bus name="AXI_BUS" type="Bus">
+        <ports>
+            <port name="awaddr"/>
+            <port name="wdata"/>
+            <port name="rdata"/>
+        </ports>
+        <registers/>
+    </bus>
+    <connections>
+        <connection source="CPU0" target="AXI_BUS"/>
+        <connection source="CPU1" target="AXI_BUS"/>
+        <connection source="AXI_BUS" target="AHB_BUS"/>
+        <connection source="AHB_BUS" target="APB_BUS"/>
+        <connection source="AXI_BUS" target="DDR0"/>
+        <connection source="AXI_BUS" target="CACHE_L2"/>
+        <connection source="CPU0" target="CACHE_L1"/>
+        <connection source="CPU1" target="CACHE_L1"/>
+        <connection source="AHB_BUS" target="SRAM0"/>
+        <connection source="AHB_BUS" target="SRAM1"/>
+        <connection source="AHB_BUS" target="FLASH0"/>
+        <connection source="APB_BUS" target="UART0"/>
+        <connection source="APB_BUS" target="UART1"/>
+        <connection source="APB_BUS" target="UART2"/>
+        <connection source="APB_BUS" target="UART3"/>
+        <connection source="APB_BUS" target="SPI0"/>
+        <connection source="APB_BUS" target="SPI1"/>
+        <connection source="APB_BUS" target="SPI2"/>
+        <connection source="APB_BUS" target="I2C0"/>
+        <connection source="APB_BUS" target="I2C1"/>
+        <connection source="APB_BUS" target="I2C2"/>
+        <connection source="APB_BUS" target="GPIO0"/>
+        <connection source="APB_BUS" target="GPIO1"/>
+        <connection source="APB_BUS" target="GPIO2"/>
+        <connection source="APB_BUS" target="GPIO3"/>
+        <connection source="APB_BUS" target="TIMER0"/>
+        <connection source="APB_BUS" target="TIMER1"/>
+        <connection source="APB_BUS" target="TIMER2"/>
+        <connection source="AHB_BUS" target="DMA0"/>
+        <connection source="AHB_BUS" target="DMA1"/>
+        <connection source="APB_BUS" target="ADC0"/>
+        <connection source="APB_BUS" target="ADC1"/>
+        <connection source="APB_BUS" target="DAC0"/>
+        <connection source="APB_BUS" target="DAC1"/>
+        <connection source="APB_BUS" target="PWM0"/>
+        <connection source="APB_BUS" target="PWM1"/>
+        <connection source="APB_BUS" target="PWM2"/>
+        <connection source="AHB_BUS" target="ETH0"/>
+        <connection source="AHB_BUS" target="ETH1"/>
+        <connection source="APB_BUS" target="CAN0"/>
+        <connection source="APB_BUS" target="CAN1"/>
+        <connection source="AHB_BUS" target="USB0"/>
+        <connection source="AHB_BUS" target="USB1"/>
+        <connection source="AXI_BUS" target="GPU0"/>
+        <connection source="AXI_BUS" target="NPU0"/>
+        <connection source="RTC" target="INTC"/>
+        <connection source="WATCHDOG" target="INTC"/>
+        <connection source="UART0" target="INTC"/>
+        <connection source="UART1" target="INTC"/>
+        <connection source="UART2" target="INTC"/>
+        <connection source="UART3" target="INTC"/>
+        <connection source="TIMER0" target="INTC"/>
+        <connection source="TIMER1" target="INTC"/>
+        <connection source="TIMER2" target="INTC"/>
+        <connection source="GPIO0" target="INTC"/>
+        <connection source="GPIO1" target="INTC"/>
+        <connection source="GPIO2" target="INTC"/>
+        <connection source="GPIO3" target="INTC"/>
+        <connection source="DMA0" target="INTC"/>
+        <connection source="DMA1" target="INTC"/>
+        <connection source="ETH0" target="INTC"/>
+        <connection source="ETH1" target="INTC"/>
+        <connection source="USB0" target="INTC"/>
+        <connection source="USB1" target="INTC"/>
+        <connection source="GPU0" target="INTC"/>
+        <connection source="NPU0" target="INTC"/>
+        <connection source="INTC" target="CPU0"/>
+        <connection source="INTC" target="CPU1"/>
+        <connection source="UART0" target="DMA0"/>
+        <connection source="UART1" target="DMA0"/>
+        <connection source="SPI0" target="DMA1"/>
+        <connection source="SPI1" target="DMA1"/>
+        <connection source="ADC0" target="DMA0"/>
+        <connection source="ADC1" target="DMA1"/>
+        <connection source="PWM0" target="GPIO0"/>
+        <connection source="PWM1" target="GPIO1"/>
+        <connection source="PWM2" target="GPIO2"/>
+        <connection source="CAN0" target="ETH0"/>
+        <connection source="CAN1" target="ETH1"/>
+        <connection source="USB0" target="FLASH0"/>
+        <connection source="USB1" target="DDR0"/>
+        <connection source="GPU0" target="DDR0"/>
+        <connection source="NPU0" target="DDR0"/>
+        <connection source="RTC" target="CPU0"/>
+        <connection source="WATCHDOG" target="CPU1"/>
+    </connections>
+</system>

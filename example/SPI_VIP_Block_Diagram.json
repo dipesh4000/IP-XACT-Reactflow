@@ -1,0 +1,233 @@
+{
+  "components": {
+    "SPI_TOP": {
+      "type": "Top",
+      "ports": [
+        "clk",
+        "rst"
+      ],
+      "registers": []
+    },
+    "SPI_ENV": {
+      "type": "Environment",
+      "ports": [
+        "cfg"
+      ],
+      "registers": [
+        "CPOL",
+        "CPHA",
+        "CHARLEN",
+        "SHIFTDIR",
+        "C2TDELAY",
+        "T2CDELAY",
+        "WDELAY",
+        "CSHOLD"
+      ]
+    },
+    "VIRTUAL_SEQUENCER": {
+      "type": "Sequencer",
+      "ports": [],
+      "registers": []
+    },
+    "MASTER_SEQUENCER": {
+      "type": "Sequencer",
+      "ports": [],
+      "registers": []
+    },
+    "MASTER_DRIVER": {
+      "type": "Driver",
+      "ports": [
+        "SCLK",
+        "MOSI",
+        "CS"
+      ],
+      "registers": [
+        "TXBUF"
+      ]
+    },
+    "MASTER_INTERFACE": {
+      "type": "Interface",
+      "ports": [
+        "SCLK",
+        "MOSI",
+        "MISO",
+        "CS"
+      ],
+      "registers": [
+        "RXBUF"
+      ]
+    },
+    "SPI_BUS": {
+      "type": "Bus",
+      "ports": [
+        "SCLK",
+        "MOSI",
+        "MISO",
+        "CS"
+      ],
+      "registers": []
+    },
+    "SLAVE_SEQUENCER": {
+      "type": "Sequencer",
+      "ports": [],
+      "registers": []
+    },
+    "SLAVE_DRIVER": {
+      "type": "Driver",
+      "ports": [
+        "MISO"
+      ],
+      "registers": [
+        "TXBUF"
+      ]
+    },
+    "SLAVE_INTERFACE": {
+      "type": "Interface",
+      "ports": [
+        "SCLK",
+        "MOSI",
+        "MISO",
+        "CS"
+      ],
+      "registers": [
+        "RXBUF"
+      ]
+    },
+    "MASTER_MONITOR": {
+      "type": "Monitor",
+      "ports": [
+        "analysis_port"
+      ],
+      "registers": []
+    },
+    "SLAVE_MONITOR": {
+      "type": "Monitor",
+      "ports": [
+        "analysis_port"
+      ],
+      "registers": []
+    },
+    "SPI_SCOREBOARD": {
+      "type": "Checker",
+      "ports": [],
+      "registers": [
+        "PASS_FAIL"
+      ]
+    },
+    "SLAVE_AGENT": {
+      "type": "Component",
+      "ports": [],
+      "registers": []
+    },
+    "SPI_CONFIG": {
+      "type": "Component",
+      "ports": [],
+      "registers": []
+    },
+    "COVERAGE": {
+      "type": "Component",
+      "ports": [],
+      "registers": []
+    },
+    "RESULTS": {
+      "type": "Component",
+      "ports": [],
+      "registers": []
+    },
+    "MASTER_AGENT": {
+      "type": "Component",
+      "ports": [],
+      "registers": []
+    }
+  },
+  "connections": [
+    {
+      "source": "SPI_TOP",
+      "target": "SPI_ENV"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "VIRTUAL_SEQUENCER"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "MASTER_AGENT"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "SLAVE_AGENT"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "SPI_SCOREBOARD"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "COVERAGE"
+    },
+    {
+      "source": "SPI_ENV",
+      "target": "SPI_CONFIG"
+    },
+    {
+      "source": "VIRTUAL_SEQUENCER",
+      "target": "MASTER_SEQUENCER"
+    },
+    {
+      "source": "VIRTUAL_SEQUENCER",
+      "target": "SLAVE_SEQUENCER"
+    },
+    {
+      "source": "MASTER_SEQUENCER",
+      "target": "MASTER_DRIVER"
+    },
+    {
+      "source": "MASTER_DRIVER",
+      "target": "MASTER_INTERFACE"
+    },
+    {
+      "source": "MASTER_INTERFACE",
+      "target": "SPI_BUS"
+    },
+    {
+      "source": "SPI_BUS",
+      "target": "SLAVE_INTERFACE"
+    },
+    {
+      "source": "SLAVE_SEQUENCER",
+      "target": "SLAVE_DRIVER"
+    },
+    {
+      "source": "SLAVE_DRIVER",
+      "target": "SLAVE_INTERFACE"
+    },
+    {
+      "source": "SLAVE_INTERFACE",
+      "target": "SLAVE_MONITOR"
+    },
+    {
+      "source": "MASTER_INTERFACE",
+      "target": "MASTER_MONITOR"
+    },
+    {
+      "source": "MASTER_MONITOR",
+      "target": "SPI_SCOREBOARD"
+    },
+    {
+      "source": "SLAVE_MONITOR",
+      "target": "SPI_SCOREBOARD"
+    },
+    {
+      "source": "MASTER_MONITOR",
+      "target": "COVERAGE"
+    },
+    {
+      "source": "SLAVE_MONITOR",
+      "target": "COVERAGE"
+    },
+    {
+      "source": "SPI_SCOREBOARD",
+      "target": "RESULTS"
+    }
+  ]
+}

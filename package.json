@@ -10,6 +10,7 @@
     "postinstall": "node -e \"const fs=require('fs'),p=require('path'),d='node_modules/.bin';fs.existsSync(d)&&fs.readdirSync(d).forEach(f=>{try{fs.chmodSync(p.join(d,f),0o755)}catch(e){}})\""
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",

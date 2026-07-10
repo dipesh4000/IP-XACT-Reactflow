@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <component name="UART" type="Component">
+        <ports>
+            <port name="clk"/>
+            <port name="rst"/>
+            <port name="tx"/>
+            <port name="rx"/>
+        </ports>
+        <registers>
+            <register name="CTRL"/>
+            <register name="STATUS"/>
+        </registers>
+    </component>
+    <bus name="APB_BUS" type="Bus">
+        <ports>
+            <port name="paddr"/>
+            <port name="pwrite"/>
+        </ports>
+        <registers/>
+    </bus>
+    <component name="CPU" type="Component">
+        <ports>
+            <port name="irq"/>
+        </ports>
+        <registers/>
+    </component>
+    <connections>
+        <connection source="UART" target="APB_BUS"/>
+        <connection source="APB_BUS" target="CPU"/>
+        <connection source="CPU" target="UART"/>
+    </connections>
+</system>

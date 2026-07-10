@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ipxact:design xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:usr="urn:abhay:ipxact:source-data:1.0" xsi:schemaLocation="http://www.accellera.org/XMLSchema/IPXACT/1685-2014 http://www.accellera.org/XMLSchema/IPXACT/1685-2014/index.xsd">
+  <ipxact:vendor>user</ipxact:vendor>
+  <ipxact:library>generated</ipxact:library>
+  <ipxact:name>circuit1</ipxact:name>
+  <ipxact:version>1.0</ipxact:version>
+  <ipxact:componentInstances>
+    <ipxact:componentInstance>
+      <ipxact:instanceName>UART</ipxact:instanceName>
+      <ipxact:componentRef vendor="user" library="generated" name="UART" version="1.0"/>
+    </ipxact:componentInstance>
+    <ipxact:componentInstance>
+      <ipxact:instanceName>APB_BUS</ipxact:instanceName>
+      <ipxact:componentRef vendor="user" library="generated" name="APB_BUS" version="1.0"/>
+    </ipxact:componentInstance>
+    <ipxact:componentInstance>
+      <ipxact:instanceName>CPU</ipxact:instanceName>
+      <ipxact:componentRef vendor="user" library="generated" name="CPU" version="1.0"/>
+    </ipxact:componentInstance>
+  </ipxact:componentInstances>
+  <ipxact:vendorExtensions>
+    <usr:sourceModel origin="IP_XACT_JSON.json / circuit1(2).xlsx" mapping="node-level; endpoint interfaces unspecified">
+      <usr:components>
+        <usr:component name="UART" type="Component">
+          <usr:ports>
+            <usr:port name="clk"/>
+            <usr:port name="rst"/>
+            <usr:port name="tx"/>
+            <usr:port name="rx"/>
+          </usr:ports>
+          <usr:registers>
+            <usr:register name="CTRL"/>
+            <usr:register name="STATUS"/>
+          </usr:registers>
+        </usr:component>
+        <usr:component name="APB_BUS" type="Bus">
+          <usr:ports>
+            <usr:port name="paddr"/>
+            <usr:port name="pwrite"/>
+          </usr:ports>
+          <usr:registers/>
+        </usr:component>
+        <usr:component name="CPU" type="Component">
+          <usr:ports>
+            <usr:port name="irq"/>
+          </usr:ports>
+          <usr:registers/>
+        </usr:component>
+      </usr:components>
+      <usr:connections>
+        <usr:connection id="connection_1" source="UART" target="APB_BUS" directed="true"/>
+        <usr:connection id="connection_2" source="APB_BUS" target="CPU" directed="true"/>
+        <usr:connection id="connection_3" source="CPU" target="UART" directed="true"/>
+      </usr:connections>
+    </usr:sourceModel>
+  </ipxact:vendorExtensions>
+</ipxact:design>

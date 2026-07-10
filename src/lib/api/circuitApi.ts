@@ -1,4 +1,4 @@
-export const CIRCUIT_API_URL = "https://python.verifplay.com/api/circuit";
+export const CIRCUIT_API_URL = "https://python.verifplay.com/api/ip-xact";
 
 const CONVERTIBLE_EXTENSIONS = [".xlsx", ".xls", ".xml"];
 
