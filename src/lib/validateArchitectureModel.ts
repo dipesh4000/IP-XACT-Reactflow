@@ -71,6 +71,10 @@ function inferComponentType(name: string, rawType: string): ComponentType {
 }
 
 function normalizePorts(componentId: string, ports: unknown): Port[] {
+  if (ports === undefined || ports === null) {
+    return [];
+  }
+
   if (!Array.isArray(ports)) {
     throw new Error(`Component ${componentId} needs ports[].`);
   }
@@ -90,6 +94,10 @@ function normalizePorts(componentId: string, ports: unknown): Port[] {
 }
 
 function normalizeRegisters(componentId: string, registers: unknown): Register[] {
+  if (registers === undefined || registers === null) {
+    return [];
+  }
+
   if (!Array.isArray(registers)) {
     throw new Error(`Component ${componentId} needs registers[].`);
   }
